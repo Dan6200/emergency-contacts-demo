@@ -9,7 +9,7 @@ export default function Test({ params: { id } }: { params: { id: string } }) {
   );
 
   return (
-    <main className="w-1/2 mx-auto my-16">
+    <main className="w-full px-8 md:w-1/2 mx-auto my-16">
       <h1 className="text-cent text-3xl">Scan Qr code</h1>
       <QrReader
         constraints={{ facingMode: "environment" }}
@@ -22,7 +22,7 @@ export default function Test({ params: { id } }: { params: { id: string } }) {
             console.info(error);
           }
         }}
-        className="w-3/4 mx-auto"
+        className="w-full md:w-3/4 mx-auto"
       />
       <p>{data}</p>
       <Link href={`/residents/${id}`} className="text-blue-700 underline">
