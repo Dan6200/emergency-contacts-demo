@@ -40,6 +40,7 @@ interface initialValProps {
   lastName: string;
   phone: string;
   address: string;
+  id?: string;
 }
 
 export function ResidentForm({
@@ -47,6 +48,7 @@ export function ResidentForm({
   lastName,
   phone,
   address,
+  id,
 }: initialValProps) {
   const [people, setPeople] = useAtom(peopleAtom);
   const router = useRouter();
@@ -61,11 +63,20 @@ export function ResidentForm({
   });
 
   function onSubmit(data: z.infer<typeof ResidentFormSchema>) {
-    setPeople([...people, data]);
+    if (id) {
+      // if id is present edit instead
+      console.log(id);
+      let newPeople = people.map((person, index) =>
+        index === parseInt(id) - 1 ? data : person
+      );
+      setPeople(newPeople);
+    } else setPeople([...people, data]);
     toast({
-      title: "New Resident Added Successfully",
+      title: id
+        ? "Resident's Info Successfully Changed"
+        : "New Resident Added Successfully",
     });
-    setTimeout(() => router.push("/residents"), 1000);
+    setTimeout(() => router.push(id ? `/residents/${id}` : "/residents"), 1000);
   }
 
   return (

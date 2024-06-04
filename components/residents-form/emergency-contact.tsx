@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import { useAtom, useSetAtom } from "jotai";
+import emergencyAtom from "@/data/emergency-atom";
+import { useRouter } from "next/navigation";
 
 const EmergencyContactFormSchema = z.object({
   firstName: z.string().min(2, {
@@ -30,9 +33,12 @@ const EmergencyContactFormSchema = z.object({
   address: z.string().min(5, {
     message: "home address must be at least 5 characters.",
   }),
+  relationship: z.string(),
 });
 
-export function EmergencyContactForm() {
+export function EmergencyContactForm({ id }: { id: string }) {
+  const [emergencyContacts, setEmergencyContacts] = useAtom(emergencyAtom);
+  const router = useRouter();
   const form = useForm<z.infer<typeof EmergencyContactFormSchema>>({
     resolver: zodResolver(EmergencyContactFormSchema),
     defaultValues: {
@@ -40,18 +46,21 @@ export function EmergencyContactForm() {
       lastName: "",
       phone: "",
       address: "",
+      relationship: "",
     },
   });
 
   function onSubmit(data: z.infer<typeof EmergencyContactFormSchema>) {
+    if (emergencyContacts === null)
+      setEmergencyContacts(new Map([[id, [data]]]));
+    else if (emergencyContacts.has(id))
+      setEmergencyContacts(
+        emergencyContacts?.set(id, [...emergencyContacts.get(id)!, data])
+      );
     toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+      title: "Emergency Contact Added Successfully",
     });
+    setTimeout(() => router.push(`/residents/${id}`), 1000);
   }
 
   return (
@@ -111,6 +120,20 @@ export function EmergencyContactForm() {
                 <Input {...field} />
               </FormControl>
               <FormDescription>Emergency contact's address</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="relationship"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Relationship</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormDescription>Relationship to Patient</FormDescription>
               <FormMessage />
             </FormItem>
           )}
