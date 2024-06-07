@@ -1,7 +1,7 @@
 import { FirebaseOptions, initializeApp } from "firebase/app";
 import { Auth, getAuth, getIdToken } from "firebase/auth";
 import { getInstallations, getToken } from "firebase/installations";
-import { NextFetchEvent, NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 
 let firebaseConfig: FirebaseOptions;
 
