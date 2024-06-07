@@ -11,6 +11,16 @@ import { User } from "firebase/auth";
 import { signOut, signInWithGoogle, onAuthStateChanged } from "@/firebase/auth";
 import { firebaseConfig } from "@/firebase/config";
 import Image from "next/image";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Button } from "./ui/button";
+import { UserRound } from "lucide-react";
 
 function useUserSession(initialUser: User | null) {
   // The initial user comes from the server via a server component
@@ -57,7 +67,7 @@ function useUserSession(initialUser: User | null) {
 export default function Header({ initialUser }: { initialUser: User }) {
   const user = useUserSession(initialUser);
 
-  const handleSignOut: MouseEventHandler<HTMLAnchorElement> = async (
+  const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
     event: MouseEvent
   ) => {
     event.preventDefault();
@@ -65,8 +75,8 @@ export default function Header({ initialUser }: { initialUser: User }) {
     console.log("sign out", resolved);
   };
 
-  const handleSignIn: MouseEventHandler<HTMLAnchorElement> = async (
-    event: React.MouseEvent
+  const handleSignIn: MouseEventHandler<HTMLButtonElement> = async (
+    event: MouseEvent
   ) => {
     event.preventDefault();
     const resolved = await signInWithGoogle();
@@ -74,7 +84,7 @@ export default function Header({ initialUser }: { initialUser: User }) {
   };
 
   return (
-    <header className="flex justify-between px-8 py-2">
+    <header className="bg-primary flex justify-between px-8 py-2">
       <Link href="/" className="logo">
         <Image
           width={150}
@@ -84,29 +94,26 @@ export default function Header({ initialUser }: { initialUser: User }) {
         />
       </Link>
       {user ? (
-        <>
-          <div className="profile">
-            <p>{user.displayName}</p>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="rounded-full border-2 bg-primary-foreground w-12 h-12">
+            <UserRound className="mx-auto" />
+          </DropdownMenuTrigger>
 
-            <div className="menu">
-              ...
-              <ul>
-                <li>{user.displayName}</li>
+          <DropdownMenuContent className="bg-background border-2">
+            <DropdownMenuLabel>
+              Welcome, {/* first name only */}
+              {user.displayName?.split(" ")[0]}
+            </DropdownMenuLabel>
 
-                <li>
-                  <a href="#" onClick={handleSignOut}>
-                    Sign Out
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Button onClick={handleSignOut}>Sign Out</Button>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ) : (
         <div className="profile">
-          <a href="#" onClick={handleSignIn}>
-            Sign In
-          </a>
+          <Button onClick={handleSignIn}>Sign In</Button>
         </div>
       )}
     </header>
