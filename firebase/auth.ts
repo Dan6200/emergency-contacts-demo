@@ -1,15 +1,31 @@
 import {
-  // EmailAuthProvider,
+  signInWithEmailAndPassword,
   signInWithPopup,
   onAuthStateChanged as _onAuthStateChanged,
   type User,
-  // createUserWithEmailAndPassword,
   GoogleAuthProvider,
+  UserCredential,
+  Auth,
 } from "firebase/auth";
 import { auth } from "./config";
 
 export function onAuthStateChanged(cb: (authUser: User | null) => void) {
   return _onAuthStateChanged(auth, cb);
+}
+
+export async function signInWithEmailAndPasswordWrapper(
+  email: string,
+  password: string
+): Promise<[string | null, UserCredential | null]> {
+  let res = null,
+    error = null;
+  try {
+    res = await signInWithEmailAndPassword(auth, email, password);
+  } catch (e) {
+    error = "Failed to sign in: " + e;
+  } finally {
+    return [error, res];
+  }
 }
 
 export async function signInWithGoogle() {

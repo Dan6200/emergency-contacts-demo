@@ -10,8 +10,7 @@ import { User } from "firebase/auth";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Senior care",
-  description: "To be edited",
+  title: "LinkID",
 };
 
 export default async function RootLayout({
@@ -23,7 +22,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Header initialUser={currentUser?.toJSON() as User} />
+        <Header />
         {children}
         <Toaster />
         <Analytics />

@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import peopleAtom from "@/data/people-atom";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 
@@ -35,48 +34,19 @@ const ResidentFormSchema = z.object({
   }),
 });
 
-interface initialValProps {
-  firstName: string;
-  lastName: string;
-  phone: string;
-  address: string;
-  id?: string;
-}
+interface initialValProps {}
 
-export function ResidentForm({
-  firstName,
-  lastName,
-  phone,
-  address,
-  id,
-}: initialValProps) {
-  const [people, setPeople] = useAtom(peopleAtom);
+export function ResidentForm({}: initialValProps) {
   const router = useRouter();
   const form = useForm<z.infer<typeof ResidentFormSchema>>({
     resolver: zodResolver(ResidentFormSchema),
-    defaultValues: {
-      firstName,
-      lastName,
-      phone,
-      address,
-    },
+    defaultValues: {},
   });
 
   function onSubmit(data: z.infer<typeof ResidentFormSchema>) {
-    if (id) {
-      // if id is present edit instead
-      console.log(id);
-      let newPeople = people.map((person, index) =>
-        index === parseInt(id) - 1 ? data : person
-      );
-      setPeople(newPeople);
-    } else setPeople([...people, data]);
     toast({
-      title: id
-        ? "Resident's Info Successfully Changed"
-        : "New Resident Added Successfully",
+      title: "",
     });
-    setTimeout(() => router.push(id ? `/residents/${id}` : "/residents"), 1000);
   }
 
   return (

@@ -1,6 +1,5 @@
 "use client";
 import { useAtomValue } from "jotai";
-import peopleAtom from "@/data/people-atom";
 import { EmergencyContactForm } from "@/components/residents-form/emergency-contact";
 
 export default function EditResidentPage({

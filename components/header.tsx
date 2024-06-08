@@ -21,6 +21,8 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { UserRound } from "lucide-react";
+import { useAtomValue } from "jotai";
+import { UserAtom } from "@/app/atoms/user";
 
 function useUserSession(initialUser: User | null) {
   // The initial user comes from the server via a server component
@@ -64,7 +66,8 @@ function useUserSession(initialUser: User | null) {
   return user;
 }
 
-export default function Header({ initialUser }: { initialUser: User }) {
+export default function Header() {
+  const initialUser = useAtomValue(UserAtom);
   const user = useUserSession(initialUser);
 
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
@@ -84,37 +87,52 @@ export default function Header({ initialUser }: { initialUser: User }) {
   };
 
   return (
-    <header className="bg-gradient-to-r from-background to-primary flex justify-between px-8 py-2">
-      <Link href="/" className="logo">
+    <header className="flex border-b items-center justify-between px-4 py-2">
+      <Link href="/">
+        <Image
+          width={100}
+          height={100}
+          src="/client-logo-small.png"
+          alt="LinkId logo"
+          className="md:hidden"
+        />
         <Image
           width={150}
           height={150}
           src="/client-logo-large.jpeg"
           alt="LinkId logo"
+          className="hidden md:block"
         />
       </Link>
       {user ? (
         <DropdownMenu>
-          <DropdownMenuTrigger className="rounded-full border-2 bg-primary-foreground w-12 h-12">
+          <DropdownMenuTrigger className="rounded-full border-primary/80 border-4 bg-primary-foreground w-12 h-12">
             <UserRound className="mx-auto" />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="bg-background border-2">
-            <DropdownMenuLabel>
-              Welcome, {/* first name only */}
-              {user.displayName?.split(" ")[0]}
-            </DropdownMenuLabel>
+          <DropdownMenuContent className="text-center gap-2 md:gap-5 bg-background border-2 mr-4">
+            <DropdownMenuLabel>Admin</DropdownMenuLabel>
 
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Button onClick={handleSignOut}>Sign Out</Button>
+              <Link href="/manage-residents" className="mx-auto">
+                Manage Residents Information
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Button onClick={handleSignOut} className="w-full mx-auto">
+                Sign Out
+              </Button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <div className="profile">
-          <Button onClick={handleSignIn}>Sign In</Button>
-        </div>
+        <Link href="/admin/sign-in" className="">
+          <Button className="capitalize hidden md:flex">
+            sign in as admin
+          </Button>
+          <Button className="capitalize md:hidden">sign in</Button>
+        </Link>
       )}
     </header>
   );

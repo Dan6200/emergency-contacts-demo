@@ -1,11 +1,9 @@
 "use client";
-import peopleAtom from "@/data/people-atom";
 import { useAtomValue } from "jotai";
 import Link from "next/link";
 import { Button } from "./ui/button";
 
 export default function Residents() {
-  const people = useAtomValue(peopleAtom);
   return (
     <main className="bg-background container w-full px-8 mx-auto py-8 max-h-screen">
       <div className="w-full gap-5 md:justify-between flex flex-col md:flex-row mb-8">
@@ -15,8 +13,8 @@ export default function Residents() {
         </Link>
       </div>
       <ul className="flex flex-col h-[200vh] flex-wrap md:h-[80vh] py-4">
-        {people.map((person, index) => (
-          // <Link key={index} href={`/residents/${index + 1}`} className=""> */}
+        {/*people.map((person, index) => (
+          // <Link key={index} href={`/residents/${index + 1}`} className=""> }
           <Link
             key={index}
             href={`/residents/${index + 1}/auth/qr`}
@@ -28,7 +26,7 @@ export default function Residents() {
               </span>
             </li>
           </Link>
-        ))}
+			))*/}
       </ul>
     </main>
   );

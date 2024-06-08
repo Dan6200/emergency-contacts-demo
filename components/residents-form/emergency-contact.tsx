@@ -17,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { useAtom, useSetAtom } from "jotai";
-import emergencyAtom from "@/data/emergency-atom";
 import { useRouter } from "next/navigation";
 
 const EmergencyContactFormSchema = z.object({
@@ -37,7 +36,6 @@ const EmergencyContactFormSchema = z.object({
 });
 
 export function EmergencyContactForm({ id }: { id: string }) {
-  const [emergencyContacts, setEmergencyContacts] = useAtom(emergencyAtom);
   const router = useRouter();
   const form = useForm<z.infer<typeof EmergencyContactFormSchema>>({
     resolver: zodResolver(EmergencyContactFormSchema),
@@ -51,12 +49,6 @@ export function EmergencyContactForm({ id }: { id: string }) {
   });
 
   function onSubmit(data: z.infer<typeof EmergencyContactFormSchema>) {
-    if (emergencyContacts === null)
-      setEmergencyContacts(new Map([[id, [data]]]));
-    else if (emergencyContacts.has(id))
-      setEmergencyContacts(
-        emergencyContacts?.set(id, [...emergencyContacts.get(id)!, data])
-      );
     toast({
       title: "Emergency Contact Added Successfully",
     });
