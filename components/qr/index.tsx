@@ -6,14 +6,14 @@ import { CameraOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function QRFetchResidents() {
-  const [camOn, setCamOn] = useState(false);
-  const [camLoaded, setCamLoaded] = useState(false);
-  const [isQR, setIsQR] = useState(false);
-  {
-    /* const [errorMessage, setError] = useState(""); */
-  }
+  const [camOn, setCamOn] = useState(false),
+    [camLoaded, setCamLoaded] = useState(false),
+    [isQR, setIsQR] = useState(false),
+    [exists, setExists] = useState(false),
+    [fetchResErr, setFetchResErr] = useState(false);
   const router = useRouter();
   const Id = "qr-video";
+  // Set Fallback elements when camera does not show
   useEffect(() => {
     navigator.mediaDevices
       .getUserMedia({
@@ -22,14 +22,12 @@ export default function QRFetchResidents() {
       .then((stream) => setCamLoaded(stream.active));
     setCamOn(camLoaded);
   }, [camLoaded]);
-  /*
+  // Error Message to UI
   useEffect(() => {
     toast({
-      title: "An Error Occurred When Fetching Resident Info",
-      description: errorMessage,
+      title: "Unable To Fetch Resident Info",
     });
-  }, [errorMessage]);
-	 */
+  }, [fetchResErr]);
   return (
     <main className="w-full px-4 md:w-1/2 mx-auto my-4">
       {camOn && (
@@ -43,16 +41,10 @@ export default function QRFetchResidents() {
                 console.log(result);
                 setIsQR(true);
                 const ID = result.getText();
-                router.push(`/resident/${ID}`);
-                /*
-                const [resErr, residentsRef] = collectionWrapper(
-                  db,
-                  "residents"
-                );
-								if (resErr) setError(resErr);
-								else {
-									const [err, residentData] = docWrapper(residentsRef as any, ID)
-									if (err) setError(err)*/
+                const url = new URL(`/resident/${ID}`);
+                fetch(url, { method: "HEAD" }).then((res) => setExists(res.ok));
+                if (exists) router.push(`/resident/${ID}`);
+                else setFetchResErr(true);
               }
               if (error) {
                 console.error(error);
@@ -60,7 +52,7 @@ export default function QRFetchResidents() {
             }}
             className={
               (isQR ? "bg-green-700 " : "bg-red-600 ") +
-              "border-2 rounded-lg p-4 sm:p-6 md:p-8 flex items-center bg-green-700 my-4 bg-black-800 mx-auto"
+              "transition-colors border-2 rounded-lg p-4 sm:p-6 md:p-8 flex items-center bg-green-700 my-4 bg-black-800 mx-auto"
             }
             containerStyle={{ height: "100%", width: "100%" }}
             videoContainerStyle={{ height: "100%", width: "100%" }}
