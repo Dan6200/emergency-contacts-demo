@@ -84,7 +84,7 @@ export default function Header({ initialUser }: { initialUser: User }) {
   };
 
   return (
-    <header className="bg-primary flex justify-between px-8 py-2">
+    <header className="bg-gradient-to-r from-background to-primary flex justify-between px-8 py-2">
       <Link href="/" className="logo">
         <Image
           width={150}

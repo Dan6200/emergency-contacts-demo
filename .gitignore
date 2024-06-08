@@ -2,6 +2,7 @@
 reader-for-code-snip.mjs
 shadcn-download.sh
 todo.md
+*.csv
 
 # dependencies
 /node_modules

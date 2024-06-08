@@ -1,71 +1,230 @@
-residents
-"Tippit"
-"Thomas"
-"Mercer"
-"Nicholson"
-"Alvarez"
-"Lancaster"
-"Vincent"
-"Dettra"
-"Dettra"
-"Peters, C"
-"Peters, K"
-"Goldman"
-"Bridges"
-"MacKay"
-"Winslow"
-"Braden"
-"Ross"
-"Webb"
-"Webb"
-"Kamm"
-"Vlasimsky"
-"Douglas"
-"Peterson"
-"Rainey"
-"Wilson"
-"Walker"
-"Shaw"
-"Gafford"
-"Gafford"
-"Currin"
-"Mankey"
-"Hughes"
-"Hughes"
-"Brown"
-"Brown"
-"Cranshaw"
-"Hamilton"
-"Crews"
-"Johnson"
-"Thornton"
-"Gooch"
-"Vazquez"
-"Cowell"
-"Cowell"
-"Hill, D"
-"Temple"
-"Wammack"
-"Jarvis"
-"McMillin"
-"Hill, P"
-"Nulisch"
-"Baier"
-"Davis"
-"Price"
-"Kurth"
-"Kurth"
-"Heath"
-"Heath"
-"Waller"
-"DeMott"
-"Weber"
-"Blackwell"
-"Gibson"
-"Cranfill"
-"O'Neal"
-"Stillman"
-"Fyffe"
-"Osborn"
-"King"
-"Bogard"
+name,address,unit_number
+Tippit,"4831 W Lawther Dr. Dallas, TX 75214",101
+Thomas,"4831 W Lawther Dr. Dallas, TX 75214",102
+Mercer,"4831 W Lawther Dr. Dallas, TX 75214",103
+Nicholson,"4831 W Lawther Dr. Dallas, TX 75214",104
+Alvarez,"4831 W Lawther Dr. Dallas, TX 75214",105
+Lancaster,"4831 W Lawther Dr. Dallas, TX 75214",106
+Vincent,"4831 W Lawther Dr. Dallas, TX 75214",107
+Dettra,"4831 W Lawther Dr. Dallas, TX 75214",108
+"Peters, C","4831 W Lawther Dr. Dallas, TX 75214",109
+Goldman,"4831 W Lawther Dr. Dallas, TX 75214",110
+Bridges,"4831 W Lawther Dr. Dallas, TX 75214",111
+MacKay,"4831 W Lawther Dr. Dallas, TX 75214",112
+Winslow,"4831 W Lawther Dr. Dallas, TX 75214",113
+Braden,"4831 W Lawther Dr. Dallas, TX 75214",114
+Ross,"4831 W Lawther Dr. Dallas, TX 75214",115
+Webb,"4831 W Lawther Dr. Dallas, TX 75214",116
+Kamm,"4831 W Lawther Dr. Dallas, TX 75214",118
+Vlasimsky,"4831 W Lawther Dr. Dallas, TX 75214",120
+Douglas,"4831 W Lawther Dr. Dallas, TX 75214",122
+Peterson,"4831 W Lawther Dr. Dallas, TX 75214",123
+Rainey,"4831 W Lawther Dr. Dallas, TX 75214",124
+Wilson,"4831 W Lawther Dr. Dallas, TX 75214",201
+Walker,"4831 W Lawther Dr. Dallas, TX 75214",204
+Shaw,"4831 W Lawther Dr. Dallas, TX 75214",205
+Gafford,"4831 W Lawther Dr. Dallas, TX 75214",206
+Currin,"4831 W Lawther Dr. Dallas, TX 75214",207
+Mankey,"4831 W Lawther Dr. Dallas, TX 75214",208
+Hughes,"4831 W Lawther Dr. Dallas, TX 75214",210
+Brown,"4831 W Lawther Dr. Dallas, TX 75214",211
+Cranshaw,"4831 W Lawther Dr. Dallas, TX 75214",212
+Hamilton,"4831 W Lawther Dr. Dallas, TX 75214",213
+Crews,"4831 W Lawther Dr. Dallas, TX 75214",214
+Johnson,"4831 W Lawther Dr. Dallas, TX 75214",215
+Thornton,"4831 W Lawther Dr. Dallas, TX 75214",216
+Gooch,"4831 W Lawther Dr. Dallas, TX 75214",217
+Vazquez,"4831 W Lawther Dr. Dallas, TX 75214",218
+Cowell,"4831 W Lawther Dr. Dallas, TX 75214",219
+"Hill, D","4831 W Lawther Dr. Dallas, TX 75214",220
+Temple,"4831 W Lawther Dr. Dallas, TX 75214",223
+Wammack,"4831 W Lawther Dr. Dallas, TX 75214",225
+Jarvis,"4831 W Lawther Dr. Dallas, TX 75214",226
+McMillin,"4831 W Lawther Dr. Dallas, TX 75214",302
+"Hill, P","4831 W Lawther Dr. Dallas, TX 75214",303
+Nulisch,"4831 W Lawther Dr. Dallas, TX 75214",304
+Baier,"4831 W Lawther Dr. Dallas, TX 75214",305
+Davis,"4831 W Lawther Dr. Dallas, TX 75214",307
+Price,"4831 W Lawther Dr. Dallas, TX 75214",308
+Kurth,"4831 W Lawther Dr. Dallas, TX 75214",309
+Heath,"4831 W Lawther Dr. Dallas, TX 75214",310
+Waller,"4831 W Lawther Dr. Dallas, TX 75214",311
+DeMott,"4831 W Lawther Dr. Dallas, TX 75214",313
+Weber,"4831 W Lawther Dr. Dallas, TX 75214",314
+Blackwell,"4831 W Lawther Dr. Dallas, TX 75214",315
+Gibson,"4831 W Lawther Dr. Dallas, TX 75214",317
+Cranfill,"4831 W Lawther Dr. Dallas, TX 75214",319
+O'Neal,"4831 W Lawther Dr. Dallas, TX 75214",321
+Stillman,"4831 W Lawther Dr. Dallas, TX 75214",322
+Fyffe,"4831 W Lawther Dr. Dallas, TX 75214",323
+Osborn,"4831 W Lawther Dr. Dallas, TX 75214",329
+King,"4831 W Lawther Dr. Dallas, TX 75214",330
+Bogard,"4831 W Lawther Dr. Dallas, TX 75214",332
+Kuser,4833 W Lawther Dr. Dallas TX 75214,102
+Aylesworth,4833 W Lawther Dr. Dallas TX 75214,103
+Jackson,4833 W Lawther Dr. Dallas TX 75214,104
+Hustis,4833 W Lawther Dr. Dallas TX 75214,105
+Buxbaum,4833 W Lawther Dr. Dallas TX 75214,106
+Parish,4833 W Lawther Dr. Dallas TX 75214,107
+Paschal,4833 W Lawther Dr. Dallas TX 75214,108
+Wiley,4833 W Lawther Dr. Dallas TX 75214,109
+Hearne,4833 W Lawther Dr. Dallas TX 75214,110
+Barnard,4833 W Lawther Dr. Dallas TX 75214,111
+Williams,4833 W Lawther Dr. Dallas TX 75214,200
+McLeod,4833 W Lawther Dr. Dallas TX 75214,201
+Luckett,4833 W Lawther Dr. Dallas TX 75214,202
+Bryans,4833 W Lawther Dr. Dallas TX 75214,203
+Hooks,4833 W Lawther Dr. Dallas TX 75214,204
+Cassingham,4833 W Lawther Dr. Dallas TX 75214,205
+Beasley,4833 W Lawther Dr. Dallas TX 75214,207
+Laird,4833 W Lawther Dr. Dallas TX 75214,208
+Voight,4833 W Lawther Dr. Dallas TX 75214,209
+Ramirez,4833 W Lawther Dr. Dallas TX 75214,210
+Pickett,4833 W Lawther Dr. Dallas TX 75214,211
+Fulton,4833 W Lawther Dr. Dallas TX 75214,212
+Dunscombe,4833 W Lawther Dr. Dallas TX 75214,213
+Anthony,4833 W Lawther Dr. Dallas TX 75214,214
+Johnson,4833 W Lawther Dr. Dallas TX 75214,215
+Jenkins,4833 W Lawther Dr. Dallas TX 75214,216
+O'Donnell,4833 W Lawther Dr. Dallas TX 75214,218
+Broome,4833 W Lawther Dr. Dallas TX 75214,219
+Worden,4833 W Lawther Dr. Dallas TX 75214,220
+Durand,4833 W Lawther Dr. Dallas TX 75214,222
+Finley,4833 W Lawther Dr. Dallas TX 75214,300
+Bowen,4833 W Lawther Dr. Dallas TX 75214,301
+Smith,4833 W Lawther Dr. Dallas TX 75214,302
+Smith,4833 W Lawther Dr. Dallas TX 75214,302
+Hustis,4833 W Lawther Dr. Dallas TX 75214,303
+"Denton, G",4833 W Lawther Dr. Dallas TX 75214,305
+"Denton, J",4833 W Lawther Dr. Dallas TX 75214,305
+"Stewart, J",4833 W Lawther Dr. Dallas TX 75214,306
+King,4833 W Lawther Dr. Dallas TX 75214,307
+Jacobi,4833 W Lawther Dr. Dallas TX 75214,308
+Poston,4833 W Lawther Dr. Dallas TX 75214,309
+Glime,4833 W Lawther Dr. Dallas TX 75214,310
+Ward,4833 W Lawther Dr. Dallas TX 75214,311
+Orr,4833 W Lawther Dr. Dallas TX 75214,312
+Harvey,4833 W Lawther Dr. Dallas TX 75214,313
+McDonald,4833 W Lawther Dr. Dallas TX 75214,314
+Allen,4833 W Lawther Dr. Dallas TX 75214,315
+Gilhooly,4833 W Lawther Dr. Dallas TX 75214,316
+Crawford,4833 W Lawther Dr. Dallas TX 75214,317
+Flint,4833 W Lawther Dr. Dallas TX 75214,318
+Little,4833 W Lawther Dr. Dallas TX 75214,319
+Franklin,4833 W Lawther Dr. Dallas TX 75214,320
+Geyer,4833 W Lawther Dr. Dallas TX 75214,321
+Christen,4833 W Lawther Dr. Dallas TX 75214,322
+Lummus,4833 W Lawther Dr. Dallas TX 75214,400
+Gould,4833 W Lawther Dr. Dallas TX 75214,402
+Fisher,4833 W Lawther Dr. Dallas TX 75214,403
+Greene,4833 W Lawther Dr. Dallas TX 75214,404
+Baum,4833 W Lawther Dr. Dallas TX 75214,405
+Cooke,4833 W Lawther Dr. Dallas TX 75214,406
+Smith,4833 W Lawther Dr. Dallas TX 75214,407
+Hullum,4833 W Lawther Dr. Dallas TX 75214,408
+Hillbish,4833 W Lawther Dr. Dallas TX 75214,409
+Shields,4833 W Lawther Dr. Dallas TX 75214,410
+Hanmer,4833 W Lawther Dr. Dallas TX 75214,411
+McMillan,4833 W Lawther Dr. Dallas TX 75214,412
+Hammert,4833 W Lawther Dr. Dallas TX 75214,413
+Setliff,4833 W Lawther Dr. Dallas TX 75214,414
+Haas,4833 W Lawther Dr. Dallas TX 75214,415
+Malcolm,4833 W Lawther Dr. Dallas TX 75214,416
+Boswell,4833 W Lawther Dr. Dallas TX 75214,418
+Benningfield,4833 W Lawther Dr. Dallas TX 75214,419
+Tyler,4833 W Lawther Dr. Dallas TX 75214,420
+McWhorter,4833 W Lawther Dr. Dallas TX 75214,421
+Dugger,4833 W Lawther Dr. Dallas TX 75214,501
+Lindsly,4833 W Lawther Dr. Dallas TX 75214,503
+Wooldridge,4833 W Lawther Dr. Dallas TX 75214,504
+Hodge,4833 W Lawther Dr. Dallas TX 75214,505
+Powell,4833 W Lawther Dr. Dallas TX 75214,506
+Kidd,4833 W Lawther Dr. Dallas TX 75214,507
+Hardy,4833 W Lawther Dr. Dallas TX 75214,512
+Banes,4833 W Lawther Dr. Dallas TX 75214,513
+Symank,4833 W Lawther Dr. Dallas TX 75214,514
+Collins,4833 W Lawther Dr. Dallas TX 75214,515
+"Franklin, B",4833 W Lawther Dr. Dallas TX 75214,516
+Walch,4833 W Lawther Dr. Dallas TX 75214,517
+Cox,4833 W Lawther Dr. Dallas TX 75214,518
+Mikeska,4833 W Lawther Dr. Dallas TX 75214,519
+LeeswoodJones,4833 W Lawther Dr. Dallas TX 75214,521
+"Johnson, B",4833 W Lawther Dr. Dallas TX 75214,522
+Esgar,4833 W Lawther Dr. Dallas TX 75214,600
+Esgar,4833 W Lawther Dr. Dallas TX 75214,600
+Eilers,4833 W Lawther Dr. Dallas TX 75214,601
+York,4833 W Lawther Dr. Dallas TX 75214,602
+Baird,4833 W Lawther Dr. Dallas TX 75214,603
+Barnes,4833 W Lawther Dr. Dallas TX 75214,604
+Hood,4833 W Lawther Dr. Dallas TX 75214,605
+Gass,4833 W Lawther Dr. Dallas TX 75214,606
+Getty,4833 W Lawther Dr. Dallas TX 75214,607
+Mason,4833 W Lawther Dr. Dallas TX 75214,613
+Marshall,4833 W Lawther Dr. Dallas TX 75214,616
+McCall,4835 W Lawther Dr. Dallas TX 75214,301
+"Davis, D",4835 W Lawther Dr. Dallas TX 75214,304
+Rampey,4835 W Lawther Dr. Dallas TX 75214,305
+Hearn,4835 W Lawther Dr. Dallas TX 75214,306
+Shupe,4835 W Lawther Dr. Dallas TX 75214,401
+Hubbuch,4835 W Lawther Dr. Dallas TX 75214,402
+Rivers,4835 W Lawther Dr. Dallas TX 75214,403
+Webb,4835 W Lawther Dr. Dallas TX 75214,404
+Guy,4835 W Lawther Dr. Dallas TX 75214,406
+Barrett,4835 W Lawther Dr. Dallas TX 75214,501
+Howland,4835 W Lawther Dr. Dallas TX 75214,504
+Hutton,4835 W Lawther Dr. Dallas TX 75214,505
+Plugge,4835 W Lawther Dr. Dallas TX 75214,506
+Thornbrugh,4835 W Lawther Dr. Dallas TX 75214,601
+Allmon,4835 W Lawther Dr. Dallas TX 75214,602
+Searcy,4835 W Lawther Dr. Dallas TX 75214,603
+White,4835 W Lawther Dr. Dallas TX 75214,604
+Robertson,4835 W Lawther Dr. Dallas TX 75214,605
+Barker,4835 W Lawther Dr. Dallas TX 75214,606
+Bruce,4835 W Lawther Dr. Dallas TX 75214,701
+Gamble,4835 W Lawther Dr. Dallas TX 75214,702
+Matlock,4835 W Lawther Dr. Dallas TX 75214,703
+Schackmann,4835 W Lawther Dr. Dallas TX 75214,704
+Ibach,4835 W Lawther Dr. Dallas TX 75214,705
+Rogers,4835 W Lawther Dr. Dallas TX 75214,706
+Bacon,4835 W Lawther Dr. Dallas TX 75214,707
+Bryan,4835 W Lawther Dr. Dallas TX 75214,801
+Rauscher,4835 W Lawther Dr. Dallas TX 75214,803
+Strucely,4835 W Lawther Dr. Dallas TX 75214,804
+Field,4835 W Lawther Dr. Dallas TX 75214,805
+Lemons,4835 W Lawther Dr. Dallas TX 75214,806
+Dahlberg,4835 W Lawther Dr. Dallas TX 75214,807
+Marston,4835 W Lawther Dr. Dallas TX 75214,810
+,"7246 Umphress Road, Dallas, TX 75217",2A
+,"7247 Umphress Road, Dallas, TX 75217",2B
+,"7248 Umphress Road, Dallas, TX 75217",2C
+,"7249 Umphress Road, Dallas, TX 75217",2D
+,"7250 Umphress Road, Dallas, TX 75217",3A
+,"7253 Umphress Road, Dallas, TX 75217",3D
+,"7254 Umphress Road, Dallas, TX 75217",4A
+,"7258 Umphress Road, Dallas, TX 75217",5A
+,"7259 Umphress Road, Dallas, TX 75217",5B
+,"7260 Umphress Road, Dallas, TX 75217",5C
+,"7262 Umphress Road, Dallas, TX 75217",6A
+,"7267 Umphress Road, Dallas, TX 75217",7B
+,"7268 Umphress Road, Dallas, TX 75217",7C
+,"7271 Umphress Road, Dallas, TX 75217",8B
+,"7273 Umphress Road, Dallas, TX 75217",8D
+,"7276 Umphress Road, Dallas, TX 75217",9C
+,"7278 Umphress Road, Dallas, TX 75217",10A
+,"7279 Umphress Road, Dallas, TX 75217",10B
+,"7280 Umphress Road, Dallas, TX 75217",10C
+,"7281 Umphress Road, Dallas, TX 75217",10D
+,"7286 Umphress Road, Dallas, TX 75217",12A
+,"7287 Umphress Road, Dallas, TX 75217",12B
+,"7288 Umphress Road, Dallas, TX 75217",12C
+,"7289 Umphress Road, Dallas, TX 75217",12D
+,"7290 Umphress Road, Dallas, TX 75217",13A
+,"7291 Umphress Road, Dallas, TX 75217",13B
+,"7293 Umphress Road, Dallas, TX 75217",13D
+,"7294 Umphress Road, Dallas, TX 75217",14A
+,"7295 Umphress Road, Dallas, TX 75217",14B
+,"7296 Umphress Road, Dallas, TX 75217",14C
+,"7297 Umphress Road, Dallas, TX 75217",14D
+,"7299 Umphress Road, Dallas, TX 75217",15B
+,"7300 Umphress Road, Dallas, TX 75217",15C
+,"7301 Umphress Road, Dallas, TX 75217",15D
