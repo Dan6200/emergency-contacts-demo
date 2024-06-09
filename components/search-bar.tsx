@@ -28,10 +28,13 @@ const ResidentSchema = z.object({
 
 export function SearchBar({
   setResidents,
+  setOpen,
 }: {
   setResidents: Dispatch<SetStateAction<Resident[] | null>>;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
   const [searchData, setSearchData] = useState<Resident[] | []>([]);
+  const [debounced, setDebounced] = useState(false);
   const form = useForm<Resident>({
     resolver: zodResolver(ResidentSchema),
     defaultValues: {
@@ -77,13 +80,19 @@ export function SearchBar({
     if (watch("name") || watch("address") || watch("unit_number")) {
       residents = searchData.filter(
         (data) =>
-          data.address.startsWith(watch("address")) &&
+          data.address
+            .toLowerCase() // Ignore case
+            .replaceAll(/[^a-zA-Z0-9]/g, "") // Ignore non-alnum chars
+            .startsWith(
+              watch("address")
+                .toLowerCase()
+                .replaceAll(/[^a-zA-Z0-9]/g, "")
+            ) &&
           data.unit_number.startsWith(watch("unit_number")) &&
-          data.name.startsWith(watch("name"))
+          data.name.toLowerCase().startsWith(watch("name").toLowerCase())
       );
+      setResidents(residents);
     }
-    console.dir(residents);
-    setResidents(residents);
   }
 
   /* for very large data
@@ -139,6 +148,7 @@ export function SearchBar({
               </FormLabel>
               <FormControl>
                 <Input
+                  onFocus={() => setOpen(true)}
                   {...field}
                   type="text"
                   className="p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -162,6 +172,7 @@ export function SearchBar({
               <FormControl>
                 <Input
                   {...field}
+                  onFocus={() => setOpen(true)}
                   type="text"
                   className="p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
@@ -184,6 +195,7 @@ export function SearchBar({
               <FormControl>
                 <Input
                   {...field}
+                  onFocus={() => setOpen(true)}
                   type="text"
                   className="p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
