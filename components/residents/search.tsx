@@ -1,7 +1,7 @@
 "use client";
 import { SearchBar } from "@/components/search-bar";
 import { useState } from "react";
-import type { Resident } from "@/components/resident";
+import type { Resident } from "@/types/resident";
 import { SearchSuggestions } from "../search-suggestions";
 
 export default function Search() {

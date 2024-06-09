@@ -1,4 +1,4 @@
-import { User } from "firebase/auth";
+import type { User } from "firebase/auth";
 import { atom } from "jotai";
 
 export const UserAtom = atom<User | null>(null);

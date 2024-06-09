@@ -82,8 +82,7 @@ export default function Header() {
     event: MouseEvent
   ) => {
     event.preventDefault();
-    const resolved = await signInWithGoogle();
-    console.log(resolved);
+    signInWithGoogle();
   };
 
   return (

@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import type { Resident } from "@/components/resident";
+import type { Resident } from "@/types/resident";
 import Link from "next/link";
 import { X } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
@@ -25,7 +25,7 @@ export const SearchSuggestions = ({
             residents.map((resident) => (
               <Link
                 className="text-nowrap h-9 align-bottom"
-                href={`/resident/${resident.id}`}
+                href={`/residents/${resident.id}`}
               >
                 {resident.name} | {resident.unit_number} | {resident.address}
               </Link>

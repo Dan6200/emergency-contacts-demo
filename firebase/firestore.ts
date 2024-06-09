@@ -12,6 +12,8 @@ import {
   Query,
   DocumentReference,
   QuerySnapshot,
+  getDoc,
+  DocumentSnapshot,
 } from "firebase/firestore";
 
 export const collectionWrapper = (
@@ -39,6 +41,19 @@ export const addDocWrapper = async (
     result = await addDoc(reference, data);
   } catch (err) {
     error = "error adding document: " + err;
+  }
+  return [error, result];
+};
+
+export const getDocWrapper = async (
+  ref: DocumentReference<unknown, DocumentData>
+): Promise<[string | null, DocumentSnapshot<unknown, DocumentData> | null]> => {
+  let error = null,
+    result = null;
+  try {
+    result = await getDoc(ref);
+  } catch (err) {
+    error = "error retrieving document: " + err;
   }
   return [error, result];
 };

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import type { Resident } from "@/components/resident";
+import type { Resident } from "@/types/resident";
 import { collectionWrapper, getDocsWrapper } from "@/firebase/firestore";
 import db from "@/firebase/config";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
@@ -54,9 +54,11 @@ export function SearchBar({
       const [resErr, resRef] = collectionWrapper(db, "residents");
       if (resRef === null) {
         toast({ title: "could not access database" });
+        console.log(resErr);
       } else {
         const q = query(resRef);
         const [err, residents] = await getDocsWrapper(q);
+        console.log(err);
         if (residents === null) {
           toast({ title: "Could not fetch data" });
         } else

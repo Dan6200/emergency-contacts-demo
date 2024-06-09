@@ -47,7 +47,7 @@ export default function QRFetchResidents() {
               setIsQR(true);
               const ID = result.getText();
               try {
-                const url = `/resident/${ID}`;
+                const url = `/residents/${ID}`;
                 fetch(url, { method: "HEAD" }).then((res) => {
                   if (res.ok) router.push(url.toString());
                   if (res.status === 404)

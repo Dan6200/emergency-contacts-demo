@@ -5,7 +5,7 @@ import { useEffect } from "react";
 export default function NotFound() {
   const router = useRouter();
   useEffect(() => {
-    setTimeout(() => router.push("/"), 1000);
+    setTimeout(() => router.back(), 1000);
   }, []);
   return (
     <main className="bg-background font-semibold w-4/5 text-center mx-auto py-8">
