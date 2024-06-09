@@ -116,7 +116,7 @@ export default function Header() {
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link
-                href="/manage-residents"
+                href="/residents/manage"
                 className="h-9 align-middle mx-auto w-full"
               >
                 Manage Residents Information

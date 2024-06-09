@@ -18,7 +18,7 @@ import { toast } from "@/components/ui/use-toast";
 import type { Resident } from "@/components/resident";
 import { collectionWrapper, getDocsWrapper } from "@/firebase/firestore";
 import db from "@/firebase/config";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
 const ResidentSchema = z.object({
   name: z.string(),
@@ -31,6 +31,7 @@ export function SearchBar({
 }: {
   setResidents: Dispatch<SetStateAction<Resident[] | null>>;
 }) {
+  const [searchData, setSearchData] = useState<Resident[] | []>([]);
   const form = useForm<Resident>({
     resolver: zodResolver(ResidentSchema),
     defaultValues: {
@@ -45,20 +46,60 @@ export function SearchBar({
     formState: { errors },
   } = form;
 
-  Send(watch);
+  useEffect(() => {
+    (async () => {
+      const [resErr, resRef] = collectionWrapper(db, "residents");
+      if (resRef === null) {
+        toast({ title: "could not access database" });
+      } else {
+        const q = query(resRef);
+        const [err, residents] = await getDocsWrapper(q);
+        if (residents === null) {
+          toast({ title: "Could not fetch data" });
+        } else
+          setSearchData(
+            residents.docs.map((doc) => ({
+              id: doc.id,
+              ...(doc.data() as any),
+            }))
+          );
+      }
+    })();
+  }, []);
+  // for medium data
+  useMemo(
+    () => Send(watch),
+    [watch("name"), watch("address"), watch("unit_number")]
+  );
+
   async function Send(watch: UseFormWatch<Resident>) {
-    console.log(watch("name"));
-    console.log(watch("unit_number"));
-    console.log(watch("address"));
+    let residents: Resident[] = [];
+    if (watch("name") || watch("address") || watch("unit_number")) {
+      residents = searchData.filter(
+        (data) =>
+          data.address.startsWith(watch("address")) &&
+          data.unit_number.startsWith(watch("unit_number")) &&
+          data.name.startsWith(watch("name"))
+      );
+    }
+    console.dir(residents);
+    setResidents(residents);
+  }
+
+  /* for very large data
+		*
+  SendRealTime(watch);
+  async function SendRealTime(watch: UseFormWatch<Resident>) {
     const queryList: QueryConstraint[] = [];
     if (watch("name")) queryList.push(where("name", "==", watch("name")));
     if (watch("unit_number"))
       queryList.push(where("unit_number", "==", watch("unit_number")));
     if (watch("address"))
       queryList.push(where("address", "==", watch("address")));
-    if (!watch("name") && !watch("address") && !watch("unit_number"))
+    if (!watch("name") && !watch("address") && !watch("unit_number")) {
       queryList.length = 0;
-    console.log("query list", queryList);
+      setResidents(null);
+    }
 
     const [resErr, resRef] = collectionWrapper(db, "residents");
     let fetchErr = null;
@@ -76,6 +117,8 @@ export function SearchBar({
         title: fetchErr ?? resErr ?? "",
       });
   }
+	 *
+	 */
 
   return (
     <Form {...form}>
@@ -85,14 +128,14 @@ export function SearchBar({
         </h3>
         <FormField
           control={form.control}
-          name="name"
+          name="address"
           render={({ field }) => (
             <FormItem
               tabIndex={5}
               className="ring-offset-background border-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md flex place-items-center space-y-0 w-full gap-2 place-self-center"
             >
-              <FormLabel className="text-sm bg-blue-300 rounded-sm flex h-10 p-2">
-                Name:
+              <FormLabel className="text-sm bg-blue-300/50 rounded-sm flex h-10 p-2">
+                Address:
               </FormLabel>
               <FormControl>
                 <Input
@@ -113,7 +156,7 @@ export function SearchBar({
               tabIndex={5}
               className="ring-offset-background border-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md flex place-items-center space-y-0 w-full gap-2 place-self-center"
             >
-              <FormLabel className="text-sm bg-blue-300 rounded-sm flex h-10 p-2">
+              <FormLabel className="text-sm bg-blue-300/50 rounded-sm flex h-10 p-2">
                 Room:
               </FormLabel>
               <FormControl>
@@ -129,14 +172,14 @@ export function SearchBar({
         />
         <FormField
           control={form.control}
-          name="address"
+          name="name"
           render={({ field }) => (
             <FormItem
               tabIndex={5}
               className="ring-offset-background border-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md flex place-items-center space-y-0 w-full gap-2 place-self-center"
             >
-              <FormLabel className="text-sm bg-blue-300 rounded-sm flex h-10 p-2">
-                Address:
+              <FormLabel className="text-sm bg-blue-300/50 rounded-sm flex h-10 p-2">
+                Name:
               </FormLabel>
               <FormControl>
                 <Input

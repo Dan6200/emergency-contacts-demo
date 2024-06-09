@@ -9,9 +9,7 @@ export default function Search() {
   return (
     <main className="bg-background w-full px-4 mx-auto py-8 max-h-screen">
       <SearchBar {...{ setResidents }} />
-      {residents && residents.length > 0 && (
-        <SearchSuggestions {...{ residents }} />
-      )}
+      {residents && <SearchSuggestions {...{ residents }} />}
     </main>
   );
 }
