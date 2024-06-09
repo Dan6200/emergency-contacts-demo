@@ -1,8 +1,13 @@
 "use client";
 import { DocumentData } from "firebase/firestore";
-import { useAtomValue } from "jotai";
-import Link from "next/link";
-import { Button } from "./ui/button";
+
+export interface Resident {
+  id: string;
+  name: string;
+  address: string;
+  unit_number: string;
+  emergency_contact_id?: string[];
+}
 
 export default function Resident(docData: DocumentData) {
   console.log(docData);

@@ -110,12 +110,15 @@ export default function Header() {
             <UserRound className="mx-auto" />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="text-center gap-2 md:gap-5 bg-background border-2 mr-4">
+          <DropdownMenuContent className="text-center gap-5 md:gap-5 bg-background border-2 mr-4">
             <DropdownMenuLabel>Admin</DropdownMenuLabel>
 
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href="/manage-residents" className="mx-auto">
+              <Link
+                href="/manage-residents"
+                className="h-9 align-middle mx-auto w-full"
+              >
                 Manage Residents Information
               </Link>
             </DropdownMenuItem>

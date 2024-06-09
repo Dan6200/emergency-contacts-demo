@@ -21,7 +21,7 @@ import { signInWithEmailAndPasswordWrapper } from "@/firebase/auth";
 
 const SignInFormSchema = z.object({
   email: z.string().min(2, {
-    message: "last name must be at least 2 characters.",
+    message: "email must be provided.",
   }),
   password: z.string().min(2, {
     message: "must provide password.",
