@@ -75,10 +75,13 @@ export default function QRFetchResidents() {
           }}
         />
       ) : (
-        <div className="flex flex-col gap-5 border-4 my-4 p-4 sm:p-6 border-primary/80 md:p-8 h-[40vh] w-full rounded-md">
+        <div className="flex flex-col gap-5 border-4 my-4 p-6 sm:p-6 border-primary/80 md:p-8 h-[40vh] w-full rounded-md">
           <CameraOff className="w-28 h-28 mx-auto" />
-          <p className="text-xl capitalize">
-            Camera is off. Please turn on camera and refresh to scan QR code
+          <p className="text-lg capitalize">
+            <span className="font-semibold">Camera is off.</span>
+            <span className="block">
+              Please turn on camera and refresh to scan QR code.
+            </span>
           </p>
         </div>
       )}
