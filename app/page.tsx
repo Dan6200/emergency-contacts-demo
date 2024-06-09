@@ -1,5 +1,3 @@
-import Residents from "@/components/residents";
-import Link from "next/link";
 import QRFetchResidents from "@/components/qr";
 
 export default function Home() {
