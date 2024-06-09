@@ -5,9 +5,8 @@ import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import Header from "@/components/header";
 import { getAuthenticatedAppForUser } from "@/server";
-import { User } from "firebase/auth";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: "LinkID",

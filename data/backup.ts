@@ -34,6 +34,7 @@ const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
 });
 
+/*
 createWriteStream(file)
   .pipe(fastcsv.parse({ headers: true }))
   .on("data", async (row) => {
@@ -77,7 +78,7 @@ createWriteStream(file)
   })
   .on("error", (error: Error) => console.error(`Encounter an error:\n${error}`))
   .on("end", (rowCount: number) => console.log(`Parsed ${rowCount}  rows`));
-
+*/
 interface Residents {
   name: string;
   address: string;
