@@ -35,20 +35,14 @@ const ResidentFormSchema = z.object({
 });
 
 interface initialValProps {
-  initialUser: User | null;
   address: string;
   name: string;
   unit_number: string;
 }
 
-export function ResidentForm({
-  initialUser,
-  address,
-  name,
-  unit_number,
-}: initialValProps) {
+export function ResidentForm({ address, name, unit_number }: initialValProps) {
   const router = useRouter();
-  const user = useUserSession(initialUser);
+  const user = useUserSession(null);
   const [canRedirect, setCanRedirect] = useState(false);
   const form = useForm<z.infer<typeof ResidentFormSchema>>({
     resolver: zodResolver(ResidentFormSchema),

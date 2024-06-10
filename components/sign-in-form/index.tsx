@@ -31,11 +31,9 @@ const SignInFormSchema = z.object({
   }),
 });
 
-interface initialValProps {
-  initialUser: User | null;
-}
+interface initialValProps {}
 
-export function SignInForm({ initialUser }: initialValProps) {
+export function SignInForm() {
   const router = useRouter();
   const form = useForm<z.infer<typeof SignInFormSchema>>({
     resolver: zodResolver(SignInFormSchema),
@@ -44,7 +42,7 @@ export function SignInForm({ initialUser }: initialValProps) {
       password: "",
     },
   });
-  const user = useUserSession(initialUser);
+  const user = useUserSession(null);
   const [canRedirect, setCanRedirect] = useState(false);
   const {
     setError,
