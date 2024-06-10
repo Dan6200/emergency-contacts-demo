@@ -12,7 +12,7 @@ export const SearchSuggestions = ({
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   return (
-    <Card className="mt-8 py-0">
+    <Card className="mt-4 py-0">
       <div className="w-[90%] relative mx-auto ">
         <span onClick={() => setOpen(!open)} className="absolute top-0 right-0">
           <X />

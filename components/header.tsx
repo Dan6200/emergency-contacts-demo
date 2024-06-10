@@ -7,17 +7,19 @@ import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { UserRound } from "lucide-react";
+import { UserPlus, UserRound, UserRoundPlus, UserSearch } from "lucide-react";
 import { useUserSession } from "@/auth/user";
+import { useRouter } from "next/navigation";
 
 export default function Header({ initialUser }: { initialUser: User | null }) {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
   const user = useUserSession(initialUser);
 
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
@@ -54,7 +56,7 @@ export default function Header({ initialUser }: { initialUser: User | null }) {
       </Link>
       {user ? (
         <DropdownMenu>
-          <DropdownMenuTrigger className="rounded-full border-primary/80 border-4 bg-primary-foreground w-12 h-12">
+          <DropdownMenuTrigger className="rounded-full border-primary border-4 bg-primary-foreground w-12 h-12">
             <UserRound className="mx-auto" />
           </DropdownMenuTrigger>
 
@@ -62,27 +64,40 @@ export default function Header({ initialUser }: { initialUser: User | null }) {
             <DropdownMenuLabel>Admin</DropdownMenuLabel>
 
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Link
-                href="/admin/residents/search"
-                className="h-9 align-middle mx-auto w-48"
-              >
-                Search Residents
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link
-                href="/admin/residents/add"
-                className="h-9 align-middle mx-auto w-full"
-              >
-                Add New Residents
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Button onClick={handleSignOut} className="w-full mx-auto">
-                Sign Out
-              </Button>
-            </DropdownMenuItem>
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                <span
+                  onClick={() => router.push("/admin/residents/search")}
+                  className="h-9 items-center flex justify-between mx-auto w-48"
+                >
+                  Search Residents
+                  <UserSearch className="w-6" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <span
+                  onClick={() => router.push("/admin/residents/add")}
+                  className="h-9 items-center flex justify-between mx-auto w-full"
+                >
+                  Add New Residents
+                  <UserPlus className="w-6" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <span
+                  onClick={() => router.push("/admin/add")}
+                  className="h-9 items-center flex justify-between mx-auto w-full"
+                >
+                  Add New Admin
+                  <UserRoundPlus className="w-6" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Button onClick={handleSignOut} className="w-full mx-auto">
+                  Sign Out
+                </Button>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (

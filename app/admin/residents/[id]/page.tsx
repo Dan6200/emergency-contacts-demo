@@ -9,7 +9,6 @@ import {
 } from "@/firebase/firestore";
 import { isTypeEmergencyContact, isTypeResident } from "@/types/resident";
 
-export const dynamic = "force-dynamic";
 export default async function ResidentPage({
   params: { id },
 }: {
@@ -44,12 +43,8 @@ export default async function ResidentPage({
   return <Resident {...{ resident }} />;
 }
 
-/* Causing errors...
 export async function generateStaticParams() {
-  const [colError, colRef] = collectionWrapper(db, "residents");
-  if (colError || !colRef) throw new Error(colError!);
-  const [qErr, qSnapshot] = await getDocsWrapper(colRef);
-  if (qErr || !qSnapshot) throw new Error(qErr!);
-  return qSnapshot.docs.map((doc) => doc.id);
+  const res = await fetch("/residents");
+  if (!res.ok) throw new Error("Failed To Generate Static Pages");
+  return res.json();
 }
-	 */

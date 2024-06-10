@@ -1,4 +1,4 @@
-interface EmergencyContact {
+export interface EmergencyContact {
   name: string;
   relationship: string;
   phone_number: string;

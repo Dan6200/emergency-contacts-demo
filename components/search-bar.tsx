@@ -35,7 +35,6 @@ export function SearchBar({
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
   const [searchData, setSearchData] = useState<Resident[] | []>([]);
-  const [debounced, setDebounced] = useState(false);
   const form = useForm<Resident>({
     resolver: zodResolver(ResidentSchema),
     defaultValues: {
