@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import type { Resident } from "@/types/resident";
+import { isTypeResident, Resident } from "@/types/resident";
 import { collectionWrapper, getDocsWrapper } from "@/firebase/firestore";
 import db from "@/firebase/config";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
@@ -51,25 +51,12 @@ export function SearchBar({
 
   useEffect(() => {
     (async () => {
-      const [resErr, resRef] = collectionWrapper(db, "residents");
-      if (resRef === null) {
-        toast({ title: "could not access database" });
-      } else {
-        const q = query(resRef);
-        const [err, residents] = await getDocsWrapper(q);
-        console.log(err);
-        if (residents === null) {
-          toast({ title: "Could not fetch data" });
-        } else {
-          setSearchData(
-            residents.docs.map((doc) => ({
-              id: doc.id,
-              ...(doc.data() as any),
-            }))
-          );
-          console.log("fetched data");
-        }
+      const res = await fetch("/residents");
+      if (!res.ok) {
+        toast({ title: "Failed To Fetch Resident Information" });
       }
+      const data = await res.json();
+      setSearchData(data);
     })();
   }, []);
   // for medium data
