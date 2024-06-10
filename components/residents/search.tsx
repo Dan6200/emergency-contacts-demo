@@ -4,12 +4,11 @@ import { useLayoutEffect, useState } from "react";
 import type { Resident } from "@/types/resident";
 import { SearchSuggestions } from "../search-suggestions";
 import { useUserSession } from "@/auth/user";
-import { User } from "firebase/auth";
 import { redirect } from "next/navigation";
 
-export default function Search({ initialUser }: { initialUser: User | null }) {
+export default function Search() {
   const [residents, setResidents] = useState<null | Resident[]>(null);
-  const user = useUserSession(initialUser);
+  const user = useUserSession(null);
   const [canRedirect, setCanRedirect] = useState(false);
   const [open, setOpen] = useState(true);
   useLayoutEffect(() => {
