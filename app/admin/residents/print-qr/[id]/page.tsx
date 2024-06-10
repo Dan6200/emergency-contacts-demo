@@ -1,8 +1,12 @@
 import { QRCodeSVG } from "qrcode.react";
 import jsPDF from "jspdf";
 
-export const printQR = ({ id }: { id: string }) => {
-  // this funtion will generate PDF with QR
+export default function PrintQR({
+  params: { id },
+}: {
+  params: { id: string };
+}) {
+  // this function will generate PDF with QR
   /*
   const generatePdf = (qrCodeURL: string) => {
     var doc = new jsPDF("landscape", "mm", "a4");
@@ -13,4 +17,4 @@ export const printQR = ({ id }: { id: string }) => {
   };
 	 */
   return <QRCodeSVG value={id} />;
-};
+}

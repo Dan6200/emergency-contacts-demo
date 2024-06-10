@@ -1,4 +1,3 @@
-"use client";
 import { ResidentForm } from "@/components/residents-form/resident";
 import { getAuthenticatedAppForUser } from "@/server";
 
