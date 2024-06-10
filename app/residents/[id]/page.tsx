@@ -9,6 +9,7 @@ import {
 } from "@/firebase/firestore";
 import { isTypeEmergencyContact, isTypeResident } from "@/types/resident";
 
+export const dynamic = "force-dynamic";
 export default async function ResidentPage({
   params: { id },
 }: {

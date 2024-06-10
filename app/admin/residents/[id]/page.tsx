@@ -9,6 +9,7 @@ import {
 } from "@/firebase/firestore";
 import { isTypeEmergencyContact, isTypeResident } from "@/types/resident";
 
+export const dynamic = "force-dynamic";
 export default async function ResidentPage({
   params: { id },
 }: {
@@ -43,6 +44,7 @@ export default async function ResidentPage({
   return <Resident {...{ resident }} />;
 }
 
+/* Causing errors...
 export async function generateStaticParams() {
   const [colError, colRef] = collectionWrapper(db, "residents");
   if (colError || !colRef) throw new Error(colError!);
@@ -50,3 +52,4 @@ export async function generateStaticParams() {
   if (qErr || !qSnapshot) throw new Error(qErr!);
   return qSnapshot.docs.map((doc) => doc.id);
 }
+	 */

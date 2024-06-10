@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "LinkID",
 };
 
+export const dynamic = "force-dynamic";
 export default async function RootLayout({
   children,
 }: Readonly<{
