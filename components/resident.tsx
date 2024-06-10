@@ -17,12 +17,12 @@ export default function Resident({ resident }: { resident: Resident }) {
       {emergencyContacts &&
         emergencyContacts.map((contact, index) => (
           <Link
-            href={`/tel:${contact.phone_number
+            href={`tel:${contact.phone_number
               .replaceAll(/\s/g, "-")
-              .replaceAll(/(|)/, "")}`}
+              .replaceAll(/\(|\)/g, "")}`}
           >
             <Card
-              className="flex shadow-md p-4 items-center"
+              className="hover:bg-muted flex shadow-md p-4 items-center"
               key={emConIds[index]}
             >
               <CardContent className="grow p-0 text-left">

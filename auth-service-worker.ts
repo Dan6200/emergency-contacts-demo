@@ -23,11 +23,17 @@ self.addEventListener("install", (event) => {
 const isFetchEvent = (event: Event): event is FetchEvent => "request" in event;
 
 self.addEventListener("fetch", (event: Event) => {
+  console.log("fetch event fired");
   if (!isFetchEvent(event)) throw new Error("Event must be of type FetchEvent");
   const { origin } = new URL(event.request.url);
   if (origin !== self.location.origin) return;
   event.respondWith(fetchWithFirebaseHeaders(<NextRequest>event.request));
 });
+
+// self.addEventListener("activate", function (event) {
+//   console.log("Claiming control");
+//   return self.clients.claim();
+// });
 
 async function fetchWithFirebaseHeaders(request: NextRequest) {
   const app = initializeApp(firebaseConfig);

@@ -45,14 +45,17 @@ export default function QRFetchResidents() {
           onResult={(result, error) => {
             if (result) {
               setIsQR(true);
-              const ID = result.getText();
               try {
-                const url = `/residents/${ID}`;
-                fetch(url, { method: "HEAD" }).then((res) => {
-                  if (res.ok) router.push(url.toString());
-                  if (res.status === 404)
-                    setFetchResidentErr("Resident Does Not Exist");
-                });
+                const url = new URL(result.getText());
+                fetch(url, { method: "HEAD" })
+                  .then((res) => {
+                    if (res.ok) router.push(url.toString()); // may need need to use javascript to visit link if external
+                    if (res.status === 404)
+                      setFetchResidentErr("Resident Does Not Exist");
+                  })
+                  .catch((e) =>
+                    setFetchResidentErr("Failed to Retrieve Resident Info")
+                  );
               } catch (e) {
                 setFetchResidentErr("Failed to Retrieve Resident Info");
                 console.error(e);
@@ -63,15 +66,19 @@ export default function QRFetchResidents() {
           }}
           className={
             (isQR ? "bg-green-700 " : "bg-red-600 ") +
-            "transition-colors border-2 rounded-lg p-4 sm:p-6 md:p-8 flex items-center bg-green-700 my-4 bg-black-800 mx-auto"
+            "transition-colors rounded-lg p-1 sm:p-2 md:p-3 flex items-center bg-green-700 my-4 bg-black-800 mx-auto"
           }
           containerStyle={{ height: "100%", width: "100%" }}
-          videoContainerStyle={{ height: "100%", width: "100%" }}
+          videoContainerStyle={{
+            height: "100%",
+            width: "100%",
+            rounded: "50px",
+          }}
           videoStyle={{
             height: "100%",
             width: "100%",
             objectFit: "cover",
-            rounded: "10px",
+            rounded: "50px",
           }}
         />
       ) : (

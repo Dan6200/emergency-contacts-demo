@@ -16,8 +16,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { signInWithEmailAndPasswordWrapper } from "@/firebase/auth";
+import { useLayoutEffect, useState } from "react";
+import { useUserSession } from "@/auth/user";
+import { User } from "firebase/auth";
 
 const SignInFormSchema = z.object({
   email: z.string().min(2, {
@@ -28,9 +31,11 @@ const SignInFormSchema = z.object({
   }),
 });
 
-interface initialValProps {}
+interface initialValProps {
+  initialUser: User | null;
+}
 
-export function SignInForm({}: initialValProps) {
+export function SignInForm({ initialUser }: initialValProps) {
   const router = useRouter();
   const form = useForm<z.infer<typeof SignInFormSchema>>({
     resolver: zodResolver(SignInFormSchema),
@@ -39,10 +44,23 @@ export function SignInForm({}: initialValProps) {
       password: "",
     },
   });
+  const user = useUserSession(initialUser);
+  const [canRedirect, setCanRedirect] = useState(false);
   const {
     setError,
     formState: { errors },
   } = form;
+
+  useLayoutEffect(() => {
+    let t: any;
+    if (!user && canRedirect) {
+      redirect("/");
+    }
+    t = setTimeout(() => {
+      setCanRedirect(true);
+    }, 1000);
+    return () => t;
+  }, [user]);
 
   async function onSubmit(data: z.infer<typeof SignInFormSchema>) {
     const [error, user] = await signInWithEmailAndPasswordWrapper(
@@ -51,11 +69,6 @@ export function SignInForm({}: initialValProps) {
     );
     toast({
       title: error ? "Failed to Sign In User" : "User Signed In Successfully",
-      description: error && (
-        <pre className="mt-2 w-[25vw] text-wrap rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(error, null, 2)}</code>
-        </pre>
-      ),
     });
     setTimeout(() => router.push("/"), 1000);
   }

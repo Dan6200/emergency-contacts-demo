@@ -24,8 +24,9 @@ export const SearchSuggestions = ({
           {residents.length ? (
             residents.map((resident) => (
               <Link
-                className="text-nowrap h-9 align-bottom"
+                className="hover:bg-primary/10 bg-muted rounded-md p-2 text-nowrap h-9 align-bottom"
                 href={`/residents/${resident.id}`}
+                key={resident.id}
               >
                 {resident.name} | {resident.unit_number} | {resident.address}
               </Link>

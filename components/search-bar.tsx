@@ -54,20 +54,21 @@ export function SearchBar({
       const [resErr, resRef] = collectionWrapper(db, "residents");
       if (resRef === null) {
         toast({ title: "could not access database" });
-        console.log(resErr);
       } else {
         const q = query(resRef);
         const [err, residents] = await getDocsWrapper(q);
         console.log(err);
         if (residents === null) {
           toast({ title: "Could not fetch data" });
-        } else
+        } else {
           setSearchData(
             residents.docs.map((doc) => ({
               id: doc.id,
               ...(doc.data() as any),
             }))
           );
+          console.log("fetched data");
+        }
       }
     })();
   }, []);

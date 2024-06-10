@@ -1,15 +1,8 @@
 "use client";
-import React, {
-  useState,
-  useEffect,
-  MouseEventHandler,
-  MouseEvent,
-} from "react";
+import React, { MouseEventHandler, MouseEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { User } from "firebase/auth";
-import { signOut, signInWithGoogle, onAuthStateChanged } from "@/firebase/auth";
-import { firebaseConfig } from "@/firebase/config";
+import { signOut, signInWithGoogle } from "@/firebase/auth";
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -21,53 +14,9 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { UserRound } from "lucide-react";
-import { useAtomValue } from "jotai";
-import { UserAtom } from "@/app/atoms/user";
+import { useUserSession } from "@/auth/user";
 
-function useUserSession(initialUser: User | null) {
-  // The initial user comes from the server via a server component
-  const [user, setUser] = useState(initialUser);
-  const router = useRouter();
-
-  // Register  the service worker that sends auth state back to server
-  // The service worker is built with npm run build-service-worker
-  useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      const serializedFirebaseConfig = encodeURIComponent(
-        JSON.stringify(firebaseConfig)
-      );
-      const serviceWorkerUrl = `/auth-service-worker.js?firebaseConfig=${serializedFirebaseConfig}`;
-      navigator.serviceWorker
-        .register(serviceWorkerUrl)
-        .then((registration) => console.log("scope is: ", registration.scope));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged((authUser) => {
-      setUser(authUser);
-    });
-    return () => unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    onAuthStateChanged((authUser) => {
-      if (user === undefined) return;
-      // refresh when user changed to ease testing
-      if (user?.email !== authUser?.email) {
-        router.refresh();
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
-  return user;
-}
-
-export default function Header() {
-  const initialUser = useAtomValue(UserAtom);
+export default function Header({ initialUser }: { initialUser: User | null }) {
   const user = useUserSession(initialUser);
 
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
@@ -75,7 +24,6 @@ export default function Header() {
   ) => {
     event.preventDefault();
     const resolved = await signOut();
-    console.log("sign out", resolved);
   };
 
   const handleSignIn: MouseEventHandler<HTMLButtonElement> = async (
@@ -109,16 +57,24 @@ export default function Header() {
             <UserRound className="mx-auto" />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="text-center gap-5 md:gap-5 bg-background border-2 mr-4">
+          <DropdownMenuContent className="text-center gap-5 p-2 md:gap-5 bg-background border-2 mr-4">
             <DropdownMenuLabel>Admin</DropdownMenuLabel>
 
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link
-                href="/residents/manage"
-                className="h-9 align-middle mx-auto w-full"
+                href="/residents/search"
+                className="h-9 align-middle mx-auto w-32"
               >
-                Manage Residents Information
+                Search Residents
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link
+                href="/residents/add"
+                className="h-9 align-middle mx-auto w-32"
+              >
+                Add New Residents
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>

@@ -16,32 +16,56 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
-import { useAtom } from "jotai";
+import { redirect, useRouter } from "next/navigation";
+import { useUserSession } from "@/auth/user";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { User } from "firebase/auth";
+import { headers } from "next/headers";
 
 const ResidentFormSchema = z.object({
-  firstName: z.string().min(2, {
+  name: z.string().min(2, {
     message: "first name must be at least 2 characters.",
   }),
-  lastName: z.string().min(2, {
-    message: "last name must be at least 2 characters.",
-  }),
-  phone: z.string().min(7, {
-    message: "phone number must be at least 7 digits.",
-  }),
+  unit_number: z.string(),
   address: z.string().min(5, {
     message: "home address must be at least 5 characters.",
   }),
 });
 
-interface initialValProps {}
+interface initialValProps {
+  initialUser: User | null;
+  address: string;
+  name: string;
+  unit_number: string;
+}
 
-export function ResidentForm({}: initialValProps) {
-  const router = useRouter();
+export function ResidentForm({
+  initialUser,
+  address,
+  name,
+  unit_number,
+}: initialValProps) {
+  const user = useUserSession(initialUser);
+  const [canRedirect, setCanRedirect] = useState(false);
   const form = useForm<z.infer<typeof ResidentFormSchema>>({
     resolver: zodResolver(ResidentFormSchema),
-    defaultValues: {},
+    defaultValues: {
+      address,
+      name,
+      unit_number,
+    },
   });
+
+  useLayoutEffect(() => {
+    let t: any;
+    if (!user && canRedirect) {
+      redirect("/");
+    }
+    t = setTimeout(() => {
+      setCanRedirect(true);
+    }, 1000);
+    return () => t;
+  }, [user]);
 
   function onSubmit(data: z.infer<typeof ResidentFormSchema>) {
     toast({
@@ -51,13 +75,13 @@ export function ResidentForm({}: initialValProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
         <FormField
           control={form.control}
-          name="firstName"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>First Name</FormLabel>
+              <FormLabel>Full Name</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -68,28 +92,14 @@ export function ResidentForm({}: initialValProps) {
         />
         <FormField
           control={form.control}
-          name="lastName"
+          name="unit_number"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Last Name</FormLabel>
+              <FormLabel>Unit Number</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>Residents last name.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone Number</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormDescription>Resident's phone number</FormDescription>
+              <FormDescription>Resident's room number</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -108,7 +118,9 @@ export function ResidentForm({}: initialValProps) {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" className="w-full">
+          Submit
+        </Button>
       </form>
     </Form>
   );
