@@ -19,6 +19,7 @@ import { isTypeResident, Resident } from "@/types/resident";
 import { collectionWrapper, getDocsWrapper } from "@/firebase/firestore";
 import db from "@/firebase/config";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { Minus, Plus } from "lucide-react";
 
 const ResidentSchema = z.object({
   name: z.string(),
@@ -48,6 +49,9 @@ export function SearchBar({
     watch,
     formState: { errors },
   } = form;
+
+  const [showRm, setShowRm] = useState(false);
+  const [showAddr, setShowAddr] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -86,115 +90,109 @@ export function SearchBar({
     }
   }
 
-  /* for very large data
-		*
-  SendRealTime(watch);
-  async function SendRealTime(watch: UseFormWatch<Resident>) {
-    const queryList: QueryConstraint[] = [];
-    if (watch("name")) queryList.push(where("name", "==", watch("name")));
-    if (watch("unit_number"))
-      queryList.push(where("unit_number", "==", watch("unit_number")));
-    if (watch("address"))
-      queryList.push(where("address", "==", watch("address")));
-    if (!watch("name") && !watch("address") && !watch("unit_number")) {
-      queryList.length = 0;
-      setResidents(null);
-    }
-
-    const [resErr, resRef] = collectionWrapper(db, "residents");
-    let fetchErr = null;
-    if (resRef !== null && queryList.length) {
-      const q = query(resRef, ...queryList);
-      const [err, residents] = await getDocsWrapper(q);
-      if (residents === null) fetchErr = err;
-      else
-        setResidents(
-          residents.docs.map((doc) => ({ id: doc.id, ...(doc.data() as any) }))
-        );
-    }
-    if (resErr || fetchErr)
-      toast({
-        title: fetchErr ?? resErr ?? "",
-      });
-  }
-	 *
-	 */
-
   return (
     <Form {...form}>
       <form className="w-full p-4 overflow-x-scroll gap-6 flex flex-col border-2 rounded-md">
-        <h3 className="text-lg font-semibold">
-          Enter at least one field to search
-        </h3>
-        <FormField
-          control={form.control}
-          name="address"
-          render={({ field }) => (
-            <FormItem
-              tabIndex={5}
-              className="ring-offset-background border-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md flex place-items-center space-y-0 w-full gap-2 place-self-center"
-            >
-              <FormLabel className="text-sm bg-blue-300/50 rounded-sm flex h-10 p-2">
-                Address:
-              </FormLabel>
-              <FormControl>
-                <Input
-                  onFocus={() => setOpen(true)}
-                  {...field}
-                  type="text"
-                  className="p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="unit_number"
-          render={({ field }) => (
-            <FormItem
-              tabIndex={5}
-              className="ring-offset-background border-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md flex place-items-center space-y-0 w-full gap-2 place-self-center"
-            >
-              <FormLabel className="text-sm bg-blue-300/50 rounded-sm flex h-10 p-2">
-                Room:
-              </FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  onFocus={() => setOpen(true)}
-                  type="text"
-                  className="p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <span>
+          <h3 className="text-base capitalize">
+            Enter To Search for resident.
+          </h3>
+          <p className="text-sm capitalize">can add more search fields</p>
+        </span>
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem
-              tabIndex={5}
-              className="ring-offset-background border-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md flex place-items-center space-y-0 w-full gap-2 place-self-center"
-            >
-              <FormLabel className="text-sm bg-blue-300/50 rounded-sm flex h-10 p-2">
-                Name:
-              </FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  onFocus={() => setOpen(true)}
-                  type="text"
-                  className="p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+            <div className="flex items-center gap-2">
+              <FormItem
+                tabIndex={5}
+                className="ring-offset-background border-2 border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md flex place-items-center space-y-0 w-[90%] gap-2 place-self-center"
+              >
+                <FormLabel className="text-sm bg-primary w-16 text-primary-foreground rounded-l-sm flex h-10 border-l border-y border-primary p-2">
+                  Name:
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    onFocus={() => setOpen(true)}
+                    {...field}
+                    type="text"
+                    className="p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  />
+                </FormControl>
+              </FormItem>
+              {(!showAddr || !showRm) && (
+                <span
+                  onClick={() =>
+                    !showAddr ? setShowAddr(true) : setShowRm(true)
+                  }
+                  className=""
+                >
+                  <Plus />
+                </span>
+              )}
+            </div>
           )}
         />
+        {showAddr && (
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <div className="flex items-center gap-2">
+                <FormItem
+                  tabIndex={5}
+                  className="ring-offset-background border-2 border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md flex place-items-center space-y-0 w-[90%] gap-2 place-self-center"
+                >
+                  <FormLabel className="text-sm bg-primary w-18 text-primary-foreground rounded-l-sm flex h-10 border-l border-y border-primary p-2">
+                    Address:
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      onFocus={() => setOpen(true)}
+                      type="text"
+                      className="p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+                <span onClick={() => setShowAddr(false)} className="">
+                  <Minus />
+                </span>
+              </div>
+            )}
+          />
+        )}
+        {showRm && (
+          <FormField
+            control={form.control}
+            name="unit_number"
+            render={({ field }) => (
+              <div className="flex items-center gap-2">
+                <FormItem
+                  tabIndex={5}
+                  className="ring-offset-background border-2 border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md flex place-items-center space-y-0 w-[90%] gap-2 place-self-center"
+                >
+                  <FormLabel className="text-sm bg-primary w-16 text-primary-foreground rounded-l-sm flex h-10 border-l border-y border-primary p-2">
+                    Room:
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      onFocus={() => setOpen(true)}
+                      type="text"
+                      className="p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+                <span onClick={() => setShowRm(false)} className="">
+                  <Minus />
+                </span>
+              </div>
+            )}
+          />
+        )}
       </form>
     </Form>
   );
