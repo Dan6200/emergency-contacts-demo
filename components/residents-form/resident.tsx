@@ -71,6 +71,7 @@ export function ResidentForm({
     toast({
       title: "",
     });
+    useRouter().push(`/admin/residents/print-qr/https://www.google.com`);
   }
 
   return (
