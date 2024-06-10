@@ -1,9 +1,9 @@
 "use client";
 import { redirect, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 
 export default function NotFound() {
-  useEffect(() => {
+  useLayoutEffect(() => {
     let t: any;
     t = setTimeout(() => redirect("/"), 1000);
     return () => t;

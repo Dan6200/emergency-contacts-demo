@@ -21,6 +21,8 @@ import { useUserSession } from "@/auth/user";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { User } from "firebase/auth";
 import { headers } from "next/headers";
+import { collectionWrapper } from "@/firebase/firestore";
+import db from "@/firebase/config";
 
 const ResidentFormSchema = z.object({
   name: z.string().min(2, {
@@ -72,7 +74,12 @@ export function ResidentForm({
     toast({
       title: "Successfully Added New Resident",
     });
-    router.push(`/admin/residents/print-qr/https\:\/\/www\.google\.com`);
+    const [colError, colRef] = collectionWrapper(db, "residents");
+    router.push(
+      `/admin/residents/print-qr/${encodeURIComponent(
+        "https://www.google.com"
+      )}`
+    );
   }
 
   return (

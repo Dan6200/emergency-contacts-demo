@@ -16,5 +16,11 @@ export default function PrintQR({
     doc.save("qr.pdf");
   };
 	 */
-  return <QRCodeSVG value={id} />;
+  console.log(id);
+  const url = decodeURIComponent(id);
+  return (
+    <main className="bg-background flex items-center container w-full my-8 md:w-2/3 mx-auto md:my-16 max-h-screen">
+      <QRCodeSVG value={url} size={500} />
+    </main>
+  );
 }

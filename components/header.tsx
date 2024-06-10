@@ -1,5 +1,5 @@
 "use client";
-import React, { MouseEventHandler, MouseEvent } from "react";
+import React, { MouseEventHandler, MouseEvent, useState } from "react";
 import Link from "next/link";
 import { User } from "firebase/auth";
 import { signOut, signInWithGoogle } from "@/firebase/auth";
@@ -17,6 +17,7 @@ import { UserRound } from "lucide-react";
 import { useUserSession } from "@/auth/user";
 
 export default function Header({ initialUser }: { initialUser: User | null }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const user = useUserSession(initialUser);
 
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
