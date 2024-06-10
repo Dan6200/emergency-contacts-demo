@@ -63,16 +63,16 @@ export default function Header({ initialUser }: { initialUser: User | null }) {
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link
-                href="/residents/search"
-                className="h-9 align-middle mx-auto w-32"
+                href="/admin/residents/search"
+                className="h-9 align-middle mx-auto w-48"
               >
                 Search Residents
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Link
-                href="/residents/add"
-                className="h-9 align-middle mx-auto w-32"
+                href="/admin/residents/add"
+                className="h-9 align-middle mx-auto w-full"
               >
                 Add New Residents
               </Link>

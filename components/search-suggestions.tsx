@@ -12,15 +12,15 @@ export const SearchSuggestions = ({
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   return (
-    <Card className="mt-8 py-4">
-      <div className="max-h-[40vh] w-[90%] relative mx-auto overflow-scroll">
+    <Card className="mt-8 py-0">
+      <div className="w-[90%] relative mx-auto ">
         <span
           onClick={() => setOpen(!open)}
-          className="absolute top-0 right-0 border rounded-sm border-1"
+          className="absolute top-0 right-0 border bg-muted shadow-md rounded-sm border-1"
         >
           <X />
         </span>
-        <CardContent className="mt-8 py-4 px-0 flex flex-col gap-2">
+        <CardContent className="my-4 pt-10 px-0 flex flex-col overflow-scroll max-h-[40vh] gap-2">
           {residents.length ? (
             residents.map((resident) => (
               <Link

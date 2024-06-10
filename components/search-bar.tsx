@@ -86,7 +86,8 @@ export function SearchBar({
           data.address
             .toLowerCase() // Ignore case
             .replaceAll(/[^a-zA-Z0-9]/g, "") // Ignore non-alnum chars
-            .startsWith(
+            .slice(0, 25)
+            .includes(
               watch("address")
                 .toLowerCase()
                 .replaceAll(/[^a-zA-Z0-9]/g, "")
