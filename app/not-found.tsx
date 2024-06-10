@@ -5,7 +5,7 @@ import { useEffect } from "react";
 export default function NotFound() {
   useEffect(() => {
     let t: any;
-    t = setTimeout(() => redirect, 1000);
+    t = setTimeout(() => redirect("/"), 1000);
     return () => t;
   }, []);
   return (

@@ -45,6 +45,7 @@ export function ResidentForm({
   name,
   unit_number,
 }: initialValProps) {
+  const router = useRouter();
   const user = useUserSession(initialUser);
   const [canRedirect, setCanRedirect] = useState(false);
   const form = useForm<z.infer<typeof ResidentFormSchema>>({
@@ -69,9 +70,9 @@ export function ResidentForm({
 
   function onSubmit(data: z.infer<typeof ResidentFormSchema>) {
     toast({
-      title: "",
+      title: "Successfully Added New Resident",
     });
-    useRouter().push(`/admin/residents/print-qr/https://www.google.com`);
+    router.push(`/admin/residents/print-qr/https\:\/\/www\.google\.com`);
   }
 
   return (
