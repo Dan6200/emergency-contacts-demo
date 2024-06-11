@@ -1,5 +1,5 @@
 "use client";
-import React, { MouseEventHandler, MouseEvent, useState } from "react";
+import React, { MouseEventHandler, MouseEvent } from "react";
 import Link from "next/link";
 import { User } from "firebase/auth";
 import { signOut, signInWithGoogle } from "@/firebase/auth";
@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { UserPlus, UserRound, UserRoundPlus, UserSearch } from "lucide-react";
+import { Plus, Search, UserRound, UserRoundPlus } from "lucide-react";
 import { useUserSession } from "@/auth/user";
 import { useRouter } from "next/navigation";
 
@@ -71,7 +71,7 @@ export default function Header({ initialUser }: { initialUser: User | null }) {
                   className="h-9 items-center flex justify-between mx-auto w-48"
                 >
                   Search Residents
-                  <UserSearch className="w-6" />
+                  <Search className="w-4 mr-2" />
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem>
@@ -80,7 +80,7 @@ export default function Header({ initialUser }: { initialUser: User | null }) {
                   className="h-9 items-center flex justify-between mx-auto w-full"
                 >
                   Add New Residents
-                  <UserPlus className="w-6" />
+                  <Plus className="w-4 mr-2" />
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem>
