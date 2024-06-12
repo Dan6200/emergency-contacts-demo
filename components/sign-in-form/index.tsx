@@ -61,14 +61,15 @@ export function SignInForm() {
   }, [user]);
 
   async function onSubmit(data: z.infer<typeof SignInFormSchema>) {
-    const [error, user] = await signInWithEmailAndPasswordWrapper(
-      data.email,
-      data.password
-    );
-    toast({
-      title: error ? "Failed to Sign In User" : "User Signed In Successfully",
-    });
-    setTimeout(() => router.push("/"), 1000);
+    return signInWithEmailAndPasswordWrapper(data.email, data.password)
+      .catch((error) => {
+        toast({
+          title: error
+            ? "Failed to Sign In User"
+            : "User Signed In Successfully",
+        });
+      })
+      .then((_) => router.push("/"));
   }
 
   return (
