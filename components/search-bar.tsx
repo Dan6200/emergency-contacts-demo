@@ -54,6 +54,8 @@ export function SearchBar({
 
   useEffect(() => {
     (async () => {
+      // TODO: lift fetching off the client to the server also explicitly use node:fetch
+      // for server side data fetching
       const res = await fetch("/residents");
       if (!res.ok) {
         toast({ title: "Failed To Fetch Resident Information" });

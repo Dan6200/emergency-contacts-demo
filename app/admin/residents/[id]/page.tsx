@@ -44,7 +44,14 @@ export default async function ResidentPage({
 }
 
 export async function generateStaticParams() {
-  const res = await fetch("/residents");
-  if (!res.ok) throw new Error("Failed To Generate Static Pages");
-  return res.json();
+  const url = new URL("/residents", process.env.SERVER);
+  debugger;
+  try {
+    const res = await fetch(url);
+    console.log(res);
+    if (!res.ok) throw new Error("Failed To Generate Static Pages");
+    return res.json();
+  } catch (e) {
+    console.error(e);
+  }
 }
