@@ -1,3 +1,6 @@
+/*
+ * Route handlers are not needed alongside Server components and server actions when its just the web
+ *
 import db from "@/firebase/config";
 import {
   collectionWrapper,
@@ -54,3 +57,4 @@ export async function GET() {
 
   return NextResponse.json(residents);
 }
+*/

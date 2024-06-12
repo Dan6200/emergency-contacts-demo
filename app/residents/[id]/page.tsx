@@ -1,12 +1,7 @@
 import Resident from "@/components/resident";
 import type { Resident as ResidentType } from "@/types/resident";
 import db from "@/firebase/config";
-import {
-  collectionWrapper,
-  docWrapper,
-  getDocsWrapper,
-  getDocWrapper,
-} from "@/firebase/firestore";
+import { docWrapper, getDocWrapper } from "@/firebase/firestore";
 import { isTypeEmergencyContact, isTypeResident } from "@/types/resident";
 
 export default async function ResidentPage({

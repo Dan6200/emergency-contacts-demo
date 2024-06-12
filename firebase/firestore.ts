@@ -1,4 +1,5 @@
 //cspell:ignore firestore
+import { Resident } from "@/types/resident";
 import {
   collection,
   addDoc,
@@ -10,103 +11,82 @@ import {
   CollectionReference,
   DocumentData,
   Query,
+  query,
   DocumentReference,
-  QuerySnapshot,
   getDoc,
-  DocumentSnapshot,
 } from "firebase/firestore";
 
 export const collectionWrapper = (
   firestore: Firestore,
   path: string,
   ...pathSegments: string[]
-): [string | null, CollectionReference<DocumentData, DocumentData> | null] => {
-  let ref: CollectionReference<DocumentData, DocumentData> | null = null,
-    error: string | null = null;
+) => {
   try {
-    ref = collection(firestore, path, ...pathSegments);
+    return <CollectionReference<Resident>>(
+      collection(firestore, path, ...pathSegments)
+    );
   } catch (err) {
-    error = "error creating collection : " + err;
+    return new Error("creating collection :\n" + err);
   }
-  return [error, ref];
 };
 
 export const addDocWrapper = async (
   reference: CollectionReference<any, DocumentData>,
   data: any
-): Promise<[string | null, DocumentReference<any, DocumentData> | null]> => {
-  let error = null,
-    result = null;
-  try {
-    result = await addDoc(reference, data);
-  } catch (err) {
-    error = "error adding document: " + err;
-  }
-  return [error, result];
+) => {
+  return addDoc(reference, data).catch((err) => {
+    throw new Error("Error adding document:\n" + err);
+  });
 };
 
 export const getDocWrapper = async (
   ref: DocumentReference<unknown, DocumentData>
-): Promise<[string | null, DocumentSnapshot<unknown, DocumentData> | null]> => {
-  let error = null,
-    result = null;
-  try {
-    result = await getDoc(ref);
-  } catch (err) {
-    error = "error retrieving document: " + err;
-  }
-  return [error, result];
+) => {
+  return getDoc(ref).catch((err) => {
+    throw new Error("Error retrieving document:\n" + err);
+  });
 };
 
-export const getDocsWrapper = async (
-  query: Query<unknown, DocumentData>
-): Promise<[string | null, QuerySnapshot<unknown, DocumentData> | null]> => {
-  let error = null,
-    result = null;
-  try {
-    result = await getDocs(query);
-  } catch (err) {
-    error = "error retrieving all documents: " + err;
-  }
-  return [error, result];
+export const getDocsWrapper = async (query: Query<unknown, DocumentData>) => {
+  return getDocs(query).catch((err) => {
+    if (err instanceof Error)
+      throw new Error("Error retrieving all documents:\n" + err.message);
+  });
 };
 
 export function docWrapper(
   firestore: Firestore,
   path: string,
   ...pathSegments: string[]
-): [string | null, DocumentReference<DocumentData, DocumentData> | null] {
-  let ref = null,
-    error = null;
+) {
   try {
-    ref = doc(firestore, path, ...pathSegments);
+    return doc(firestore, path, ...pathSegments);
   } catch (err) {
-    error = "error getting document reference: " + err;
+    return new Error("Error getting document reference:\n" + err);
   }
-  return [error, ref];
 }
 
 export const updateDocWrapper = async (
   reference: DocumentReference<unknown, any>,
   data: any
 ) => {
-  let error = null;
-  try {
-    await updateDoc(reference, data);
-  } catch (err) {
-    error = "error updating document: " + err;
-  }
-  return error;
+  return updateDoc(reference, data).catch((err) => {
+    throw new Error("Error updating document:\n" + err);
+  });
 };
 
 export const deleteDocWrapper = async (
   reference: DocumentReference<unknown, DocumentData>
 ) => {
-  let error = null;
+  return deleteDoc(reference).catch((err) => {
+    throw new Error("Error deleting document:\n" + err);
+  });
+};
+
+export const queryWrapper = (_query: Query<Resident, DocumentData>) => {
   try {
-    deleteDoc(reference);
-  } catch (err) {
-    error = "error deleting document: " + err;
+    return query(_query);
+  } catch (e) {
+    return new Error("Error querying the Database:\n" + e);
   }
-  return error;
 };
