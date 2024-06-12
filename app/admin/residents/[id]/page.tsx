@@ -45,7 +45,6 @@ export default async function ResidentPage({
 
 export async function generateStaticParams() {
   const url = new URL("/residents", process.env.SERVER);
-  debugger;
   try {
     const res = await fetch(url);
     console.log(res);
