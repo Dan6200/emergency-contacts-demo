@@ -16,7 +16,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 
-export const collectionWrapper = (
+export const collectionWrapper = async (
   firestore: Firestore,
   path: string,
   ...pathSegments: string[]
@@ -25,8 +25,8 @@ export const collectionWrapper = (
     return <CollectionReference<Resident>>(
       collection(firestore, path, ...pathSegments)
     );
-  } catch (err) {
-    return new Error("creating collection :\n" + err);
+  } catch (e) {
+    throw new Error(`Could not retrieve the ${path} Collection.\n\t` + e);
   }
 };
 
@@ -35,7 +35,7 @@ export const addDocWrapper = async (
   data: any
 ) => {
   return addDoc(reference, data).catch((err) => {
-    throw new Error("Error adding document:\n" + err);
+    throw new Error("Error adding document.\n\t" + err);
   });
 };
 
@@ -43,26 +43,25 @@ export const getDocWrapper = async (
   ref: DocumentReference<unknown, DocumentData>
 ) => {
   return getDoc(ref).catch((err) => {
-    throw new Error("Error retrieving document:\n" + err);
+    throw new Error("Error retrieving document.\n\t" + err);
   });
 };
 
 export const getDocsWrapper = async (query: Query<unknown, DocumentData>) => {
   return getDocs(query).catch((err) => {
-    if (err instanceof Error)
-      throw new Error("Error retrieving all documents:\n" + err.message);
+    throw new Error("Error retrieving all documents.\n\t" + err);
   });
 };
 
-export function docWrapper(
+export async function docWrapper(
   firestore: Firestore,
   path: string,
   ...pathSegments: string[]
 ) {
   try {
     return doc(firestore, path, ...pathSegments);
-  } catch (err) {
-    return new Error("Error getting document reference:\n" + err);
+  } catch (e) {
+    throw new Error(`Error retrieving the ${path} Document.\n\t` + e);
   }
 }
 
@@ -71,7 +70,7 @@ export const updateDocWrapper = async (
   data: any
 ) => {
   return updateDoc(reference, data).catch((err) => {
-    throw new Error("Error updating document:\n" + err);
+    throw new Error("Error updating document.\n\t" + err);
   });
 };
 
@@ -79,14 +78,14 @@ export const deleteDocWrapper = async (
   reference: DocumentReference<unknown, DocumentData>
 ) => {
   return deleteDoc(reference).catch((err) => {
-    throw new Error("Error deleting document:\n" + err);
+    throw new Error("Error deleting document.\n\t" + err);
   });
 };
 
-export const queryWrapper = (_query: Query<Resident, DocumentData>) => {
+export const queryWrapper = async (_query: Query<Resident, DocumentData>) => {
   try {
     return query(_query);
   } catch (e) {
-    return new Error("Error querying the Database:\n" + e);
+    throw new Error("Error querying the Database.\n\t" + e);
   }
 };

@@ -6,8 +6,14 @@ import { SearchSuggestions } from "../search-suggestions";
 import { useUserSession } from "@/auth/user";
 import { redirect } from "next/navigation";
 
-export default function Search() {
-  const [residents, setResidents] = useState<null | Resident[]>(null);
+interface SearchProps {
+  residents: Resident[];
+}
+
+export default function Search({ residents }: SearchProps) {
+  const [matchingResidents, setMatchingResidents] = useState<null | Resident[]>(
+    null
+  );
   const user = useUserSession(null);
   const [canRedirect, setCanRedirect] = useState(false);
   const [open, setOpen] = useState(true);
@@ -24,8 +30,10 @@ export default function Search() {
 
   return (
     <main className="bg-background w-full px-4 mx-auto py-8 max-h-screen">
-      <SearchBar {...{ setResidents, setOpen }} />
-      {residents && open && <SearchSuggestions {...{ residents, setOpen }} />}
+      <SearchBar {...{ residents, setMatchingResidents, setOpen }} />
+      {matchingResidents && open && (
+        <SearchSuggestions {...{ matchingResidents, setOpen }} />
+      )}
     </main>
   );
 }

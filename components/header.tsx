@@ -67,7 +67,7 @@ export default function Header({ initialUser }: { initialUser: User | null }) {
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <span
-                  onClick={() => router.push("/admin/residents/search")}
+                  onClick={() => router.push("/admin/residents")}
                   className="h-9 items-center flex justify-between mx-auto w-48"
                 >
                   Search Residents
@@ -76,7 +76,7 @@ export default function Header({ initialUser }: { initialUser: User | null }) {
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <span
-                  onClick={() => router.push("/admin/residents/add")}
+                  onClick={() => router.push("/admin/add-residents")}
                   className="h-9 items-center flex justify-between mx-auto w-full"
                 >
                   Add New Residents

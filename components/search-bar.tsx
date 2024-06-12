@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, UseFormWatch } from "react-hook-form";
 import { z } from "zod";
-import { QueryConstraint, query, where } from "firebase/firestore";
 
 import {
   Form,
@@ -14,11 +13,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
-import { isTypeResident, Resident } from "@/types/resident";
-import { collectionWrapper, getDocsWrapper } from "@/firebase/firestore";
-import db from "@/firebase/config";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { Resident } from "@/types/resident";
+import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { Minus, Plus } from "lucide-react";
 
 const ResidentSchema = z.object({
@@ -28,13 +24,14 @@ const ResidentSchema = z.object({
 });
 
 export function SearchBar({
-  setResidents,
+  residents,
+  setMatchingResidents,
   setOpen,
 }: {
-  setResidents: Dispatch<SetStateAction<Resident[] | null>>;
+  residents: Resident[];
+  setMatchingResidents: Dispatch<SetStateAction<Resident[] | null>>;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
-  const [searchData, setSearchData] = useState<Resident[] | []>([]);
   const form = useForm<Resident>({
     resolver: zodResolver(ResidentSchema),
     defaultValues: {
@@ -52,18 +49,6 @@ export function SearchBar({
   const [showRm, setShowRm] = useState(false);
   const [showAddr, setShowAddr] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      // TODO: lift fetching off the client to the server also explicitly use node:fetch
-      // for server side data fetching
-      const res = await fetch("/residents");
-      if (!res.ok) {
-        toast({ title: "Failed To Fetch Resident Information" });
-      }
-      const data = await res.json();
-      setSearchData(data);
-    })();
-  }, []);
   // for medium data
   useMemo(
     () => Send(watch),
@@ -71,11 +56,11 @@ export function SearchBar({
   );
 
   async function Send(watch: UseFormWatch<Resident>) {
-    let residents: Resident[] = [];
+    let matchingResidents: Resident[] = [];
     if (watch("name") || watch("address") || watch("unit_number")) {
-      residents = searchData.filter(
-        (data) =>
-          data.address
+      matchingResidents = residents.filter(
+        (resident) =>
+          resident.address
             .toLowerCase() // Ignore case
             .replaceAll(/[^a-zA-Z0-9]/g, "") // Ignore non-alnum chars
             .slice(0, 25)
@@ -84,10 +69,10 @@ export function SearchBar({
                 .toLowerCase()
                 .replaceAll(/[^a-zA-Z0-9]/g, "")
             ) &&
-          data.unit_number.startsWith(watch("unit_number")) &&
-          data.name.toLowerCase().startsWith(watch("name").toLowerCase())
+          resident.unit_number.startsWith(watch("unit_number")) &&
+          resident.name.toLowerCase().startsWith(watch("name").toLowerCase())
       );
-      setResidents(residents);
+      setMatchingResidents(matchingResidents);
     }
   }
 

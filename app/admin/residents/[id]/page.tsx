@@ -1,51 +1,19 @@
 import Resident from "@/components/resident";
-import type { Resident as ResidentType } from "@/types/resident";
-import db from "@/firebase/config";
-import { docWrapper, getDocWrapper } from "@/firebase/firestore";
-import { isTypeEmergencyContact, isTypeResident } from "@/types/resident";
+import { getAllResidentsData, getResidentData } from "@/app/residents/data";
 
 export default async function ResidentPage({
   params: { id },
 }: {
   params: { id: string };
 }) {
-  const [resDocErr, resDocRef] = docWrapper(db, "residents", id);
-  if (resDocErr || !resDocRef) throw new Error(resDocErr!);
-  const [resSnapErr, resDocSnap] = await getDocWrapper(resDocRef);
-  if (resSnapErr || !resDocSnap) throw new Error(resSnapErr!);
-  const resData = resDocSnap.data();
-  if (!isTypeResident(resData))
-    throw new Error("Object is not of type Resident");
-  const emContactData = [];
-  for (const emContactId of resData.emergency_contact_id) {
-    const [emDocErr, emDocRef] = docWrapper(
-      db,
-      "emergency-contacts",
-      emContactId
-    );
-    if (emDocErr || !emDocRef) throw new Error(emDocErr!);
-    const [emSnapErr, emDocSnap] = await getDocWrapper(emDocRef);
-    if (emSnapErr || !emDocSnap) throw new Error(emSnapErr!);
-    const singleEmConData = emDocSnap.data();
-    if (!isTypeEmergencyContact(singleEmConData))
-      throw new Error("Object is not of type Emergency Contact");
-    emContactData.push(singleEmConData);
-  }
-  const resident: ResidentType = {
-    ...resData,
-    emergency_contacts: emContactData,
-  };
+  const resident = await getResidentData(id).catch((e) => {
+    throw new Error(`Unable to pass props to Resident Component:\n\t${e}`);
+  });
   return <Resident {...{ resident }} />;
 }
 
 export async function generateStaticParams() {
-  const url = new URL("/residents", process.env.SERVER);
-  try {
-    const res = await fetch(url);
-    console.log(res);
-    if (!res.ok) throw new Error("Failed To Generate Static Pages");
-    return res.json();
-  } catch (e) {
-    console.error(e);
-  }
+  return getAllResidentsData().catch((e) => {
+    throw new Error("Failed To Generate Static Pages.\n\t", e);
+  });
 }

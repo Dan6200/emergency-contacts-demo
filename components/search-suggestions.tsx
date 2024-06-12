@@ -5,10 +5,10 @@ import { X } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 
 export const SearchSuggestions = ({
-  residents,
+  matchingResidents,
   setOpen,
 }: {
-  residents: Resident[];
+  matchingResidents: Resident[];
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   return (
@@ -17,15 +17,19 @@ export const SearchSuggestions = ({
         <span onClick={() => setOpen(!open)} className="absolute top-0 right-0">
           <X />
         </span>
-        <CardContent className="my-4 pt-10 px-0 flex flex-col overflow-scroll max-h-[40vh] gap-2">
-          {residents.length ? (
-            residents.map((resident) => (
+        <CardContent className="my-4 pt-10 px-0 flex flex-col overflow-y-scroll max-h-[40vh] gap-2">
+          {matchingResidents.length ? (
+            matchingResidents.map((resident) => (
               <Link
-                className="active:hover:bg-primary/10 bg-muted w-fit rounded-md p-2 text-nowrap h-9 align-bottom"
+                className="text-left active:hover:bg-primary/10 bg-muted w-full rounded-md py-2 text-nowrap align-bottom"
                 href={`/residents/${resident.id}`}
                 key={resident.id}
               >
-                {resident.name} | {resident.unit_number} | {resident.address}
+                <p className="font-semibold">{resident.name}</p>
+                <p>{resident.address}</p>
+                <p className="text-sm font-semibold">
+                  Rm: {resident.unit_number}
+                </p>
               </Link>
             ))
           ) : (
