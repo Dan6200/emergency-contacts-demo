@@ -18,9 +18,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { redirect, useRouter } from "next/navigation";
 import { useUserSession } from "@/auth/user";
-import { useEffect, useLayoutEffect, useState } from "react";
-import { User } from "firebase/auth";
-import { headers } from "next/headers";
+import { useLayoutEffect, useState } from "react";
 import { collectionWrapper } from "@/firebase/firestore";
 import db from "@/firebase/config";
 
@@ -42,8 +40,7 @@ interface initialValProps {
 
 export function ResidentForm({ address, name, unit_number }: initialValProps) {
   const router = useRouter();
-  const user = useUserSession(null);
-  const [canRedirect, setCanRedirect] = useState(false);
+  const [user, userLoaded] = useUserSession(null);
   const form = useForm<z.infer<typeof ResidentFormSchema>>({
     resolver: zodResolver(ResidentFormSchema),
     defaultValues: {
@@ -54,15 +51,10 @@ export function ResidentForm({ address, name, unit_number }: initialValProps) {
   });
 
   useLayoutEffect(() => {
-    let t: any;
-    if (!user && canRedirect) {
+    if (userLoaded && !user) {
       redirect("/");
     }
-    t = setTimeout(() => {
-      setCanRedirect(true);
-    }, 1000);
-    return () => t;
-  }, [user]);
+  }, [user, userLoaded]);
 
   function onSubmit(data: z.infer<typeof ResidentFormSchema>) {
     toast({

@@ -30,11 +30,6 @@ self.addEventListener("fetch", (event: Event) => {
   event.respondWith(fetchWithFirebaseHeaders(<NextRequest>event.request));
 });
 
-// self.addEventListener("activate", function (event) {
-//   console.log("Claiming control");
-//   return self.clients.claim();
-// });
-
 async function fetchWithFirebaseHeaders(request: NextRequest) {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);

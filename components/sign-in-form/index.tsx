@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,7 +19,6 @@ import { redirect, useRouter } from "next/navigation";
 import { signInWithEmailAndPasswordWrapper } from "@/firebase/auth";
 import { useLayoutEffect, useState } from "react";
 import { useUserSession } from "@/auth/user";
-import { User } from "firebase/auth";
 
 const SignInFormSchema = z.object({
   email: z.string().min(2, {
@@ -42,22 +40,12 @@ export function SignInForm() {
       password: "",
     },
   });
-  const user = useUserSession(null);
-  const [canRedirect, setCanRedirect] = useState(false);
-  const {
-    setError,
-    formState: { errors },
-  } = form;
+  const [user] = useUserSession(null);
 
   useLayoutEffect(() => {
-    let t: any;
-    if (!user && canRedirect) {
+    if (user) {
       redirect("/");
     }
-    t = setTimeout(() => {
-      setCanRedirect(true);
-    }, 1000);
-    return () => t;
   }, [user]);
 
   async function onSubmit(data: z.infer<typeof SignInFormSchema>) {

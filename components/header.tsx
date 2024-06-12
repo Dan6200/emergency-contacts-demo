@@ -20,20 +20,13 @@ import { useRouter } from "next/navigation";
 
 export default function Header({ initialUser }: { initialUser: User | null }) {
   const router = useRouter();
-  const user = useUserSession(initialUser);
+  const [user] = useUserSession(initialUser);
 
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
     event: MouseEvent
   ) => {
     event.preventDefault();
-    const resolved = await signOut();
-  };
-
-  const handleSignIn: MouseEventHandler<HTMLButtonElement> = async (
-    event: MouseEvent
-  ) => {
-    event.preventDefault();
-    signInWithGoogle();
+    return signOut();
   };
 
   return (

@@ -7,10 +7,13 @@ import { useEffect, useState } from "react";
 export function useUserSession(initialUser: User | null) {
   // The initial user comes from the server via a server component
   const [user, setUser] = useState(initialUser);
+  const [userLoaded, setUserLoaded] = useState(false);
   const router = useRouter();
 
   // Register  the service worker that sends auth state back to server
   // The service worker is built with npm run build-service-worker
+  /*
+	 * auth-service-worker.(ts|js) has errors
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       const serializedFirebaseConfig = encodeURIComponent(
@@ -23,10 +26,12 @@ export function useUserSession(initialUser: User | null) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+	*/
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged((authUser) => {
       setUser(authUser);
+      setUserLoaded(true);
     });
     return () => unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -43,5 +48,5 @@ export function useUserSession(initialUser: User | null) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  return user;
+  return [user, userLoaded];
 }

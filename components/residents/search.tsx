@@ -14,19 +14,14 @@ export default function Search({ residents }: SearchProps) {
   const [matchingResidents, setMatchingResidents] = useState<null | Resident[]>(
     null
   );
-  const user = useUserSession(null);
-  const [canRedirect, setCanRedirect] = useState(false);
+  const [user, userLoaded] = useUserSession(null);
   const [open, setOpen] = useState(true);
+
   useLayoutEffect(() => {
-    let t: any;
-    if (!user && canRedirect) {
+    if (userLoaded && !user) {
       redirect("/");
     }
-    t = setTimeout(() => {
-      setCanRedirect(true);
-    }, 1000);
-    return () => t;
-  }, [user]);
+  }, [user, userLoaded]);
 
   return (
     <main className="bg-background w-full px-4 mx-auto py-8 max-h-screen">

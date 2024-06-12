@@ -1,4 +1,5 @@
 import { SignInForm } from "@/components/sign-in-form/";
+import { getAuthenticatedAppForUser } from "@/server";
 
 export default async function SignInPage() {
   return (

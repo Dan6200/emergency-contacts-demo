@@ -12,13 +12,13 @@ export const metadata: Metadata = {
   title: "LinkID",
 };
 
-export const dynamic = "force-dynamic";
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const { currentUser } = await getAuthenticatedAppForUser();
+  console.log("currentUser", currentUser);
   return (
     <html lang="en">
       <body className={inter.className}>
