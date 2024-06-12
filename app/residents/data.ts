@@ -1,10 +1,12 @@
 import db from "@/firebase/config";
 import {
+  addDocWrapper,
   collectionWrapper,
   docWrapper,
   getDocsWrapper,
   getDocWrapper,
   queryWrapper,
+  updateDocWrapper,
 } from "@/firebase/firestore";
 import {
   EmergencyContact,
@@ -13,10 +15,32 @@ import {
   Resident,
 } from "@/types/resident";
 
+export async function addNewResident(resident: Resident) {
+  try {
+    const residentColRef = await collectionWrapper(db, "residents");
+    const residentsDocRef = await addDocWrapper(residentColRef, resident);
+    return new URL(`/${residentsDocRef.id}`, process.env.DOMAIN);
+  } catch (error) {
+    throw new Error("Failed to Add a New Resident.\n\t\t" + error);
+  }
+}
+
+export async function updateNewResident(
+  residentId: string,
+  resident: Resident
+) {
+  try {
+    const residentDocRef = await docWrapper(db, "residents", residentId);
+    return updateDocWrapper(residentDocRef, resident);
+  } catch (error) {
+    throw new Error("Failed to Update the Resident.\n\t\t" + error);
+  }
+}
+
 export async function getResidentData(residentId: string) {
   try {
-    const residentsDocument = await docWrapper(db, "residents", residentId);
-    const residentsSnap = await getDocWrapper(residentsDocument);
+    const residentsDocRef = await docWrapper(db, "residents", residentId);
+    const residentsSnap = await getDocWrapper(residentsDocRef);
     const residentData = residentsSnap.data();
     if (!isTypeResident(residentData))
       throw new Error("Object is not of type Resident -- Line:22");
@@ -103,6 +127,6 @@ export async function getAllResidentsDataLite() {
       };
     });
   } catch (error) {
-    throw new Error("Failed to fetch All Residents Data:\n\t\t" + error);
+    throw new Error("Failed to fetch All Residents Data.\n\t\t" + error);
   }
 }

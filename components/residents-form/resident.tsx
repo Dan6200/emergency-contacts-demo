@@ -41,6 +41,7 @@ interface initialValProps {
 export function ResidentForm({ address, name, unit_number }: initialValProps) {
   const router = useRouter();
   const [user, userLoaded] = useUserSession(null);
+  const [noEmContacts, setNoEmContacts] = useState(0);
   const form = useForm<z.infer<typeof ResidentFormSchema>>({
     resolver: zodResolver(ResidentFormSchema),
     defaultValues: {
@@ -60,7 +61,6 @@ export function ResidentForm({ address, name, unit_number }: initialValProps) {
     toast({
       title: "Successfully Added New Resident",
     });
-    const [colError, colRef] = collectionWrapper(db, "residents");
     router.push(
       `/admin/residents/print-qr/${encodeURIComponent(
         "https://www.google.com"
