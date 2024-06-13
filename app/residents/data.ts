@@ -68,7 +68,7 @@ export async function updateResident(
   }
 }
 
-export async function mutateResidentData(resident: Resident): Promise<URL>;
+export async function mutateResidentData(resident: ResidentData): Promise<URL>;
 export async function mutateResidentData(
   resident: ResidentData,
   residentId: string

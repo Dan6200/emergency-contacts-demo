@@ -31,9 +31,13 @@ const ResidentFormSchema = z.object({
   address: z.string().min(5, {
     message: "home address must be at least 5 characters.",
   }),
-  em_contact_name: z.string(),
-  em_contact_relationship: z.string(),
-  em_contact_number: z.string(),
+  emergency_contacts: z.array(
+    z.object({
+      name: z.string(),
+      relationship: z.string(),
+      phone_number: z.string(),
+    })
+  ),
 });
 
 export type MutateResidents =
@@ -83,6 +87,7 @@ export function ResidentForm({
         toast({
           title: "Successfully Updated Resident Information",
         });
+        router.back();
       } else {
         const url = await mutateData(data).catch((err) => {
           console.error(err);
@@ -97,10 +102,12 @@ export function ResidentForm({
       if (isError(err)) toast({ title: err.message });
     }
   }
-  console.log(noOfEmContacts);
 
   return (
     <Form {...form}>
+      <h1 className="font-semibold mb-8 text-2xl text-center">
+        Add A New Resident
+      </h1>
       <form
         onSubmit={form.handleSubmit(onSubmit.bind(null, mutateResidents))}
         className="w-full space-y-6"
@@ -148,7 +155,7 @@ export function ResidentForm({
           )}
         />
         <div className="flex justify-end border-b w-full">
-          <h4 className="gap-2 flex">
+          <h4 className="gap-2 flex pb-4">
             Add Emergency Contacts
             <span
               onClick={() =>
@@ -173,12 +180,12 @@ export function ResidentForm({
           </h4>
         </div>
         {new Array(noOfEmContacts).fill(null).map((_, i) => (
-          <div key={i}>
+          <div key={i} className="mb-8 border-b py-4">
             <h3 className="font-semibold mb-8">Emergency Contact {i + 1}</h3>
-            <div>
+            <div className="space-y-6">
               <FormField
                 control={form.control}
-                name={`em_contact_name_${i + 1}`}
+                name={`emergency_contacts.${i + 1}.name`}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
@@ -192,7 +199,7 @@ export function ResidentForm({
               />
               <FormField
                 control={form.control}
-                name={`em_contact_relationship_{i + 1}`}
+                name={`emergency_contacts.${i + 1}.relationship`}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Relationship</FormLabel>
@@ -208,7 +215,7 @@ export function ResidentForm({
               />
               <FormField
                 control={form.control}
-                name={`em_contact_number{i + 1}`}
+                name={`emergency_contacts.${i + 1}.phone_number`}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
