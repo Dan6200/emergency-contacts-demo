@@ -19,8 +19,9 @@ import { toast } from "@/components/ui/use-toast";
 import { redirect, useRouter } from "next/navigation";
 import { useUserSession } from "@/auth/user";
 import { useLayoutEffect, useState } from "react";
-import { collectionWrapper } from "@/firebase/firestore";
-import db from "@/firebase/config";
+import type { ResidentData } from "@/types/resident";
+import { isError } from "util";
+import { Minus, Plus } from "lucide-react";
 
 const ResidentFormSchema = z.object({
   name: z.string().min(2, {
@@ -30,18 +31,33 @@ const ResidentFormSchema = z.object({
   address: z.string().min(5, {
     message: "home address must be at least 5 characters.",
   }),
+  em_contact_name: z.string(),
+  em_contact_relationship: z.string(),
+  em_contact_number: z.string(),
 });
 
-interface initialValProps {
+export type MutateResidents =
+  | ((resident: ResidentData) => Promise<URL>)
+  | ((resident: ResidentData, residentId?: string) => Promise<void>);
+
+interface ResidentFormProps {
   address: string;
   name: string;
   unit_number: string;
+  mutateResidents: MutateResidents;
+  residentId?: string;
 }
 
-export function ResidentForm({ address, name, unit_number }: initialValProps) {
+export function ResidentForm({
+  address,
+  name,
+  unit_number,
+  mutateResidents,
+  residentId,
+}: ResidentFormProps) {
   const router = useRouter();
   const [user, userLoaded] = useUserSession(null);
-  const [noEmContacts, setNoEmContacts] = useState(0);
+  const [noOfEmContacts, setNoOfEmContacts] = useState(0);
   const form = useForm<z.infer<typeof ResidentFormSchema>>({
     resolver: zodResolver(ResidentFormSchema),
     defaultValues: {
@@ -57,20 +73,38 @@ export function ResidentForm({ address, name, unit_number }: initialValProps) {
     }
   }, [user, userLoaded]);
 
-  function onSubmit(data: z.infer<typeof ResidentFormSchema>) {
-    toast({
-      title: "Successfully Added New Resident",
-    });
-    router.push(
-      `/admin/residents/print-qr/${encodeURIComponent(
-        "https://www.google.com"
-      )}`
-    );
+  async function onSubmit(
+    mutateData: MutateResidents,
+    data: z.infer<typeof ResidentFormSchema>
+  ) {
+    try {
+      if (residentId) {
+        await mutateData(data, residentId);
+        toast({
+          title: "Successfully Updated Resident Information",
+        });
+      } else {
+        const url = await mutateData(data).catch((err) => {
+          console.error(err);
+          throw new Error();
+        });
+        if (!url) throw new Error();
+        redirect(
+          `/admin/residents/print-qr/${encodeURIComponent(url.toString())}`
+        );
+      }
+    } catch (err) {
+      if (isError(err)) toast({ title: err.message });
+    }
   }
+  console.log(noOfEmContacts);
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit.bind(null, mutateResidents))}
+        className="w-full space-y-6"
+      >
         <FormField
           control={form.control}
           name="name"
@@ -113,6 +147,84 @@ export function ResidentForm({ address, name, unit_number }: initialValProps) {
             </FormItem>
           )}
         />
+        <div className="flex justify-end border-b w-full">
+          <h4 className="gap-2 flex">
+            Add Emergency Contacts
+            <span
+              onClick={() =>
+                setNoOfEmContacts(
+                  noOfEmContacts < 5 ? noOfEmContacts + 1 : noOfEmContacts
+                )
+              }
+            >
+              <Plus />
+            </span>
+            {noOfEmContacts > 0 && (
+              <span
+                onClick={() =>
+                  setNoOfEmContacts(
+                    noOfEmContacts > 0 ? noOfEmContacts - 1 : noOfEmContacts
+                  )
+                }
+              >
+                <Minus />
+              </span>
+            )}
+          </h4>
+        </div>
+        {new Array(noOfEmContacts).fill(null).map((_, i) => (
+          <div key={i}>
+            <h3 className="font-semibold mb-8">Emergency Contact {i + 1}</h3>
+            <div>
+              <FormField
+                control={form.control}
+                name={`em_contact_name_${i + 1}`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormDescription>Emergency Contact's Name</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name={`em_contact_relationship_{i + 1}`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Relationship</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Emergency Contact's Relationship
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name={`em_contact_number{i + 1}`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Emergency Contact's Number
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+        ))}
         <Button type="submit" className="w-full">
           Submit
         </Button>

@@ -1,4 +1,3 @@
-// cspell:ignore fastcsv birthdate
 import { createReadStream } from "fs";
 import * as fastcsv from "fast-csv";
 import {
@@ -37,7 +36,7 @@ const db = initializeFirestore(app, {
 let file = "emergency-contacts.csv";
 
 (async () => {
-  const [error, ref] = collectionWrapper(db, "residents");
+  const  = collectionWrapper(db, "residents");
   if (ref === null)
     throw new Error("could not get residents collection reference: " + error);
   const [docErr, snapshot] = await getDocsWrapper(ref as Query);

@@ -2,6 +2,15 @@ export interface EmergencyContact {
   name: string;
   relationship: string;
   phone_number: string;
+  id?: string;
+}
+
+export interface ResidentData {
+  name: string;
+  address: string;
+  unit_number: string;
+  emergency_contact_id?: string[];
+  emergency_contacts?: EmergencyContact[];
 }
 
 export interface Resident {
@@ -10,7 +19,6 @@ export interface Resident {
   address: string;
   unit_number: string;
   emergency_contact_id: string[];
-  emergency_contacts?: EmergencyContact[];
 }
 
 export const isTypeResident = (data: unknown): data is Resident =>

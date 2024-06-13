@@ -13,28 +13,73 @@ import {
   isTypeEmergencyContact,
   isTypeResident,
   Resident,
+  ResidentData,
 } from "@/types/resident";
 
-export async function addNewResident(resident: Resident) {
+export async function addNewResident(resident: ResidentData) {
+  "use server";
   try {
+    const { emergency_contacts: emergencyContacts } = resident;
+    if (emergencyContacts && emergencyContacts.length)
+      for (const contact of emergencyContacts) {
+        const contactColRef = await collectionWrapper(db, "emergency_contacts");
+        const contactDocRef = await addDocWrapper(contactColRef, contact);
+        if (!resident.emergency_contact_id)
+          throw new Error(
+            "Resident Object must contain Emergency Contact Ids -- Line:28"
+          );
+        resident.emergency_contact_id.push(contactDocRef.id);
+      }
     const residentColRef = await collectionWrapper(db, "residents");
-    const residentsDocRef = await addDocWrapper(residentColRef, resident);
-    return new URL(`/${residentsDocRef.id}`, process.env.DOMAIN);
+    const { emergency_contacts, ...newResident } = resident;
+    const residentsDocRef = await addDocWrapper(residentColRef, newResident);
+    return new URL(`/residents/${residentsDocRef.id}`, process.env.DOMAIN);
   } catch (error) {
     throw new Error("Failed to Add a New Resident.\n\t\t" + error);
   }
 }
 
-export async function updateNewResident(
-  residentId: string,
-  resident: Resident
+export async function updateResident(
+  resident: ResidentData,
+  residentId: string
 ) {
+  "use server";
   try {
+    const { emergency_contacts: emergencyContacts } = resident;
+    if (emergencyContacts && emergencyContacts.length)
+      Promise.all(
+        emergencyContacts.map(async (contact) => {
+          if (!contact.id)
+            throw new Error(
+              "Must include Id in Emergency Contact Object -- Line:52"
+            );
+          const contactDocRef = await docWrapper(
+            db,
+            "emergency_contacts",
+            contact.id
+          );
+          await updateDocWrapper(contactDocRef, contact);
+        })
+      );
     const residentDocRef = await docWrapper(db, "residents", residentId);
     return updateDocWrapper(residentDocRef, resident);
   } catch (error) {
     throw new Error("Failed to Update the Resident.\n\t\t" + error);
   }
+}
+
+export async function mutateResidentData(resident: Resident): Promise<URL>;
+export async function mutateResidentData(
+  resident: ResidentData,
+  residentId: string
+): Promise<void>;
+export async function mutateResidentData(
+  resident: ResidentData,
+  residentId?: string
+) {
+  "use server";
+  if (residentId) return updateResident(resident, residentId);
+  return addNewResident(resident);
 }
 
 export async function getResidentData(residentId: string) {
