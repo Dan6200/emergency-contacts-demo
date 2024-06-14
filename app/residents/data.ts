@@ -2,6 +2,7 @@ import db from "@/firebase/config";
 import {
   addDocWrapper,
   collectionWrapper,
+  deleteDocWrapper,
   docWrapper,
   getDocsWrapper,
   getDocWrapper,
@@ -38,6 +39,29 @@ export async function addNewResident(resident: ResidentData) {
     ).toString();
   } catch (error) {
     throw new Error("Failed to Add a New Resident.\n\t\t" + error);
+  }
+}
+
+export async function deleteResidentData(
+  residentData: ResidentData,
+  residentId: string
+) {
+  "use server";
+  try {
+    const { emergency_contact_id: emergencyContactIds } = residentData;
+    if (emergencyContactIds) {
+      Promise.all(
+        emergencyContactIds.map(async (id) => {
+          const contactDocRef = await docWrapper(db, "emergency-contacts", id);
+          await deleteDocWrapper(contactDocRef);
+        })
+      );
+    }
+    console.log(residentId);
+    const residentDocRef = await docWrapper(db, "residents", residentId);
+    return deleteDocWrapper(residentDocRef);
+  } catch (error) {
+    throw new Error("Failed to Delete the Resident.\n\t\t" + error);
   }
 }
 

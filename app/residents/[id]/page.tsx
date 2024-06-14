@@ -1,5 +1,10 @@
 import Resident from "@/components/resident";
-import { getAllResidentsData, getResidentData } from "../data";
+import {
+  getAllResidentsData,
+  getResidentData,
+  deleteResidentData,
+} from "../data";
+import DeleteResident from "./delete";
 
 export default async function ResidentPage({
   params: { id },
@@ -9,7 +14,11 @@ export default async function ResidentPage({
   const resident = await getResidentData(id).catch((e) => {
     throw new Error(`Unable to pass props to Resident Component:\n\t${e}`);
   });
-  return <Resident {...{ resident }} />;
+  return (
+    <Resident {...{ resident }}>
+      <DeleteResident {...{ id, residentData: resident, deleteResidentData }} />
+    </Resident>
+  );
 }
 
 /*
