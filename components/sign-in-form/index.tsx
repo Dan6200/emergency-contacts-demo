@@ -20,7 +20,7 @@ import { signInWithEmailAndPasswordWrapper } from "@/firebase/auth";
 import { useLayoutEffect, useState } from "react";
 import { useUserSession } from "@/auth/user";
 
-const SignInFormSchema = z.object({
+const AuthFormSchema = z.object({
   email: z.string().min(2, {
     message: "email must be provided.",
   }),
@@ -29,12 +29,20 @@ const SignInFormSchema = z.object({
   }),
 });
 
-interface initialValProps {}
+type Authenticate = (data: {
+  email: string;
+  password: string;
+}) => Promise<{ success: string | boolean } | { error: string }>;
 
-export function SignInForm() {
+interface AuthForm {
+  signIn?: Authenticate;
+  signUp?: Authenticate;
+}
+
+export function AuthForm({ signIn, signUp }: AuthForm) {
   const router = useRouter();
-  const form = useForm<z.infer<typeof SignInFormSchema>>({
-    resolver: zodResolver(SignInFormSchema),
+  const form = useForm<z.infer<typeof AuthFormSchema>>({
+    resolver: zodResolver(AuthFormSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -48,22 +56,29 @@ export function SignInForm() {
     }
   }, [user]);
 
-  async function onSubmit(data: z.infer<typeof SignInFormSchema>) {
-    return signInWithEmailAndPasswordWrapper(data.email, data.password)
-      .catch((error) => {
-        toast({
-          title: error
-            ? "Failed to Sign In User"
-            : "User Signed In Successfully",
-          variant: error ? "destructive" : "default",
-        });
-      })
-      .then((_) => router.push("/"));
+  async function onSubmit(
+    signIn?: Authenticate,
+    signUp?: Authenticate,
+    data: z.infer<typeof AuthFormSchema>,
+  ) {
+    if (signIn && signUp)
+      throw new Error("Cannot sign up and sign in at the same time");
+    if (signIn) {
+      const { message, success } = await signIn(data);
+      toast({ title: message, variant: success ? "default" : "destructive" });
+    }
+    if (signUp) {
+      const { message, success } = await signUp(data);
+      toast({ title: message, variant: success ? "default" : "destructive" });
+    }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit.bind(null, signIn, signUp)}
+        className="w-full sm:w-4/5 lg:w-3/4 space-y-6"
+      >
         <FormField
           control={form.control}
           name="email"

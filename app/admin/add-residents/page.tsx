@@ -1,5 +1,5 @@
-import { mutateResidentData } from "@/app/residents/data";
-import { ResidentForm } from "@/components/residents-form/resident";
+import { mutateResidentData } from "@/app/residents/functions";
+import { ResidentForm } from "@/components/residents-form";
 
 export default async function AddResidentPage() {
   return (

@@ -5,6 +5,7 @@ import { QrReader } from "react-qr-reader";
 import { CameraOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import debounce from "lodash.debounce";
+import axios from "axios";
 
 export default function QRFetchResidents() {
   const [camOn, setCamOn] = useState(false),
@@ -53,15 +54,15 @@ export default function QRFetchResidents() {
               setIsQR(true);
               try {
                 const url = new URL(result.getText());
-                fetch(url, { method: "HEAD" })
-                  .then((res) => {
-                    if (res.ok) router.push(url.toString()); // may need need to use javascript to visit link if external
-                    if (res.status === 404)
-                      setFetchResidentErr("Resident Does Not Exist");
+                axios(url.toString(), { method: "HEAD" })
+                  .then(() => {
+                    router.push(url.toString()); // may need need to use javascript to visit link if external
                   })
-                  .catch((e) =>
-                    setFetchResidentErr("Failed to Retrieve Resident Info")
-                  );
+                  .catch((e) => {
+                    if (e.status === 404)
+                      setFetchResidentErr("Resident Does Not Exist");
+                    setFetchResidentErr("Failed to Retrieve Resident Info");
+                  });
               } catch (e) {
                 setFetchResidentErr("Failed to Retrieve Resident Info");
                 console.error(e);

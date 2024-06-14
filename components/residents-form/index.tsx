@@ -45,8 +45,13 @@ const ResidentFormSchema = z.object({
 });
 
 export type MutateResidents =
-  | ((resident: ResidentData) => Promise<string>)
-  | ((resident: ResidentData, residentId?: string) => Promise<void>);
+  | ((
+      resident: ResidentData,
+      residentId?: string
+    ) => Promise<{ result?: string; success: boolean; message: string }>)
+  | ((
+      resident: ResidentData
+    ) => Promise<{ result: string; success: boolean; message: string }>);
 
 interface ResidentFormProps {
   address: string;
@@ -102,16 +107,22 @@ export function ResidentForm({
             emergency_contact_id: string;
           };
         }
-        await mutateData(newData, residentId);
+        const { message, success } = await mutateData(newData, residentId);
         toast({
-          title: "Successfully Updated Resident Information",
+          title: message,
+          variant: success ? "default" : "destructive",
         });
         router.back();
       } else {
-        const url = await mutateData(data).catch((err) => {
-          throw new Error(err);
-        });
-        if (!url) throw new Error("Failed To Add Resident Page");
+        const { result: url, message, success } = await mutateData(data);
+        if (!url || !success) {
+          toast({
+            title: success ? "Unable to Add New Resident" : message,
+            variant: "destructive",
+          });
+          return;
+        }
+        toast({ title: message });
         router.push(
           `/admin/residents/print-qr/${encodeURIComponent(url.toString())}`
         );
@@ -123,12 +134,12 @@ export function ResidentForm({
 
   return (
     <Form {...form}>
-      <h1 className="font-semibold mb-8 text-2xl text-center">
+      <h1 className="font-semibold mb-8 text-2xl ">
         {!residentId ? "Add A New Resident" : "Edit Resident Information"}
       </h1>
       <form
         onSubmit={form.handleSubmit(onSubmit.bind(null, mutateResidents))}
-        className="w-full space-y-6"
+        className="w-full sm:w-4/5 lg:w-3/4 space-y-6"
       >
         <FormField
           control={form.control}

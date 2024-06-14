@@ -1,3 +1,8 @@
+"use server";
+import {
+  createUserWithEmailAndPasswordWrapper,
+  signInWithEmailAndPasswordWrapper,
+} from "@/firebase/auth";
 import db from "@/firebase/config";
 import {
   addDocWrapper,
@@ -18,7 +23,6 @@ import {
 } from "@/types/resident";
 
 export async function addNewResident(resident: ResidentData) {
-  "use server";
   try {
     const { emergency_contacts: emergencyContacts } = resident;
     resident.emergency_contact_id = resident.emergency_contact_id ?? [];
@@ -27,18 +31,28 @@ export async function addNewResident(resident: ResidentData) {
         const contactColRef = await collectionWrapper(db, "emergency-contacts");
         const contactDocRef = await addDocWrapper(contactColRef, contact);
         if (!contactDocRef.id)
-          throw new Error("Failed to Add Emergency Contact Info. -- Line:28");
+          return {
+            message: "Failed to Add Emergency Contact Info.",
+            success: false,
+          };
         resident.emergency_contact_id.push(contactDocRef.id);
       }
     const residentColRef = await collectionWrapper(db, "residents");
     const { emergency_contacts, ...newResident } = resident;
     const residentsDocRef = await addDocWrapper(residentColRef, newResident);
-    return new URL(
-      `/residents/${residentsDocRef.id}`,
-      process.env.DOMAIN
-    ).toString();
+    return {
+      result: new URL(
+        `/residents/${residentsDocRef.id}`,
+        process.env.DOMAIN
+      ).toString(),
+      message: "Successfully Added a New Resident",
+      success: true,
+    };
   } catch (error) {
-    throw new Error("Failed to Add a New Resident.\n\t\t" + error);
+    return {
+      success: false,
+      message: "Failed to Add a New Resident",
+    };
   }
 }
 
@@ -46,7 +60,6 @@ export async function deleteResidentData(
   residentData: ResidentData,
   residentId: string
 ) {
-  "use server";
   try {
     const { emergency_contact_id: emergencyContactIds } = residentData;
     if (emergencyContactIds) {
@@ -57,11 +70,14 @@ export async function deleteResidentData(
         })
       );
     }
-    console.log(residentId);
     const residentDocRef = await docWrapper(db, "residents", residentId);
-    return deleteDocWrapper(residentDocRef);
+    await deleteDocWrapper(residentDocRef);
+    return { success: true, message: "Successfully Deleted Resident" };
   } catch (error) {
-    throw new Error("Failed to Delete the Resident.\n\t\t" + error);
+    return {
+      success: false,
+      message: "Failed to Delete the Resident.",
+    };
   }
 }
 
@@ -69,7 +85,6 @@ export async function updateResident(
   resident: ResidentData,
   residentId: string
 ) {
-  "use server";
   try {
     const { emergency_contacts, emergency_contact_id } = resident;
     if (
@@ -84,9 +99,10 @@ export async function updateResident(
       Promise.all(
         emergencyContacts.map(async (contact) => {
           if (!contact.id)
-            throw new Error(
-              "Must include Id in Emergency Contact Object -- Line:52"
-            );
+            return {
+              message: "Must include Id in Emergency Contact Object",
+              success: false,
+            };
           const contactDocRef = await docWrapper(
             db,
             "emergency-contacts",
@@ -97,24 +113,30 @@ export async function updateResident(
       );
     }
     const residentDocRef = await docWrapper(db, "residents", residentId);
-    return updateDocWrapper(residentDocRef, resident);
+    await updateDocWrapper(residentDocRef, resident);
+    return { success: true };
   } catch (error) {
-    throw new Error("Failed to Update the Resident.\n\t\t" + error);
+    return {
+      success: false,
+      message: "Failed to Update the Resident",
+    };
   }
 }
 
 export async function mutateResidentData(
   resident: ResidentData
-): Promise<string>;
+): Promise<
+  | { result?: string; message: string; success: boolean }
+  | { message?: string; success: boolean }
+>;
 export async function mutateResidentData(
   resident: ResidentData,
   residentId: string
-): Promise<void>;
+): Promise<{ success: boolean } | { success: boolean; message?: string }>;
 export async function mutateResidentData(
   resident: ResidentData,
   residentId?: string
 ) {
-  "use server";
   if (residentId) return updateResident(resident, residentId);
   return addNewResident(resident);
 }
@@ -165,7 +187,7 @@ export async function getAllResidentsData() {
     for (const doc of residentsData.docs) {
       let resident = doc.data();
       if (!isTypeResident(resident))
-        throw new Error("Object is not of type Resident -- Line:144");
+        throw new Error("Object is not of type Resident");
       const emContactData: EmergencyContact[] = [];
       for (const emContactId of resident.emergency_contact_id) {
         const emContactsDoc = await docWrapper(
@@ -176,9 +198,7 @@ export async function getAllResidentsData() {
         const emContactsSnap = await getDocWrapper(emContactsDoc);
         const singleEmConData = emContactsSnap.data();
         if (!isTypeEmergencyContact(singleEmConData))
-          throw new Error(
-            "Object is not of type Emergency Contact -- Line:155"
-          );
+          throw new Error("Object is not of type Emergency Contact");
         emContactData.push(singleEmConData);
       }
       resident = {
@@ -187,7 +207,7 @@ export async function getAllResidentsData() {
         emergency_contacts: emContactData,
       };
       if (!isTypeResident(resident))
-        throw new Error("Object is not of type Resident -- Line:166");
+        throw new Error("Object is not of type Resident");
       residents.push(resident);
     }
     return residents;
@@ -214,4 +234,26 @@ export async function getAllResidentsDataLite() {
   } catch (error) {
     throw new Error("Failed to fetch All Residents Data.\n\t\t" + error);
   }
+}
+
+export async function signUp(data: { email: string; password: string }) {
+  return createUserWithEmailAndPasswordWrapper(data.email, data.password)
+    .then(() => ({ success: true, message: "User Created Successfully" }))
+    .catch((error) => {
+      return {
+        success: false,
+        message: "Failed to Create User",
+      };
+    });
+}
+
+export async function signIn(data: { email: string; password: string }) {
+  return signInWithEmailAndPasswordWrapper(data.email, data.password)
+    .then(() => ({ success: true, message: "User Signed In Successfully" }))
+    .catch((error) => {
+      return {
+        message: "Failed to Sign In User.",
+        success: false,
+      };
+    });
 }

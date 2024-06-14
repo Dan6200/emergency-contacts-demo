@@ -2,8 +2,8 @@ import {
   getAllResidentsData,
   getResidentData,
   mutateResidentData,
-} from "@/app/residents/data";
-import { ResidentForm } from "@/components/residents-form/resident";
+} from "@/app/residents/functions";
+import { ResidentForm } from "@/components/residents-form";
 
 export default async function EditResidentPage({
   params: { id: residentId },

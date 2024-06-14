@@ -1,4 +1,4 @@
-import { getAllResidentsDataLite } from "@/app/residents/data";
+import { getAllResidentsDataLite } from "@/app/residents/functions";
 import Search from "@/components/residents/search";
 
 export default async function Residents() {

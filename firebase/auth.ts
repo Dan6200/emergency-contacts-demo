@@ -1,5 +1,6 @@
 import {
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   onAuthStateChanged as _onAuthStateChanged,
   type User,
 } from "firebase/auth";
@@ -7,6 +8,15 @@ import { auth } from "./config";
 
 export function onAuthStateChanged(cb: (authUser: User | null) => void) {
   return _onAuthStateChanged(auth, cb);
+}
+
+export async function createUserWithEmailAndPasswordWrapper(
+  email: string,
+  password: string
+) {
+  return createUserWithEmailAndPassword(auth, email, password).catch((e) => {
+    throw new Error("Failed to Create User.\n\t" + e);
+  });
 }
 
 export async function signInWithEmailAndPasswordWrapper(

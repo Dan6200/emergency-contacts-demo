@@ -11,7 +11,19 @@ export default function DeleteResident({
 }: {
   id: string;
   residentData: ResidentData;
-  deleteResidentData: (residentData: ResidentData, id: string) => Promise<void>;
+  deleteResidentData: (
+    residentData: ResidentData,
+    id: string
+  ) => Promise<
+    | {
+        success: boolean;
+        message?: undefined;
+      }
+    | {
+        success: boolean;
+        message: string;
+      }
+  >;
 }) {
   const router = useRouter();
   const handleDelete = (residentData: ResidentData, id: string) => {

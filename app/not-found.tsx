@@ -1,5 +1,5 @@
 "use client";
-import { redirect, useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { useLayoutEffect } from "react";
 
 export default function NotFound() {

@@ -3,7 +3,7 @@ import {
   getAllResidentsData,
   getResidentData,
   deleteResidentData,
-} from "../data";
+} from "../functions";
 import DeleteResident from "./delete";
 
 export default async function ResidentPage({
