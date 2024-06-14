@@ -9,8 +9,9 @@ import debounce from "lodash.debounce";
 export default function QRFetchResidents() {
   const [camOn, setCamOn] = useState(false),
     [isQR, setIsQR] = useState(false),
-    [isSmallScreen] = useState(self.innerWidth < 1024),
     [fetchResidentErr, setFetchResidentErr] = useState<string | null>(null);
+  let isSmallScreen = true;
+  if (typeof self !== "undefined") isSmallScreen = self.innerWidth < 1024;
 
   const router = useRouter();
   const Id = "qr-video";
