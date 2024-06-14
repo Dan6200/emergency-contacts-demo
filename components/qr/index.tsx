@@ -30,6 +30,7 @@ export default function QRFetchResidents() {
     if (fetchResidentErr) {
       toast({
         title: fetchResidentErr,
+        variant: "destructive",
       });
       debouncedFunc = debounce(() => {
         setIsQR(false);

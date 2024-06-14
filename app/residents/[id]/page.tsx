@@ -12,8 +12,10 @@ export default async function ResidentPage({
   return <Resident {...{ resident }} />;
 }
 
+/*
 export async function generateStaticParams() {
-  return getAllResidentsData().catch((e) => {
+  return await getAllResidentsData().catch((e) => {
+    console.log(e);
     throw new Error("Failed To Generate Static Pages.\n\t", e);
   });
-}
+}*/

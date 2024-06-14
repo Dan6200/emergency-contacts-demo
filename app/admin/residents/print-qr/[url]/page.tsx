@@ -3,12 +3,12 @@ import jsPDF from "jspdf";
 import Link from "next/link";
 
 export default function PrintQR({
-  params: { id },
+  params: { url: urlString },
 }: {
-  params: { id: string };
+  params: { url: string };
 }) {
   // this function will generate PDF with QR
-  const url = decodeURIComponent(id);
+  const url = decodeURIComponent(urlString);
   return (
     <main className="bg-background flex items-center container w-full my-8 md:w-2/3 mx-auto md:my-16 max-h-screen">
       <Link href={url}>

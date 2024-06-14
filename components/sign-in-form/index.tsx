@@ -55,6 +55,7 @@ export function SignInForm() {
           title: error
             ? "Failed to Sign In User"
             : "User Signed In Successfully",
+          variant: error ? "destructive" : "default",
         });
       })
       .then((_) => router.push("/"));

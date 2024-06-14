@@ -23,7 +23,7 @@ export async function addNewResident(resident: ResidentData) {
     resident.emergency_contact_id = resident.emergency_contact_id ?? [];
     if (emergencyContacts && emergencyContacts.length)
       for (const contact of emergencyContacts) {
-        const contactColRef = await collectionWrapper(db, "emergency_contacts");
+        const contactColRef = await collectionWrapper(db, "emergency-contacts");
         const contactDocRef = await addDocWrapper(contactColRef, contact);
         if (!contactDocRef.id)
           throw new Error("Failed to Add Emergency Contact Info. -- Line:28");
@@ -32,7 +32,6 @@ export async function addNewResident(resident: ResidentData) {
     const residentColRef = await collectionWrapper(db, "residents");
     const { emergency_contacts, ...newResident } = resident;
     const residentsDocRef = await addDocWrapper(residentColRef, newResident);
-    console.log(newResident);
     return new URL(
       `/residents/${residentsDocRef.id}`,
       process.env.DOMAIN
@@ -66,7 +65,7 @@ export async function updateResident(
             );
           const contactDocRef = await docWrapper(
             db,
-            "emergency_contacts",
+            "emergency-contacts",
             contact.id
           );
           await updateDocWrapper(contactDocRef, contact);
@@ -102,7 +101,7 @@ export async function getResidentData(residentId: string) {
     const residentsSnap = await getDocWrapper(residentsDocRef);
     const residentData = residentsSnap.data();
     if (!isTypeResident(residentData))
-      throw new Error("Object is not of type Resident -- Line:22");
+      throw new Error("Object is not of type Resident -- Line:105");
     const emContactData: EmergencyContact[] = [];
     for (const emContactId of residentData.emergency_contact_id) {
       const emContactsDoc = await docWrapper(
@@ -112,8 +111,9 @@ export async function getResidentData(residentId: string) {
       );
       const emContactsSnap = await getDocWrapper(emContactsDoc);
       const singleEmConData = emContactsSnap.data();
+
       if (!isTypeEmergencyContact(singleEmConData))
-        throw new Error("Object is not of type Emergency Contact");
+        throw new Error("Object is not of type Emergency Contact -- Line:116");
       emContactData.push(singleEmConData);
     }
     const resident = {
@@ -122,7 +122,7 @@ export async function getResidentData(residentId: string) {
       emergency_contacts: emContactData,
     };
     if (!isTypeResident(resident))
-      throw new Error("Object is not of type Resident -- Line:42");
+      throw new Error("Object is not of type Resident -- Line:125");
     return resident;
   } catch (error) {
     throw new Error("Failed to fetch resident Data.\n\t\t" + error);
@@ -141,7 +141,7 @@ export async function getAllResidentsData() {
     for (const doc of residentsData.docs) {
       let resident = doc.data();
       if (!isTypeResident(resident))
-        throw new Error("Object is not of type Resident -- Line:61");
+        throw new Error("Object is not of type Resident -- Line:144");
       const emContactData: EmergencyContact[] = [];
       for (const emContactId of resident.emergency_contact_id) {
         const emContactsDoc = await docWrapper(
@@ -152,7 +152,9 @@ export async function getAllResidentsData() {
         const emContactsSnap = await getDocWrapper(emContactsDoc);
         const singleEmConData = emContactsSnap.data();
         if (!isTypeEmergencyContact(singleEmConData))
-          throw new Error("Object is not of type Emergency Contact -- Line:72");
+          throw new Error(
+            "Object is not of type Emergency Contact -- Line:155"
+          );
         emContactData.push(singleEmConData);
       }
       resident = {
@@ -161,7 +163,7 @@ export async function getAllResidentsData() {
         emergency_contacts: emContactData,
       };
       if (!isTypeResident(resident))
-        throw new Error("Object is not of type Resident -- Line:81");
+        throw new Error("Object is not of type Resident -- Line:166");
       residents.push(resident);
     }
     return residents;

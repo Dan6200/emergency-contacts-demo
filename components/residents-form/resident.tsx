@@ -117,7 +117,7 @@ export function ResidentForm({
         );
       }
     } catch (err) {
-      if (isError(err)) toast({ title: err.message });
+      if (isError(err)) toast({ title: err.message, variant: "destructive" });
     }
   }
 
