@@ -21,9 +21,10 @@ export default async function ResidentPage({
   );
 }
 
+/*
 export async function generateStaticParams() {
   return await getAllResidentsData().catch((e) => {
-    console.log(e);
     throw new Error("Failed To Generate Static Pages.\n\t", e);
   });
 }
+	 */

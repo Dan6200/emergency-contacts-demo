@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { ResidentData } from "@/types/resident";
+import { useRouter } from "next/navigation";
 
 export default function DeleteResident({
   id,
@@ -12,6 +13,7 @@ export default function DeleteResident({
   residentData: ResidentData;
   deleteResidentData: (residentData: ResidentData, id: string) => Promise<void>;
 }) {
+  const router = useRouter();
   const handleDelete = (residentData: ResidentData, id: string) => {
     deleteResidentData(residentData, id)
       .catch((err) => {
@@ -19,6 +21,7 @@ export default function DeleteResident({
         toast({ title: "Unable to Delete Resident", variant: "destructive" });
       })
       .then((_) => toast({ title: "Successfully Deleted Resident" }));
+    router.back();
   };
   return (
     <Button
