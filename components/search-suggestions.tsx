@@ -21,7 +21,7 @@ export const SearchSuggestions = ({
           {matchingResidents.length ? (
             matchingResidents.map((resident) => (
               <Link
-                className="text-left active:hover:bg-primary/10 bg-muted w-full rounded-md py-2 text-nowrap align-bottom"
+                className="text-left cursor-pointer active:bg-primary/10 hover:bg-primary/10 bg-muted w-full rounded-md p-2 text-nowrap align-bottom"
                 href={`/residents/${resident.id}`}
                 key={resident.id}
               >

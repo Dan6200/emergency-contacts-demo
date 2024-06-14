@@ -61,7 +61,7 @@ export default function Header({ initialUser }: { initialUser: User | null }) {
               <DropdownMenuItem>
                 <span
                   onClick={() => router.push("/admin/residents")}
-                  className="h-9 items-center flex justify-between mx-auto w-48"
+                  className="cursor-pointer h-9 items-center flex justify-between mx-auto w-48"
                 >
                   Search Residents
                   <Search className="w-4 mr-2" />
@@ -70,7 +70,7 @@ export default function Header({ initialUser }: { initialUser: User | null }) {
               <DropdownMenuItem>
                 <span
                   onClick={() => router.push("/admin/add-residents")}
-                  className="h-9 items-center flex justify-between mx-auto w-full"
+                  className="cursor-pointer h-9 items-center flex justify-between mx-auto w-full"
                 >
                   Add New Residents
                   <Plus className="w-4 mr-2" />
@@ -79,7 +79,7 @@ export default function Header({ initialUser }: { initialUser: User | null }) {
               <DropdownMenuItem>
                 <span
                   onClick={() => router.push("/admin/add")}
-                  className="h-9 items-center flex justify-between mx-auto w-full"
+                  className="cursor-pointer h-9 items-center flex justify-between mx-auto w-full"
                 >
                   Add New Admin
                   <UserRoundPlus className="w-6" />

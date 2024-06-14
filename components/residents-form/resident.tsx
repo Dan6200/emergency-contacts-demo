@@ -19,7 +19,11 @@ import { toast } from "@/components/ui/use-toast";
 import { redirect, useRouter } from "next/navigation";
 import { useUserSession } from "@/auth/user";
 import { useLayoutEffect, useState } from "react";
-import type { ResidentData } from "@/types/resident";
+import type {
+  EmergencyContact,
+  Resident,
+  ResidentData,
+} from "@/types/resident";
 import { isError } from "util";
 import { Minus, Plus } from "lucide-react";
 
@@ -41,7 +45,7 @@ const ResidentFormSchema = z.object({
 });
 
 export type MutateResidents =
-  | ((resident: ResidentData) => Promise<URL>)
+  | ((resident: ResidentData) => Promise<string>)
   | ((resident: ResidentData, residentId?: string) => Promise<void>);
 
 interface ResidentFormProps {
@@ -50,24 +54,31 @@ interface ResidentFormProps {
   unit_number: string;
   mutateResidents: MutateResidents;
   residentId?: string;
+  emergency_contacts?: EmergencyContact[];
+  emergency_contact_id?: string[];
 }
 
 export function ResidentForm({
   address,
   name,
   unit_number,
+  emergency_contacts,
+  emergency_contact_id,
   mutateResidents,
   residentId,
 }: ResidentFormProps) {
   const router = useRouter();
   const [user, userLoaded] = useUserSession(null);
-  const [noOfEmContacts, setNoOfEmContacts] = useState(0);
+  const [noOfEmContacts, setNoOfEmContacts] = useState(
+    emergency_contacts?.length ?? 0
+  );
   const form = useForm<z.infer<typeof ResidentFormSchema>>({
     resolver: zodResolver(ResidentFormSchema),
     defaultValues: {
       address,
       name,
       unit_number,
+      emergency_contacts,
     },
   });
 
@@ -83,18 +94,25 @@ export function ResidentForm({
   ) {
     try {
       if (residentId) {
-        await mutateData(data, residentId);
+        let newData = data;
+        if (emergency_contact_id) {
+          emergency_contact_id.length = noOfEmContacts;
+          newData = { ...data, emergency_contact_id } as ResidentData & {
+            emergency_contacts: EmergencyContact[];
+            emergency_contact_id: string;
+          };
+        }
+        await mutateData(newData, residentId);
         toast({
           title: "Successfully Updated Resident Information",
         });
         router.back();
       } else {
         const url = await mutateData(data).catch((err) => {
-          console.error(err);
-          throw new Error();
+          throw new Error(err);
         });
-        if (!url) throw new Error();
-        redirect(
+        if (!url) throw new Error("Failed To Add Resident Page");
+        router.push(
           `/admin/residents/print-qr/${encodeURIComponent(url.toString())}`
         );
       }
@@ -106,7 +124,7 @@ export function ResidentForm({
   return (
     <Form {...form}>
       <h1 className="font-semibold mb-8 text-2xl text-center">
-        Add A New Resident
+        {!residentId ? "Add A New Resident" : "Edit Resident Information"}
       </h1>
       <form
         onSubmit={form.handleSubmit(onSubmit.bind(null, mutateResidents))}
@@ -156,7 +174,7 @@ export function ResidentForm({
         />
         <div className="flex justify-end border-b w-full">
           <h4 className="gap-2 flex pb-4">
-            Add Emergency Contacts
+            {(noOfEmContacts < 1 ? "Add " : "") + "Emergency Contacts"}
             <span
               onClick={() =>
                 setNoOfEmContacts(
@@ -185,7 +203,7 @@ export function ResidentForm({
             <div className="space-y-6">
               <FormField
                 control={form.control}
-                name={`emergency_contacts.${i + 1}.name`}
+                name={`emergency_contacts.${i}.name`}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
@@ -199,7 +217,7 @@ export function ResidentForm({
               />
               <FormField
                 control={form.control}
-                name={`emergency_contacts.${i + 1}.relationship`}
+                name={`emergency_contacts.${i}.relationship`}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Relationship</FormLabel>
@@ -215,7 +233,7 @@ export function ResidentForm({
               />
               <FormField
                 control={form.control}
-                name={`emergency_contacts.${i + 1}.phone_number`}
+                name={`emergency_contacts.${i}.phone_number`}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>

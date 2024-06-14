@@ -9,6 +9,7 @@ export interface ResidentData {
   name: string;
   address: string;
   unit_number: string;
+  id?: string;
   emergency_contact_id?: string[];
   emergency_contacts?: EmergencyContact[];
 }

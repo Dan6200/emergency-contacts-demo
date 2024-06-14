@@ -9,16 +9,20 @@ import debounce from "lodash.debounce";
 export default function QRFetchResidents() {
   const [camOn, setCamOn] = useState(false),
     [isQR, setIsQR] = useState(false),
+    [isSmallScreen] = useState(self.innerWidth < 1024),
     [fetchResidentErr, setFetchResidentErr] = useState<string | null>(null);
+
   const router = useRouter();
   const Id = "qr-video";
   // Set Fallback elements when camera does not show
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({
-        video: { facingMode: "environment" },
-      })
-      .then((stream) => setCamOn(stream.active));
+    if (isSmallScreen) {
+      navigator.mediaDevices
+        .getUserMedia({
+          video: { facingMode: "environment" },
+        })
+        .then((stream) => setCamOn(stream.active));
+    }
   }, []);
   // Error Message to UI
   useEffect(() => {
@@ -87,7 +91,9 @@ export default function QRFetchResidents() {
           <p className="text-lg capitalize">
             <span className="font-semibold">Camera is off.</span>
             <span className="block">
-              Please turn on camera and refresh to scan QR code.
+              {isSmallScreen
+                ? "Please turn on camera and refresh to scan QR code."
+                : "Only Available to Mobile phones and Tablets"}
             </span>
           </p>
         </div>

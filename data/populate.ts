@@ -1,3 +1,5 @@
+export {};
+/*
 import { createReadStream } from "fs";
 import * as fastcsv from "fast-csv";
 import {
@@ -123,3 +125,4 @@ const isTypeEmergencyContact = (data: any): data is EmergencyContact =>
   "residents" in data &&
   "addresses" in data &&
   "unit_number" in data;
+	*/

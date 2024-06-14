@@ -6,7 +6,7 @@ export default async function Residents() {
     throw new Error("Failed to Retrieve Residents Data:\n" + e);
   });
   return (
-    <main className="bg-background text-center mx-auto py-8">
+    <main className="sm:container bg-background text-center mx-auto py-8">
       <h1 className="text-2xl font-semibold w-4/5 mx-auto">
         Search Resident Information
       </h1>
