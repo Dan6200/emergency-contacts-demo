@@ -33,7 +33,7 @@ export async function signInWithGoogle() {}
 // createUserWithEmailAndPassword(auth, email, password);
 
 export async function signOut() {
-  return auth.signOut().catch(function (e) {
+  auth.signOut().catch(function (e) {
     throw new Error("Error signing out with Google: " + e);
   });
 }

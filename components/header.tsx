@@ -1,8 +1,7 @@
 "use client";
 import React, { MouseEventHandler, MouseEvent } from "react";
 import Link from "next/link";
-import { User } from "firebase/auth";
-import { signOut, signInWithGoogle } from "@/firebase/auth";
+import { signOut } from "@/firebase/auth";
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -15,17 +14,20 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { Plus, Search, UserRound, UserRoundPlus } from "lucide-react";
-import { useUserSession } from "@/auth/user";
 import { useRouter } from "next/navigation";
+import { useAtom } from "jotai";
+import userAtom from "@/atoms/user";
 
-export default function Header({ initialUser }: { initialUser: User | null }) {
+export default function Header() {
   const router = useRouter();
-  const [user] = useUserSession(initialUser);
+  const [user, setUser] = useAtom(userAtom);
+  console.log(user);
 
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
     event: MouseEvent
   ) => {
     event.preventDefault();
+    setUser(null);
     return signOut();
   };
 
@@ -78,7 +80,7 @@ export default function Header({ initialUser }: { initialUser: User | null }) {
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <span
-                  onClick={() => router.push("/admin/add")}
+                  onClick={() => router.push("/admin/new")}
                   className="cursor-pointer h-9 items-center flex justify-between mx-auto w-full"
                 >
                   Add New Admin

@@ -236,22 +236,34 @@ export async function getAllResidentsDataLite() {
   }
 }
 
-export async function signUp(data: { email: string; password: string }) {
+export async function addAdmin(data: { email: string; password: string }) {
   return createUserWithEmailAndPasswordWrapper(data.email, data.password)
-    .then(() => ({ success: true, message: "User Created Successfully" }))
+    .then((user) => ({
+      result: JSON.stringify(user),
+      success: true,
+      message: "User Created Successfully",
+    }))
     .catch((error) => {
+      let msg = "";
+      if (error.message.match(/(email-already-in-use)/g))
+        msg = "Email Already In Use";
       return {
         success: false,
-        message: "Failed to Create User",
+        message: "Failed to Create User: " + msg,
       };
     });
 }
 
 export async function signIn(data: { email: string; password: string }) {
   return signInWithEmailAndPasswordWrapper(data.email, data.password)
-    .then(() => ({ success: true, message: "User Signed In Successfully" }))
+    .then((user) => ({
+      result: JSON.stringify(user),
+      success: true,
+      message: "User Signed In Successfully",
+    }))
     .catch((error) => {
       return {
+        result: error.message,
         message: "Failed to Sign In User.",
         success: false,
       };

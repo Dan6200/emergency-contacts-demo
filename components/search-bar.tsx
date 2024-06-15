@@ -79,11 +79,13 @@ export function SearchBar({
   return (
     <Form {...form}>
       <form className="w-full p-4 overflow-x-scroll gap-6 flex flex-col border-2 rounded-md">
-        <span>
-          <h3 className="text-base capitalize">
+        <span className="flex flex-col gap-2 md:gap-5">
+          <h3 className="text-base capitalize md:text-xl">
             Enter To Search for resident.
           </h3>
-          <p className="text-sm capitalize">can add more search fields</p>
+          <p className="text-sm text-foreground/50 capitalize">
+            can add more search fields
+          </p>
         </span>
         <FormField
           control={form.control}

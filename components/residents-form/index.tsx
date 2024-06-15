@@ -26,6 +26,8 @@ import type {
 } from "@/types/resident";
 import { isError } from "util";
 import { Minus, Plus } from "lucide-react";
+import { useAtomValue } from "jotai";
+import userAtom from "@/atoms/user";
 
 const ResidentFormSchema = z.object({
   name: z.string().min(2, {
@@ -73,7 +75,7 @@ export function ResidentForm({
   residentId,
 }: ResidentFormProps) {
   const router = useRouter();
-  const [user, userLoaded] = useUserSession(null);
+  const admin = useAtomValue(userAtom);
   const [noOfEmContacts, setNoOfEmContacts] = useState(
     emergency_contacts?.length ?? 0
   );
@@ -88,10 +90,10 @@ export function ResidentForm({
   });
 
   useLayoutEffect(() => {
-    if (userLoaded && !user) {
+    if (!admin) {
       redirect("/");
     }
-  }, [user, userLoaded]);
+  }, [admin]);
 
   async function onSubmit(
     mutateData: MutateResidents,
