@@ -35,10 +35,8 @@ export default async function EditResidentPage({
   );
 }
 
-/*
 export async function generateStaticParams() {
   return getAllResidentsData().catch((e) => {
     throw new Error("Failed To Generate Static Pages.\n\t", e);
   });
 }
-	 */
