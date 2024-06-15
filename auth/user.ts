@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 export function useUserSession(initialUser: User | null) {
   // The initial user comes from the server via a server component
   const [user, setUser] = useState(initialUser);
-  console.log("user session hook", user);
   const [userLoaded, setUserLoaded] = useState(false);
   const router = useRouter();
 

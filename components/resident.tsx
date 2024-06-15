@@ -1,6 +1,7 @@
 "use client";
-import { useUserSession } from "@/auth/user";
+import userAtom from "@/atoms/user";
 import type { Resident, ResidentData } from "@/types/resident";
+import { useAtomValue } from "jotai";
 import { PhoneCall } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,11 +18,11 @@ export default function Resident({
 }) {
   const emergencyContacts = resident.emergency_contacts;
   const emConIds = resident.emergency_contact_id;
-  const admin = useUserSession(null),
+  const admin = useAtomValue(userAtom),
     router = useRouter();
 
   return (
-    <main className="bg-background flex flex-col gap-5 container md:px-16 mx-auto md:my-16 text-center py-8 h-fit">
+    <main className="bg-background flex flex-col gap-5 container md:px-16 mx-auto py-32 text-center h-fit">
       <section className="flex flex-col gap-2 mb-8">
         <h1 className="text-5xl mb-4 font-bold">{resident.name}</h1>
         <p className="font-semibold">Room: {resident.unit_number}</p>
@@ -58,7 +59,7 @@ export default function Resident({
             </Link>
           ))}
       </section>
-      <section className="mb-8 flex flex-col md:flex-row md:justify-center md:flex-wrap gap-6 w-full md:w-4/5 lg:w-2/3 mx-auto">
+      <section className="my-8 flex flex-col md:flex-row md:justify-center md:flex-wrap gap-6 w-full md:w-4/5 lg:w-2/3 mx-auto">
         {admin && (
           <div className="flex gap-5 flex-wrap items-center justify-center md:w-2/3">
             <Button

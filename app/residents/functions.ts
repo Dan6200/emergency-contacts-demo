@@ -127,7 +127,7 @@ export async function mutateResidentData(
   resident: ResidentData
 ): Promise<
   | { result?: string; message: string; success: boolean }
-  | { message?: string; success: boolean }
+  | { result?: string; message: string; success: boolean }
 >;
 export async function mutateResidentData(
   resident: ResidentData,

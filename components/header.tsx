@@ -21,7 +21,6 @@ import userAtom from "@/atoms/user";
 export default function Header() {
   const router = useRouter();
   const [user, setUser] = useAtom(userAtom);
-  console.log(user);
 
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
     event: MouseEvent
@@ -32,7 +31,7 @@ export default function Header() {
   };
 
   return (
-    <header className="flex border-b items-center justify-between px-4 py-2">
+    <header className="fixed w-full bg-background/80 flex border-b items-center justify-between px-4 py-2">
       <Link href="/">
         <Image
           width={100}

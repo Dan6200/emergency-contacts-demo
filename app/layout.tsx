@@ -19,8 +19,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* <body> */}
-        <Header initialUser={null} />
+        <Header />
         {children}
         <Toaster />
         <Analytics />
