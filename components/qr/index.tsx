@@ -59,12 +59,14 @@ export default function QRFetchResidents() {
                     router.push(url.toString()); // may need need to use javascript to visit link if external
                   })
                   .catch((e) => {
-                    if (e.status === 404)
-                      setFetchResidentErr("Resident Does Not Exist");
-                    setFetchResidentErr("Failed to Retrieve Resident Info");
+                    if (e.response.status === 404)
+                      setFetchResidentErr("Resident Does Not Exist: " + e);
+                    setFetchResidentErr(
+                      "Failed to Retrieve Resident Info: " + e
+                    );
                   });
               } catch (e) {
-                setFetchResidentErr("Failed to Retrieve Resident Info");
+                setFetchResidentErr("Failed to Retrieve Resident Info: " + e);
                 console.error(e);
               }
             }
