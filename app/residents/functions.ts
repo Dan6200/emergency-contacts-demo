@@ -21,6 +21,7 @@ import {
   Resident,
   ResidentData,
 } from "@/types/resident";
+import { revalidatePath } from "next/cache";
 
 export async function addNewResident(resident: ResidentData) {
   try {
@@ -40,6 +41,8 @@ export async function addNewResident(resident: ResidentData) {
     const residentColRef = await collectionWrapper(db, "residents");
     const { emergency_contacts, ...newResident } = resident;
     const residentsDocRef = await addDocWrapper(residentColRef, newResident);
+    revalidatePath("/admin/residents");
+    revalidatePath("/residents/[id]", "page");
     return {
       result: new URL(
         `/residents/${residentsDocRef.id}`,
@@ -72,6 +75,8 @@ export async function deleteResidentData(
     }
     const residentDocRef = await docWrapper(db, "residents", residentId);
     await deleteDocWrapper(residentDocRef);
+    revalidatePath("/admin/residents");
+    revalidatePath("/residents/[id]", "page");
     return { success: true, message: "Successfully Deleted Resident" };
   } catch (error) {
     return {
@@ -114,6 +119,8 @@ export async function updateResident(
     }
     const residentDocRef = await docWrapper(db, "residents", residentId);
     await updateDocWrapper(residentDocRef, resident);
+    revalidatePath("/admin/residents");
+    revalidatePath("/residents/[id]", "page");
     return { success: true };
   } catch (error) {
     return {
