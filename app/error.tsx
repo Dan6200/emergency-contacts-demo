@@ -13,7 +13,7 @@ export default function Error({
 }) {
   const [show, setShow] = useState(false);
   return (
-    <main className="flex gap-10 flex-col container sm:w-4/5 max-h-screen my-8 md:my-16">
+    <main className="flex gap-10 flex-col container sm:w-4/5 max-h-screen py-32">
       <h1 className="text-3xl font-semibold mx-auto text-center">
         Sorry, We've Run Into An Unexpected Error
       </h1>
