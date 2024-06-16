@@ -22,6 +22,7 @@ import {
   ResidentData,
 } from "@/types/resident";
 import { revalidatePath } from "next/cache";
+import { notFound } from "next/navigation";
 
 export async function addNewResident(resident: ResidentData) {
   try {
@@ -153,8 +154,9 @@ export async function getResidentData(residentId: string) {
     const residentsDocRef = await docWrapper(db, "residents", residentId);
     const residentsSnap = await getDocWrapper(residentsDocRef);
     const residentData = residentsSnap.data();
+    // if (!residentData) throw notFound();
     if (!isTypeResident(residentData))
-      throw new Error("Object is not of type Resident -- Line:105");
+      throw new Error("Object is not of type Resident  -- Tag:16");
     const emContactData: EmergencyContact[] = [];
     for (const emContactId of residentData.emergency_contact_id) {
       const emContactsDoc = await docWrapper(
@@ -166,7 +168,7 @@ export async function getResidentData(residentId: string) {
       const singleEmConData = emContactsSnap.data();
 
       if (!isTypeEmergencyContact(singleEmConData))
-        throw new Error("Object is not of type Emergency Contact -- Line:116");
+        throw new Error("Object is not of type Emergency Contact  -- Tag:23");
       emContactData.push(singleEmConData);
     }
     const resident = {
@@ -175,7 +177,7 @@ export async function getResidentData(residentId: string) {
       emergency_contacts: emContactData,
     };
     if (!isTypeResident(resident))
-      throw new Error("Object is not of type Resident -- Line:125");
+      throw new Error("Object is not of type Resident  -- Tag:17");
     return resident;
   } catch (error) {
     throw new Error("Failed to fetch resident Data.\n\t\t" + error);
@@ -194,7 +196,7 @@ export async function getAllResidentsData() {
     for (const doc of residentsData.docs) {
       let resident = doc.data();
       if (!isTypeResident(resident))
-        throw new Error("Object is not of type Resident");
+        throw new Error("Object is not of type Resident -- Tag:9");
       const emContactData: EmergencyContact[] = [];
       for (const emContactId of resident.emergency_contact_id) {
         const emContactsDoc = await docWrapper(
@@ -205,7 +207,7 @@ export async function getAllResidentsData() {
         const emContactsSnap = await getDocWrapper(emContactsDoc);
         const singleEmConData = emContactsSnap.data();
         if (!isTypeEmergencyContact(singleEmConData))
-          throw new Error("Object is not of type Emergency Contact");
+          throw new Error("Object is not of type Emergency Contact -- Tag:18");
         emContactData.push(singleEmConData);
       }
       resident = {
@@ -214,7 +216,7 @@ export async function getAllResidentsData() {
         emergency_contacts: emContactData,
       };
       if (!isTypeResident(resident))
-        throw new Error("Object is not of type Resident");
+        throw new Error("Object is not of type Resident -- Tag:10");
       residents.push(resident);
     }
     return residents;
@@ -232,7 +234,7 @@ export async function getAllResidentsDataLite() {
     return residentsData.docs.map((doc) => {
       const resident = doc.data();
       if (!isTypeResident(resident))
-        throw new Error("Object is not of type Resident -- Line:97");
+        throw new Error("Object is not of type Resident  -- Tag:19");
       return {
         ...resident,
         id: doc.id,

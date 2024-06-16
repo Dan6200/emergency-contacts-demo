@@ -36,11 +36,10 @@ type Authenticate = (data: { email: string; password: string }) => Promise<{
 }>;
 
 interface SignInForm {
-  signIn?: Authenticate;
-  signUp?: Authenticate;
+  signIn: Authenticate;
 }
 
-export function SignInForm({ signIn, signUp }: SignInForm) {
+export function SignInForm({ signIn }: SignInForm) {
   const router = useRouter();
   const form = useForm<z.infer<typeof SignInFormSchema>>({
     resolver: zodResolver(SignInFormSchema),
@@ -58,26 +57,18 @@ export function SignInForm({ signIn, signUp }: SignInForm) {
   }, [user]);
 
   async function onSubmit(
-    { signIn, signUp }: { signIn?: Authenticate; signUp?: Authenticate },
+    signIn: Authenticate,
     data: z.infer<typeof SignInFormSchema>
   ) {
-    if (signIn && signUp)
-      throw new Error("Cannot sign up and sign in at the same time");
-    if (signIn) {
-      const { result, message, success } = await signIn(data);
-      if (success) setUser(JSON.parse(result));
-      toast({ title: message, variant: success ? "default" : "destructive" });
-    }
-    if (signUp) {
-      const { message, success } = await signUp(data);
-      toast({ title: message, variant: success ? "default" : "destructive" });
-    }
+    const { result, message, success } = await signIn(data);
+    if (success) setUser(JSON.parse(result));
+    toast({ title: message, variant: success ? "default" : "destructive" });
   }
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit.bind(null, { signIn, signUp }))}
+        onSubmit={form.handleSubmit(onSubmit.bind(null, signIn))}
         className="w-full sm:w-4/5 lg:w-3/4 space-y-6"
       >
         <FormField

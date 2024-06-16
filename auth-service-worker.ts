@@ -12,7 +12,7 @@ self.addEventListener("install", (event) => {
 
   if (!serializedFirebaseConfig) {
     throw new Error(
-      "Firebase Config object not found in service worker query string."
+      "Firebase Config object not found in service worker query string. -- Tag:1"
     );
   }
 
@@ -24,7 +24,8 @@ const isFetchEvent = (event: Event): event is FetchEvent => "request" in event;
 
 self.addEventListener("fetch", (event: Event) => {
   console.log("fetch event fired");
-  if (!isFetchEvent(event)) throw new Error("Event must be of type FetchEvent");
+  if (!isFetchEvent(event))
+    throw new Error("Event must be of type FetchEvent -- Tag:21");
   const { origin } = new URL(event.request.url);
   if (origin !== self.location.origin) return;
   event.respondWith(fetchWithFirebaseHeaders(<NextRequest>event.request));

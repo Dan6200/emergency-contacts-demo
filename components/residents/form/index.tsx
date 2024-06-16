@@ -17,17 +17,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { redirect, useRouter } from "next/navigation";
-import { useUserSession } from "@/auth/user";
 import { useLayoutEffect, useState } from "react";
-import type {
-  EmergencyContact,
-  Resident,
-  ResidentData,
-} from "@/types/resident";
-import { isError } from "util";
+import type { EmergencyContact, ResidentData } from "@/types/resident";
 import { Minus, Plus } from "lucide-react";
 import { useAtomValue } from "jotai";
 import userAtom from "@/atoms/user";
+import { isError } from "@/app/utils";
 
 const ResidentFormSchema = z.object({
   name: z.string().min(2, {
@@ -39,9 +34,9 @@ const ResidentFormSchema = z.object({
   }),
   emergency_contacts: z.array(
     z.object({
-      name: z.string(),
-      relationship: z.string(),
-      phone_number: z.string(),
+      name: z.string().min(2),
+      relationship: z.string().min(2),
+      phone_number: z.string().min(9),
     })
   ),
 });
@@ -77,7 +72,7 @@ export function ResidentForm({
   const router = useRouter();
   const admin = useAtomValue(userAtom);
   const [noOfEmContacts, setNoOfEmContacts] = useState(
-    emergency_contacts?.length ?? 0
+    emergency_contacts?.length ?? 1
   );
   const form = useForm<z.infer<typeof ResidentFormSchema>>({
     resolver: zodResolver(ResidentFormSchema),
@@ -187,7 +182,7 @@ export function ResidentForm({
         />
         <div className="flex justify-end border-b w-full">
           <h4 className="gap-2 flex pb-4">
-            {(noOfEmContacts < 1 ? "Add " : "") + "Emergency Contacts"}
+            {(noOfEmContacts < 2 ? "Add " : "") + "Emergency Contacts"}
             <span
               onClick={() =>
                 setNoOfEmContacts(
@@ -197,11 +192,11 @@ export function ResidentForm({
             >
               <Plus />
             </span>
-            {noOfEmContacts > 0 && (
+            {noOfEmContacts > 1 && (
               <span
                 onClick={() =>
                   setNoOfEmContacts(
-                    noOfEmContacts > 0 ? noOfEmContacts - 1 : noOfEmContacts
+                    noOfEmContacts > 1 ? noOfEmContacts - 1 : noOfEmContacts
                   )
                 }
               >
@@ -212,7 +207,9 @@ export function ResidentForm({
         </div>
         {new Array(noOfEmContacts).fill(null).map((_, i) => (
           <div key={i} className="mb-8 border-b py-4">
-            <h3 className="font-semibold mb-8">Emergency Contact {i + 1}</h3>
+            <h3 className="font-semibold mb-8">
+              Emergency Contact {i > 0 ? i + 1 : ""}
+            </h3>
             <div className="space-y-6">
               <FormField
                 control={form.control}
