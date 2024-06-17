@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { Plus, Search, UserRound, UserRoundPlus } from "lucide-react";
+import { Plus, QrCode, Search, UserRound, UserRoundPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import userAtom from "@/atoms/user";
@@ -54,7 +54,7 @@ export default function Header() {
             <UserRound className="mx-auto" />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="text-center gap-5 p-2 md:gap-5 bg-background border-2 mr-4 w-[80vw] sm:w-[60vw] md:w-[40vw] lg:w-[30vw]">
+          <DropdownMenuContent className="text-center gap-5 p-2 md:gap-5 bg-background border-2 mr-4 w-[60vw] sm:w-[40vw] md:w-[20vw]">
             <DropdownMenuLabel>Admin</DropdownMenuLabel>
 
             <DropdownMenuSeparator />
@@ -91,8 +91,8 @@ export default function Header() {
                   onClick={() => router.push("/admin/residents/print-qr-all")}
                   className="cursor-pointer h-9 items-center flex justify-between capitalize mx-auto w-full"
                 >
-                  Print QR Code for all residents
-                  <UserRoundPlus className="w-6" />
+                  Print QR Codes
+                  <QrCode className="w-6" />
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem>

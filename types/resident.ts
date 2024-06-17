@@ -10,7 +10,7 @@ export interface ResidentData {
   address: string;
   unit_number: string;
   id?: string;
-  emergency_contact_id?: string[];
+  emergency_contact_ids?: string[];
   emergency_contacts?: EmergencyContact[];
 }
 
@@ -19,7 +19,7 @@ export interface Resident {
   name: string;
   address: string;
   unit_number: string;
-  emergency_contact_id: string[];
+  emergency_contact_ids: string[];
 }
 
 export const isTypeResident = (data: unknown): data is Resident =>

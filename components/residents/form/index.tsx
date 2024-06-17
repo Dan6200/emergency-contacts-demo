@@ -57,7 +57,7 @@ interface ResidentFormProps {
   mutateResidents: MutateResidents;
   residentId?: string;
   emergency_contacts?: EmergencyContact[];
-  emergency_contact_id?: string[];
+  emergency_contact_ids?: string[];
 }
 
 export function ResidentForm({
@@ -65,7 +65,7 @@ export function ResidentForm({
   name,
   unit_number,
   emergency_contacts,
-  emergency_contact_id,
+  emergency_contact_ids,
   mutateResidents,
   residentId,
 }: ResidentFormProps) {
@@ -97,11 +97,11 @@ export function ResidentForm({
     try {
       if (residentId) {
         let newData = data;
-        if (emergency_contact_id) {
-          emergency_contact_id.length = noOfEmContacts;
-          newData = { ...data, emergency_contact_id } as ResidentData & {
+        if (emergency_contact_ids) {
+          emergency_contact_ids.length = noOfEmContacts;
+          newData = { ...data, emergency_contact_ids } as ResidentData & {
             emergency_contacts: EmergencyContact[];
-            emergency_contact_id: string;
+            emergency_contact_ids: string;
           };
         }
         const { message, success } = await mutateData(newData, residentId);

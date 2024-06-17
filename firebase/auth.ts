@@ -1,3 +1,4 @@
+"use server";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -6,7 +7,7 @@ import {
 } from "firebase/auth";
 import { auth } from "./config";
 
-export function onAuthStateChanged(cb: (authUser: User | null) => void) {
+export async function onAuthStateChanged(cb: (authUser: User | null) => void) {
   return _onAuthStateChanged(auth, cb);
 }
 

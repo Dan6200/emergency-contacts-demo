@@ -17,7 +17,7 @@ export default function Resident({
   children: ReactNode;
 }) {
   const emergencyContacts = resident.emergency_contacts;
-  const emConIds = resident.emergency_contact_id;
+  const emConIds = resident.emergency_contact_ids;
   const admin = useAtomValue(userAtom),
     router = useRouter();
 

@@ -38,7 +38,7 @@ const db = initializeFirestore(app, {
 createWriteStream(file)
   .pipe(fastcsv.parse({ headers: true }))
   .on("data", async (row) => {
-    const [ecError, ecRef] = collectionWrapper(db, "emergency-contacts");
+    const [ecError, ecRef] = collectionWrapper(db, "emergency_contacts");
     if (ecRef === null) throw new Error(<string>ecError);
     if (!isTypeEmergencyContact(row)) {
       console.dir(row);
@@ -67,7 +67,7 @@ createWriteStream(file)
         if (isTypeResidents(docData)) {
           const updateErr = await updateDocWrapper(doc.ref, {
             emergency_contact_id: [
-              ...(docData.emergency_contact_id ?? []),
+              ...(docData.emergency_contact_ids ?? []),
               ecResult.id,
             ],
           });
@@ -83,7 +83,7 @@ interface Residents {
   name: string;
   address: string;
   unit_number: string;
-  emergency_contact_id?: string[];
+  emergency_contact_ids?: string[];
 }
 
 interface EmergencyContact {
