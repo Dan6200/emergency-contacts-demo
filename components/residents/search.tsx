@@ -26,7 +26,7 @@ export default function Search({ residents }: SearchProps) {
   }, [admin]);
 
   return (
-    <main className="w-full sm:w-4/5 md:w-3/5 px-[5vw] sm:px-8 mx-auto py-8 max-h-screen">
+    <main className="w-full sm:w-4/5 md:w-3/5 px-[5vw] sm:px-8 mx-auto py-8 h-[200vh] md:max-h-screen">
       <SearchBar {...{ residents, setMatchingResidents, setOpen }} />
       {matchingResidents && open && (
         <SearchSuggestions {...{ matchingResidents, setOpen }} />

@@ -74,3 +74,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+html {
+  height: 100%;
+  overflow: auto;
+}
+body {
+  height: 100%;
+}

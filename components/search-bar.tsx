@@ -14,7 +14,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Resident } from "@/types/resident";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Minus, Plus } from "lucide-react";
 
 const ResidentSchema = z.object({
@@ -40,6 +47,32 @@ export function SearchBar({
       address: "",
     },
   });
+
+  let isSmallScreen = true;
+  if (typeof self !== "undefined") isSmallScreen = self.innerWidth < 1024;
+
+  const addressOnFocus = () => {
+    () => setOpen(true);
+    if (isSmallScreen && addressRef && addressRef.current)
+      addressRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const unitNumOnFocus = () => {
+    () => setOpen(true);
+    if (isSmallScreen && unitNumRef && unitNumRef.current)
+      unitNumRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const nameOnFocus = () => {
+    () => setOpen(true);
+    if (isSmallScreen && nameRef && nameRef.current)
+      nameRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const nameRef = useRef<HTMLInputElement | null>(null),
+    addressRef = useRef<HTMLInputElement | null>(null),
+    unitNumRef = useRef<HTMLInputElement | null>(null);
+
   const {
     setError,
     watch,
@@ -101,10 +134,11 @@ export function SearchBar({
                 </FormLabel>
                 <FormControl>
                   <Input
-                    onFocus={() => setOpen(true)}
+                    onFocus={nameOnFocus}
                     {...field}
+                    ref={nameRef}
                     type="text"
-                    className="p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="scroll-mt-20 p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 </FormControl>
               </FormItem>
@@ -137,9 +171,10 @@ export function SearchBar({
                   <FormControl>
                     <Input
                       {...field}
-                      onFocus={() => setOpen(true)}
+                      ref={addressRef}
+                      onFocus={addressOnFocus}
                       type="text"
-                      className="p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      className="scroll-mt-20 p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                   </FormControl>
                   <FormMessage />
@@ -167,9 +202,10 @@ export function SearchBar({
                   <FormControl>
                     <Input
                       {...field}
-                      onFocus={() => setOpen(true)}
+                      ref={unitNumRef}
+                      onFocus={unitNumOnFocus}
                       type="text"
-                      className="p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      className="scroll-mt-20 p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                   </FormControl>
                   <FormMessage />
