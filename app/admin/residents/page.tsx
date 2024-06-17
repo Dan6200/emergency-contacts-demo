@@ -3,7 +3,7 @@ import Search from "@/components/residents/search";
 
 export default async function Residents() {
   const residents = await getAllResidentsDataLite().catch((e) => {
-    throw new Error("Failed to Retrieve Residents Data:\n" + e);
+    throw new Error("Failed to Retrieve Residents Data -- Tag:14.\n\t" + e);
   });
   return (
     <main className="sm:container bg-background text-center mx-auto py-32">

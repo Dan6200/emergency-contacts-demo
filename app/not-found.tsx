@@ -1,17 +1,24 @@
 "use client";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useLayoutEffect } from "react";
 
 export default function NotFound() {
+  const router = useRouter();
   useLayoutEffect(() => {
     let t: any;
-    t = setTimeout(() => redirect("/"), 1000);
+    t = setTimeout(() => {
+      router.push("/");
+    }, 2000);
     return () => t;
   }, []);
   return (
-    <main className="bg-background font-semibold w-4/5 text-center mx-auto py-32">
-      <h1 className="text-4xl mb-4">LinkID</h1>
-      <p className="text-3xl">This page does not exist</p>
+    <main className="flex gap-5 md:gap-10 flex-col container sm:w-4/5 py-48 px-8 md:px-32">
+      <h1 className="text-5xl font-semibold mb-8 mx-auto text-center">
+        LinkID
+      </h1>
+      <h3 className="text-2xl text-center capitalize">
+        The requested resource could not be found
+      </h3>
     </main>
   );
 }

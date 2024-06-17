@@ -1,4 +1,4 @@
-import QRFetchResidents from "@/components/qr";
+import QRFetchResidents from "@/components/qr-reader";
 
 export default function Home() {
   return (

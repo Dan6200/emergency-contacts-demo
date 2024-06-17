@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { Plus, Search, UserRound, UserRoundPlus } from "lucide-react";
+import { Plus, QrCode, Search, UserRound, UserRoundPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import userAtom from "@/atoms/user";
@@ -54,7 +54,7 @@ export default function Header() {
             <UserRound className="mx-auto" />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="text-center gap-5 p-2 md:gap-5 bg-background border-2 mr-4">
+          <DropdownMenuContent className="text-center gap-5 p-2 md:gap-5 bg-background border-2 mr-4 w-[60vw] sm:w-[40vw] md:w-[20vw]">
             <DropdownMenuLabel>Admin</DropdownMenuLabel>
 
             <DropdownMenuSeparator />
@@ -62,7 +62,7 @@ export default function Header() {
               <DropdownMenuItem>
                 <span
                   onClick={() => router.push("/admin/residents")}
-                  className="cursor-pointer h-9 items-center flex justify-between mx-auto w-48"
+                  className="cursor-pointer h-9 items-center flex justify-between mx-auto w-full"
                 >
                   Search Residents
                   <Search className="w-4 mr-2" />
@@ -87,6 +87,15 @@ export default function Header() {
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem>
+                <span
+                  onClick={() => router.push("/admin/residents/print-qr-all")}
+                  className="cursor-pointer h-9 items-center flex justify-between capitalize mx-auto w-full"
+                >
+                  Print QR Codes
+                  <QrCode className="w-6" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
                 <Button onClick={handleSignOut} className="w-full mx-auto">
                   Sign Out
                 </Button>
@@ -99,7 +108,7 @@ export default function Header() {
           <Button className="capitalize hidden md:flex">
             sign in as admin
           </Button>
-          <Button className="capitalize md:hidden">sign in</Button>
+          <Button className="capitalize md:hidden">admin</Button>
         </Link>
       )}
     </header>

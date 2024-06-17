@@ -22,21 +22,22 @@ import {
   ResidentData,
 } from "@/types/resident";
 import { revalidatePath } from "next/cache";
+import { notFound } from "next/navigation";
 
 export async function addNewResident(resident: ResidentData) {
   try {
     const { emergency_contacts: emergencyContacts } = resident;
-    resident.emergency_contact_id = resident.emergency_contact_id ?? [];
+    resident.emergency_contact_ids = resident.emergency_contact_ids ?? [];
     if (emergencyContacts && emergencyContacts.length)
       for (const contact of emergencyContacts) {
-        const contactColRef = await collectionWrapper(db, "emergency-contacts");
+        const contactColRef = await collectionWrapper(db, "emergency_contacts");
         const contactDocRef = await addDocWrapper(contactColRef, contact);
         if (!contactDocRef.id)
           return {
             message: "Failed to Add Emergency Contact Info.",
             success: false,
           };
-        resident.emergency_contact_id.push(contactDocRef.id);
+        resident.emergency_contact_ids.push(contactDocRef.id);
       }
     const residentColRef = await collectionWrapper(db, "residents");
     const { emergency_contacts, ...newResident } = resident;
@@ -64,11 +65,11 @@ export async function deleteResidentData(
   residentId: string
 ) {
   try {
-    const { emergency_contact_id: emergencyContactIds } = residentData;
+    const { emergency_contact_ids: emergencyContactIds } = residentData;
     if (emergencyContactIds) {
       Promise.all(
         emergencyContactIds.map(async (id) => {
-          const contactDocRef = await docWrapper(db, "emergency-contacts", id);
+          const contactDocRef = await docWrapper(db, "emergency_contacts", id);
           await deleteDocWrapper(contactDocRef);
         })
       );
@@ -91,15 +92,15 @@ export async function updateResident(
   residentId: string
 ) {
   try {
-    const { emergency_contacts, emergency_contact_id } = resident;
+    const { emergency_contacts, emergency_contact_ids } = resident;
     if (
       emergency_contacts &&
-      emergency_contact_id &&
+      emergency_contact_ids &&
       emergency_contacts.length
     ) {
       const emergencyContacts = emergency_contacts.map((ec, i) => ({
         ...ec,
-        id: emergency_contact_id[i],
+        id: emergency_contact_ids[i],
       }));
       Promise.all(
         emergencyContacts.map(async (contact) => {
@@ -110,7 +111,7 @@ export async function updateResident(
             };
           const contactDocRef = await docWrapper(
             db,
-            "emergency-contacts",
+            "emergency_contacts",
             contact.id
           );
           await updateDocWrapper(contactDocRef, contact);
@@ -153,20 +154,21 @@ export async function getResidentData(residentId: string) {
     const residentsDocRef = await docWrapper(db, "residents", residentId);
     const residentsSnap = await getDocWrapper(residentsDocRef);
     const residentData = residentsSnap.data();
+    if (!residentData) throw notFound();
     if (!isTypeResident(residentData))
-      throw new Error("Object is not of type Resident -- Line:105");
+      throw new Error("Object is not of type Resident  -- Tag:16");
     const emContactData: EmergencyContact[] = [];
-    for (const emContactId of residentData.emergency_contact_id) {
+    for (const emContactId of residentData.emergency_contact_ids) {
       const emContactsDoc = await docWrapper(
         db,
-        "emergency-contacts",
+        "emergency_contacts",
         emContactId
       );
       const emContactsSnap = await getDocWrapper(emContactsDoc);
       const singleEmConData = emContactsSnap.data();
 
       if (!isTypeEmergencyContact(singleEmConData))
-        throw new Error("Object is not of type Emergency Contact -- Line:116");
+        throw new Error("Object is not of type Emergency Contact  -- Tag:23");
       emContactData.push(singleEmConData);
     }
     const resident = {
@@ -175,7 +177,7 @@ export async function getResidentData(residentId: string) {
       emergency_contacts: emContactData,
     };
     if (!isTypeResident(resident))
-      throw new Error("Object is not of type Resident -- Line:125");
+      throw new Error("Object is not of type Resident  -- Tag:17");
     return resident;
   } catch (error) {
     throw new Error("Failed to fetch resident Data.\n\t\t" + error);
@@ -194,18 +196,18 @@ export async function getAllResidentsData() {
     for (const doc of residentsData.docs) {
       let resident = doc.data();
       if (!isTypeResident(resident))
-        throw new Error("Object is not of type Resident");
+        throw new Error("Object is not of type Resident -- Tag:9");
       const emContactData: EmergencyContact[] = [];
-      for (const emContactId of resident.emergency_contact_id) {
+      for (const emContactId of resident.emergency_contact_ids) {
         const emContactsDoc = await docWrapper(
           db,
-          "emergency-contacts",
+          "emergency_contacts",
           emContactId
         );
         const emContactsSnap = await getDocWrapper(emContactsDoc);
         const singleEmConData = emContactsSnap.data();
         if (!isTypeEmergencyContact(singleEmConData))
-          throw new Error("Object is not of type Emergency Contact");
+          throw new Error("Object is not of type Emergency Contact -- Tag:18");
         emContactData.push(singleEmConData);
       }
       resident = {
@@ -214,7 +216,7 @@ export async function getAllResidentsData() {
         emergency_contacts: emContactData,
       };
       if (!isTypeResident(resident))
-        throw new Error("Object is not of type Resident");
+        throw new Error("Object is not of type Resident -- Tag:10");
       residents.push(resident);
     }
     return residents;
@@ -232,7 +234,7 @@ export async function getAllResidentsDataLite() {
     return residentsData.docs.map((doc) => {
       const resident = doc.data();
       if (!isTypeResident(resident))
-        throw new Error("Object is not of type Resident -- Line:97");
+        throw new Error("Object is not of type Resident  -- Tag:19");
       return {
         ...resident,
         id: doc.id,

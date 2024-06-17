@@ -1,3 +1,4 @@
+"use server";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -6,7 +7,7 @@ import {
 } from "firebase/auth";
 import { auth } from "./config";
 
-export function onAuthStateChanged(cb: (authUser: User | null) => void) {
+export async function onAuthStateChanged(cb: (authUser: User | null) => void) {
   return _onAuthStateChanged(auth, cb);
 }
 
@@ -15,7 +16,7 @@ export async function createUserWithEmailAndPasswordWrapper(
   password: string
 ) {
   return createUserWithEmailAndPassword(auth, email, password).catch((e) => {
-    throw new Error("Failed to Create User.\n\t" + e);
+    throw new Error("Failed to Create User. -- Tag:3\n\t" + e);
   });
 }
 
@@ -24,7 +25,7 @@ export async function signInWithEmailAndPasswordWrapper(
   password: string
 ) {
   return signInWithEmailAndPassword(auth, email, password).catch((e) => {
-    throw new Error("Failed to sign in.\n\t" + e);
+    throw new Error("Failed to sign in -- Tag:2:\n\t" + e);
   });
 }
 

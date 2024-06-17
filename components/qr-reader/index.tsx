@@ -30,6 +30,7 @@ export default function QRFetchResidents() {
   useEffect(() => {
     let debouncedFunc: any;
     if (fetchResidentErr) {
+      console.log(fetchResidentErr);
       toast({
         title: fetchResidentErr,
         variant: "destructive",
@@ -56,17 +57,23 @@ export default function QRFetchResidents() {
                 const url = new URL(result.getText());
                 axios(url.toString(), { method: "HEAD" })
                   .then(() => {
+                    toast({
+                      title: "Retrieved Resident's Info",
+                    });
                     router.push(url.toString()); // may need need to use javascript to visit link if external
                   })
                   .catch((e) => {
-                    if (e.response.status === 404)
-                      setFetchResidentErr("Resident Does Not Exist: " + e);
+                    if (e.response?.status === 404)
+                      setFetchResidentErr("Resident Does Not Exist");
                     setFetchResidentErr(
                       "Failed to Retrieve Resident Info: " + e
                     );
+                    console.log("response", e.response);
+                    console.log("request", e.request);
+                    console.log("message", e.message);
                   });
               } catch (e) {
-                setFetchResidentErr("Failed to Retrieve Resident Info: " + e);
+                setFetchResidentErr("Resident's QR is Invalid" + e);
                 console.error(e);
               }
             }

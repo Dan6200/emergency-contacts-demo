@@ -1,6 +1,6 @@
 import { mutateResidentData } from "@/app/residents/functions";
 import { GoBackLink } from "@/components/go-back-link";
-import { ResidentForm } from "@/components/residents-form";
+import { ResidentForm } from "@/components/residents/form";
 
 export default async function AddResidentPage() {
   return (

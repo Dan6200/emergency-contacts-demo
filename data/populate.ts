@@ -1,5 +1,3 @@
-export {};
-/*
 import { createReadStream } from "fs";
 import * as fastcsv from "fast-csv";
 import {
@@ -18,7 +16,7 @@ import {
 } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import dotenv from "dotenv";
-dotenv.config({ path: "../.env.local" });
+dotenv.config({ path: ".env.local" });
 
 export const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -30,80 +28,101 @@ export const firebaseConfig = {
   measurementId: process.env.FIREBASE_MEASUREMENT_ID,
 };
 
+console.log(firebaseConfig);
+
 const app = initializeApp(firebaseConfig);
 const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
 });
 
-let file = "emergency-contacts.csv";
+let file1 = "data/emergency-contacts.csv",
+  file2 = "data/residents.csv";
 
-(async () => {
-  const  = collectionWrapper(db, "residents");
-  if (ref === null)
-    throw new Error("could not get residents collection reference: " + error);
-  const [docErr, snapshot] = await getDocsWrapper(ref as Query);
-  if (snapshot === null)
-    throw new Error("Could not retrieve docs snapshot: " + docErr);
-  Promise.all(
-    snapshot.docs.map(async (doc) => {
-      const updateErr = await updateDocWrapper(doc.ref, {
-        emergency_contact_id: [],
-      });
-      if (updateErr)
-        throw new Error("could not update residents document: " + updateErr);
-    })
-  );
-})();
-
-createReadStream(file)
+createReadStream(file2)
   .pipe(fastcsv.parse({ headers: true }))
   .on("data", async (row) => {
-    const [ecError, ecRef] = collectionWrapper(db, "emergency-contacts");
-    if (ecRef === null) throw new Error(<string>ecError);
-    if (!isTypeEmergencyContact(row)) {
-      console.dir(row);
-      throw new Error("row is not of type Emergency Contact");
+    try {
+      const colRef = await collectionWrapper(db, "residents").catch((e) => {
+        throw new Error("Unable to retrieve collection reference\n\t" + e);
+      });
+      const { address, unit_number, name } = row;
+      const docRef = await addDocWrapper(colRef, {
+        name,
+        address,
+        unit_number,
+      }).catch((e) => {
+        throw new Error("Unable to add data to document\n\t" + e);
+      });
+      console.log("Resident Id: ", docRef.id);
+    } catch (err) {
+      throw new Error("Unable to add residents to database.\n\t" + err);
     }
-    const { relationship, phone_number, emergency_contact: name } = row;
-    const [ecDocErr, ecResult] = await addDocWrapper(ecRef, {
-      name,
-      relationship,
-      phone_number,
-    });
-    if (ecResult == null) throw new Error(ecDocErr!);
-    const [resErr, resRef] = collectionWrapper(db, "residents");
-    if (resRef === null) throw new Error(resErr!);
-    const q = query(
-      resRef,
-      where("name", "==", row.residents),
-      where("address", "==", row.addresses),
-      where("unit_number", "==", row.unit_number)
-    );
-    const [qError, querySnapshot] = await getDocsWrapper(q);
-    if (querySnapshot == null) throw new Error(qError!);
-    Promise.all(
-      querySnapshot.docs.map(async (doc) => {
-        const docData = doc.data();
-        if (isTypeResidents(docData)) {
-          const updateErr = await updateDocWrapper(doc.ref, {
-            emergency_contact_id: [
-              ...(docData.emergency_contact_id ?? []),
-              ecResult.id,
-            ],
-          });
-          if (updateErr) throw new Error(updateErr);
-        } else throw new Error("Data is not resident document");
-      })
-    );
   })
   .on("error", (error: Error) => console.error(`Encounter an error:\n${error}`))
   .on("end", (rowCount: number) => console.log(`Parsed ${rowCount}  rows`));
+
+setTimeout(() => {
+  createReadStream(file1)
+    .pipe(fastcsv.parse({ headers: true }))
+    .on("data", async (row) => {
+      try {
+        const ecColRef = await collectionWrapper(db, "emergency_contacts");
+        if (!isTypeEmergencyContact(row)) {
+          console.dir(row);
+          throw new Error("row is not of type Emergency Contact");
+        }
+        const { relationship, phone_number, emergency_contact: name } = row;
+        const ecDocRef = await addDocWrapper(ecColRef, {
+          name,
+          relationship,
+          phone_number,
+        });
+        console.log("Emergency contact Id: ", ecDocRef.id);
+        const resColRef = await collectionWrapper(db, "residents").catch(
+          (err) => {
+            throw new Error(err);
+          }
+        );
+        const q = query(
+          resColRef,
+          where("name", "==", row.residents),
+          where("address", "==", row.addresses),
+          where("unit_number", "==", row.unit_number)
+        );
+        const querySnapshot = await getDocsWrapper(q);
+        Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const docData = doc.data();
+            if (!docData)
+              throw new Error("No residents found matching query -- Tag:26");
+            if (!isTypeResidents(docData))
+              throw new Error("Object is not of type resident -- Tag:25");
+            await updateDocWrapper(doc.ref, {
+              emergency_contact_ids: [
+                ...(docData.emergency_contact_ids ?? []),
+                ecDocRef.id,
+              ],
+            });
+          })
+        );
+      } catch (err) {
+        throw new Error(
+          "Unable to add Emergency Contact Information to Resident Data.\n\t" +
+            err
+        );
+      }
+    })
+    .on("error", (error: Error) =>
+      console.error(`Encounter an error:\n${error}`)
+    )
+    .on("end", (rowCount: number) => console.log(`Parsed ${rowCount}  rows`));
+}, 6000);
 
 interface Residents {
   name: string;
   address: string;
   unit_number: string;
-  emergency_contact_id?: string[];
+  emergency_contact_ids?: string[];
 }
 
 interface EmergencyContact {
@@ -125,4 +144,3 @@ const isTypeEmergencyContact = (data: any): data is EmergencyContact =>
   "residents" in data &&
   "addresses" in data &&
   "unit_number" in data;
-	*/
