@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import Header from "@/components/header";
+import Providers from "./providers";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -19,10 +20,12 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Header />
-        {children}
-        <Toaster />
-        <Analytics />
+        <Providers>
+          <Header />
+          {children}
+          <Toaster />
+          <Analytics />
+        </Providers>
       </body>
     </html>
   );

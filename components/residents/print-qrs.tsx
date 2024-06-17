@@ -10,7 +10,7 @@ import { Button } from "../ui/button";
 const PrintQRs = ({ AllResidents }: { AllResidents: Resident[] }) => {
   useLayoutEffect(() => {
     (async () => {
-      const qrSvgs = Array.from(document.querySelectorAll("svg"));
+      const qrSvgs = Array.from(document.querySelectorAll(".qrSvg"));
       const pdf = new jsPDF();
       Promise.all(
         qrSvgs.map(async (svg, idx) => {
@@ -35,7 +35,7 @@ const PrintQRs = ({ AllResidents }: { AllResidents: Resident[] }) => {
               process.env.NEXT_PUBLIC_DOMAIN
             ).toString()}
             size={500}
-            className="w-[80vw]"
+            className="w-[80vw] qrSvg"
           />
         ))}
       </section>
