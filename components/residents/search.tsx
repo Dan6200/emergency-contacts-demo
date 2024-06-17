@@ -3,7 +3,6 @@ import { SearchBar } from "@/components/search-bar";
 import { useLayoutEffect, useState } from "react";
 import type { Resident } from "@/types/resident";
 import { SearchSuggestions } from "../search-suggestions";
-import { useUserSession } from "@/auth/user";
 import { redirect } from "next/navigation";
 import { useAtomValue } from "jotai";
 import userAtom from "@/atoms/user";

@@ -1,3 +1,5 @@
+export {};
+/*
 import { onAuthStateChanged } from "@/firebase/auth";
 import { firebaseConfig } from "@/firebase/config";
 import { User } from "firebase/auth";
@@ -26,7 +28,6 @@ export function useUserSession(initialUser: User | null) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-	*/
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged((authUser) => {
@@ -50,3 +51,4 @@ export function useUserSession(initialUser: User | null) {
 
   return [user, userLoaded];
 }
+	*/
