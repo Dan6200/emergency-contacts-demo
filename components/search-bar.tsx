@@ -52,19 +52,19 @@ export function SearchBar({
   if (typeof self !== "undefined") isSmallScreen = self.innerWidth < 1024;
 
   const addressOnFocus = () => {
-    () => setOpen(true);
+    setOpen(true);
     if (isSmallScreen && addressRef && addressRef.current)
       addressRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const unitNumOnFocus = () => {
-    () => setOpen(true);
+    setOpen(true);
     if (isSmallScreen && unitNumRef && unitNumRef.current)
       unitNumRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const nameOnFocus = () => {
-    () => setOpen(true);
+    setOpen(true);
     if (isSmallScreen && nameRef && nameRef.current)
       nameRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
   };
