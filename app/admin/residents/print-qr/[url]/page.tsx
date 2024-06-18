@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useLayoutEffect } from "react";
 import jsPDF from "jspdf";
 import { svgToPngDataURL } from "@/app/utils";
+import { toast } from "@/components/ui/use-toast";
 
 export default function PrintQR({
   params: { url: urlString },
@@ -11,13 +12,14 @@ export default function PrintQR({
   params: { url: string };
 }) {
   useLayoutEffect(() => {
-    (async () => {
+    toast({ title: "This may take a moment..." });
+    setTimeout(async () => {
       const qrSvg = document.querySelector("#qrSvg");
       const pdf = new jsPDF();
       const pngDataUrl = await svgToPngDataURL(qrSvg!);
       if (pngDataUrl) pdf.addImage(pngDataUrl as string, 30, 50, 150, 150);
       setTimeout(() => pdf.save("Residents Qr Codes.pdf"), 250);
-    })();
+    }, 1000);
   }, []);
   const url = decodeURIComponent(urlString);
   return (

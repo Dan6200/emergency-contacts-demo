@@ -6,10 +6,12 @@ import jsPDF from "jspdf";
 import { QRCodeSVG } from "qrcode.react";
 import { useRef, useLayoutEffect, useEffect } from "react";
 import { Button } from "../ui/button";
+import { toast } from "../ui/use-toast";
 
 const PrintQRs = ({ AllResidents }: { AllResidents: Resident[] }) => {
   useLayoutEffect(() => {
-    (async () => {
+    toast({ title: "This may take a moment..." });
+    setTimeout(async () => {
       const qrSvgs = Array.from(document.querySelectorAll(".qrSvg"));
       const pdf = new jsPDF();
       Promise.all(
@@ -21,7 +23,7 @@ const PrintQRs = ({ AllResidents }: { AllResidents: Resident[] }) => {
           }
         })
       ).then((_) => pdf.save("Residents Qr Codes.pdf"));
-    })();
+    }, 1000);
   }, []);
 
   return (
