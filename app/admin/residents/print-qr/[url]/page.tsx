@@ -13,13 +13,14 @@ export default function PrintQR({
 }) {
   useLayoutEffect(() => {
     toast({ title: "This may take a moment..." });
-    setTimeout(async () => {
+    const t = setTimeout(async () => {
       const qrSvg = document.querySelector("#qrSvg");
       const pdf = new jsPDF();
       const pngDataUrl = await svgToPngDataURL(qrSvg!);
-      if (pngDataUrl) pdf.addImage(pngDataUrl as string, 30, 50, 150, 150);
+      if (pngDataUrl) pdf.addImage(pngDataUrl, 30, 50, 150, 150);
       setTimeout(() => pdf.save("Residents Qr Codes.pdf"), 250);
     }, 1000);
+    return () => clearTimeout(t);
   }, []);
   const url = decodeURIComponent(urlString);
   return (

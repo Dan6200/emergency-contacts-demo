@@ -34,13 +34,15 @@ export default function Header() {
     <header className="fixed w-full bg-background/80 flex border-b items-center justify-between px-4 py-2">
       <Link href="/">
         <Image
+          priority
           width={100}
           height={100}
           src="/client-logo-small.png"
           alt="LinkId logo"
-          className="md:hidden"
+          className="block md:hidden"
         />
         <Image
+          priority
           width={150}
           height={150}
           src="/client-logo-large.jpeg"

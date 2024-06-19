@@ -17,7 +17,6 @@ export default function Search({ residents }: SearchProps) {
   );
   const admin = useAtomValue(userAtom);
   const [open, setOpen] = useState(true);
-  console.log(open);
 
   useLayoutEffect(() => {
     if (!admin) {

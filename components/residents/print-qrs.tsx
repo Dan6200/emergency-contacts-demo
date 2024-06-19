@@ -11,19 +11,26 @@ import { toast } from "../ui/use-toast";
 const PrintQRs = ({ AllResidents }: { AllResidents: Resident[] }) => {
   useLayoutEffect(() => {
     toast({ title: "This may take a moment..." });
-    setTimeout(async () => {
-      const qrSvgs = Array.from(document.querySelectorAll(".qrSvg"));
-      const pdf = new jsPDF();
-      Promise.all(
-        qrSvgs.map(async (svg, idx) => {
-          const pngDataUrl = await svgToPngDataURL(svg!);
-          if (pngDataUrl) {
-            pdf.addImage(pngDataUrl as string, 30, 50, 150, 150);
-            if (idx < qrSvgs.length - 1) pdf.addPage();
-          }
-        })
-      ).then((_) => pdf.save("Residents Qr Codes.pdf"));
-    }, 1000);
+    const qrSvgs = Array.from(document.querySelectorAll(".qrSvg"));
+    const worker = new Worker("/pdfWorker.js");
+    worker.postMessage({
+      canvasWidth: 150,
+      canvasHeight: 150,
+      qrSvgData: qrSvgs.map((svg: Element) => svg.outerHTML),
+    });
+    worker.onmessage = function (e) {
+      const { pdfBlob } = e.data;
+      console.log(pdfBlob);
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = pdfUrl;
+      downloadLink.download = "Resident's QR Code";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      URL.revokeObjectURL(pdfUrl);
+    };
+    return () => worker.terminate();
   }, []);
 
   return (
