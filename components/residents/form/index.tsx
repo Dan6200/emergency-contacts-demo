@@ -85,9 +85,11 @@ export function ResidentForm({
   });
 
   useLayoutEffect(() => {
-    if (!admin) {
-      redirect("/");
-    }
+    setTimeout(() => {
+      if (!admin) {
+        redirect("/");
+      }
+    }, 500);
   }, [admin]);
 
   async function onSubmit(
@@ -122,13 +124,14 @@ export function ResidentForm({
           return;
         }
         toast({ title: message });
-        setTimeout(() => {
-          toast({ title: "Printing Resident's QR Code..." });
-          router.push(
-            `/admin/residents/print-qr/${encodeURIComponent(url.toString())}`
-          );
-          redirect("/");
-        }, 1000);
+        const { unit_number, address } = data;
+        const qParams = new URLSearchParams({ unit_number, address });
+        toast({ title: "Printing Resident's QR Code..." });
+        router.push(
+          `/admin/residents/print-qr/${encodeURIComponent(
+            url.toString()
+          )}?${qParams}`
+        );
       }
     } catch (err) {
       if (isError(err)) toast({ title: err.message, variant: "destructive" });

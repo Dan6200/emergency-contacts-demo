@@ -82,3 +82,15 @@ html {
 body {
   height: 100%;
 }
+
+.disable-scrollbars {
+  /* Chrome/Safari/Webkit */
+  ::-webkit-scrollbar {
+    background: transparent;
+    width: 0px;
+  }
+  /* Firefox */
+  scrollbar-width: none;
+  /* IE 10+ */
+  -ms-overflow-style: none;
+}

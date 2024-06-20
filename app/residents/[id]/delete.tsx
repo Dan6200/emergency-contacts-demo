@@ -33,7 +33,7 @@ export default function DeleteResident({
         toast({ title: "Unable to Delete Resident", variant: "destructive" });
       })
       .then((_) => toast({ title: "Successfully Deleted Resident" }));
-    router.push("/");
+    router.push("/admin/residents");
   };
   return (
     <Button

@@ -19,9 +19,11 @@ export default function Search({ residents }: SearchProps) {
   const [open, setOpen] = useState(true);
 
   useLayoutEffect(() => {
-    if (!admin) {
-      redirect("/");
-    }
+    setTimeout(() => {
+      if (!admin) {
+        redirect("/");
+      }
+    }, 500);
   }, [admin]);
 
   return (

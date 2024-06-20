@@ -11,11 +11,13 @@ export async function GET() {
   });
   const doc = new jsPDF();
   await Promise.all(
-    AllResidents.map(async ({ id }: Resident, idx) => {
+    AllResidents.map(async ({ id, address, unit_number }: Resident, idx) => {
       const qrCodeDataUri = await QRcode.toDataURL(
         new URL(`/residents/${id}`, process.env.NEXT_PUBLIC_DOMAIN).toString()
       );
-      doc.addImage(qrCodeDataUri, "PNG", 30, 50, 150, 150);
+      doc.text(`Unit Number: ${unit_number}`, 30, 20);
+      doc.text(`Address: ${address}`, 30, 35);
+      doc.addImage(qrCodeDataUri, "PNG", 30, 75, 150, 150);
       if (idx < AllResidents.length - 1) doc.addPage();
     })
   );

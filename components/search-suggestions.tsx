@@ -14,8 +14,11 @@ export const SearchSuggestions = ({
   return (
     <Card className="mt-4 py-0">
       <div className="w-[90%] relative mx-auto ">
-        <span onClick={() => setOpen(!open)} className="absolute top-0 right-0">
-          <X />
+        <span
+          onClick={() => setOpen(!open)}
+          className="bg-foreground absolute top-0 right-0 rounded-md"
+        >
+          <X className="text-background" />
         </span>
         <CardContent className="my-4 px-0 flex flex-col overflow-y-scroll max-h-[80vh] md:max-h-[40vh] gap-2">
           {matchingResidents.length ? (
