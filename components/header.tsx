@@ -32,7 +32,7 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed w-full bg-background/80 flex border-b items-center justify-between px-4 py-2">
+    <header className="fixed w-full z-10 bg-background/80 flex border-b items-center justify-between px-4 py-2">
       <Link href="/">
         <Image
           priority

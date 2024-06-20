@@ -53,17 +53,47 @@ export function SearchBar({
   if (typeof self !== "undefined") isSmallScreen = self.innerWidth < 1024;
 
   const addressOnFocus = (e: FocusEvent<HTMLInputElement, Element>) => {
-    e.preventDefault();
     setOpen(true);
     if (isSmallScreen && addressRef && addressRef.current)
-      addressRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      addressRef.current.classList.add("transform", "-translate-y-{10000}");
+    setTimeout(() => {
+      if (isSmallScreen && addressRef && addressRef.current) {
+        addressRef.current.classList.remove(
+          "transform",
+          "-translate-y-{10000}"
+        );
+      }
+    }, 50);
+    setTimeout(() => {
+      if (isSmallScreen && addressRef && addressRef.current) {
+        addressRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 500);
   };
 
   const unitNumOnFocus = (e: FocusEvent<HTMLInputElement, Element>) => {
-    e.preventDefault();
     setOpen(true);
     if (isSmallScreen && unitNumRef && unitNumRef.current)
-      unitNumRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      unitNumRef.current.classList.add("transform", "-translate-y-{10000}");
+    setTimeout(() => {
+      if (isSmallScreen && unitNumRef && unitNumRef.current) {
+        unitNumRef.current.classList.remove(
+          "transform",
+          "-translate-y-{10000}"
+        );
+      }
+    }, 50);
+    setTimeout(() => {
+      if (isSmallScreen && unitNumRef && unitNumRef.current) {
+        unitNumRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 500);
   };
 
   const nameOnFocus = () => {
