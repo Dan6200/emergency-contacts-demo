@@ -70,21 +70,19 @@ export function SearchBar({
     setOpen(true);
     if (isSmallScreen && nameRef && nameRef.current)
       nameRef.current.classList.add("transform", "-translate-y-{10000}");
-    if (isSmallScreen && nameRef && nameRef.current) {
-      setTimeout(() => {
-        if (isSmallScreen && nameRef && nameRef.current) {
-          nameRef.current.classList.remove("transform", "-translate-y-{10000}");
-        }
-      }, 50);
-      setTimeout(() => {
-        if (isSmallScreen && nameRef && nameRef.current) {
-          nameRef.current.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }
-      }, 150);
-    }
+    setTimeout(() => {
+      if (isSmallScreen && nameRef && nameRef.current) {
+        nameRef.current.classList.remove("transform", "-translate-y-{10000}");
+      }
+    }, 50);
+    setTimeout(() => {
+      if (isSmallScreen && nameRef && nameRef.current) {
+        nameRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 500);
   };
 
   const nameRef = useRef<HTMLInputElement | null>(null),
