@@ -74,12 +74,16 @@ export function SearchBar({
       setTimeout(() => {
         if (isSmallScreen && nameRef && nameRef.current) {
           nameRef.current.classList.remove("transform", "-translate-y-{10000}");
+        }
+      }, 50);
+      setTimeout(() => {
+        if (isSmallScreen && nameRef && nameRef.current) {
           nameRef.current.scrollIntoView({
             behavior: "smooth",
             block: "start",
           });
         }
-      }, 50);
+      }, 150);
     }
   };
 
