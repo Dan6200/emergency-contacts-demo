@@ -1,9 +1,12 @@
 //cspell:ignore jspdf qrcode svgs
+/*
+ * I used route handlers instead...
+ *
 "use client";
 import { svgToPngDataURL } from "@/app/utils";
 import { Resident } from "@/types/resident";
 import jsPDF from "jspdf";
-import { QRCodeSVG } from "qrcode.react";
+import { QRCodeCanvas, QRCodeSVG } from "qrcode.react";
 import { useRef, useLayoutEffect, useEffect } from "react";
 import { Button } from "../ui/button";
 import { toast } from "../ui/use-toast";
@@ -51,4 +54,5 @@ const PrintQRs = ({ AllResidents }: { AllResidents: Resident[] }) => {
     </main>
   );
 };
-export default PrintQRs;
+ */
+export {};

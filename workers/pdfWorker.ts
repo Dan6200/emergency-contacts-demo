@@ -55,6 +55,7 @@ self.onmessage = async function (
     const response = await fetch(dataUrl);
     if (!response.ok) throw new Error("Failed to fetch url blob");
     const blob = await response.blob();
+    const image = new Image();
     return createImageBitmap(blob)
       .catch((e) => console.error("Failed to create image: " + e))
       .then((imageBitmap) => {
@@ -72,16 +73,28 @@ self.onmessage = async function (
 
       const encodedSvgData = encodeURIComponent(svgData);
       const dataUrl = "data:image/svg+xml;charset=utf-8," + encodedSvgData;
+      const image = new Image();
+      let blob;
+      image.onload = () => {
+        canvas.width = image.width;
+        canvas.height = image.height;
+        ctx.drawImage(image, 0, 0);
+        blob = ctx.canvas.convertToBlob();
+      };
+      image.onerror = (e) => {
+        console.error(e);
+      };
+      image.src = dataUrl;
 
-      return loadAndDrawImage(dataUrl, ctx).then((blob) => {
-        if (!blob) throw new Error("Failed to receive blob");
-        const pngDataUrl = URL.createObjectURL(blob);
-        pdf.addImage(pngDataUrl, "PNG", 30, 50, 150, 150);
-        URL.revokeObjectURL(pngDataUrl); // Clean up the object URL
+      // return loadAndDrawImage(dataUrl, ctx).then((blob) => {
+      if (!blob) throw new Error("Failed to receive blob");
+      console.log("blob", blob);
+      const pngDataUrl = URL.createObjectURL(blob);
+      pdf.addImage(pngDataUrl, "PNG", 30, 50, 150, 150);
+      URL.revokeObjectURL(pngDataUrl); // Clean up the object URL
 
-        if (idx < qrSvgData.length - 1) pdf.addPage();
-        console.log("pdf blob", pdf.output("blob"));
-      });
+      if (idx < qrSvgData.length - 1) pdf.addPage();
+      console.log("pdf blob", pdf.output("blob"));
     })
   )
     .catch((e) => console.error("Failed to load image: " + e))

@@ -96,6 +96,7 @@ export function ResidentForm({
   ) {
     try {
       if (residentId) {
+        // Edit Resident Information
         let newData = data;
         if (emergency_contact_ids) {
           emergency_contact_ids.length = noOfEmContacts;
@@ -111,6 +112,7 @@ export function ResidentForm({
         });
         router.back();
       } else {
+        // Add new residents
         const { result: url, message, success } = await mutateData(data);
         if (!url || !success) {
           toast({
@@ -120,9 +122,13 @@ export function ResidentForm({
           return;
         }
         toast({ title: message });
-        router.push(
-          `/admin/residents/print-qr/${encodeURIComponent(url.toString())}`
-        );
+        setTimeout(() => {
+          toast({ title: "Printing Resident's QR Code..." });
+          router.push(
+            `/admin/residents/print-qr/${encodeURIComponent(url.toString())}`
+          );
+          redirect("/");
+        }, 1000);
       }
     } catch (err) {
       if (isError(err)) toast({ title: err.message, variant: "destructive" });

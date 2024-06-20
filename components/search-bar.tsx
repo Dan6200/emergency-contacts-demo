@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, UseFormWatch } from "react-hook-form";
 import { z } from "zod";
+import { FocusEvent } from "react";
 
 import {
   Form,
@@ -51,19 +52,22 @@ export function SearchBar({
   let isSmallScreen = true;
   if (typeof self !== "undefined") isSmallScreen = self.innerWidth < 1024;
 
-  const addressOnFocus = () => {
+  const addressOnFocus = (e: FocusEvent<HTMLInputElement, Element>) => {
+    e.preventDefault();
     setOpen(true);
     if (isSmallScreen && addressRef && addressRef.current)
       addressRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const unitNumOnFocus = () => {
+  const unitNumOnFocus = (e: FocusEvent<HTMLInputElement, Element>) => {
+    e.preventDefault();
     setOpen(true);
     if (isSmallScreen && unitNumRef && unitNumRef.current)
       unitNumRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const nameOnFocus = () => {
+  const nameOnFocus = (e: FocusEvent<HTMLInputElement, Element>) => {
+    e.preventDefault();
     setOpen(true);
     if (isSmallScreen && nameRef && nameRef.current)
       nameRef.current.scrollIntoView({ behavior: "smooth", block: "start" });

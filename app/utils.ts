@@ -3,6 +3,9 @@ export const isError = (_object: unknown): _object is Error =>
   typeof _object !== null &&
   _object instanceof Error;
 
+/*
+ * Using a route handler instead...
+ *
 export const svgToPngDataURL = (svgElement: SVGSVGElement | Element) => {
   return new Promise<string>((resolve, reject) => {
     const canvas = document.createElement("canvas");
@@ -25,3 +28,4 @@ export const svgToPngDataURL = (svgElement: SVGSVGElement | Element) => {
     image.src = dataUrl;
   });
 };
+*/

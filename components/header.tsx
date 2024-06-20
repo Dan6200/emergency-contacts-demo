@@ -17,6 +17,7 @@ import { Plus, QrCode, Search, UserRound, UserRoundPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import userAtom from "@/atoms/user";
+import { toast } from "./ui/use-toast";
 
 export default function Header() {
   const router = useRouter();
@@ -90,7 +91,10 @@ export default function Header() {
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <span
-                  onClick={() => router.push("/admin/residents/print-qr-all")}
+                  onClick={() => {
+                    toast({ title: "Printing QR Codes..." });
+                    router.push("/admin/residents/print-qr-all");
+                  }}
                   className="cursor-pointer h-9 items-center flex justify-between capitalize mx-auto w-full"
                 >
                   Print QR Codes

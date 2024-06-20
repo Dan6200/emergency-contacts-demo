@@ -27360,10 +27360,11 @@
       const response = await fetch(dataUrl);
       if (!response.ok) throw new Error("Failed to fetch url blob");
       const blob = await response.blob();
-      console.log("blob", blob);
-      return createImageBitmap(blob).catch(
-        (e3) => console.error("Failed to create image: " + e3)
-      );
+      const image = new Image();
+      return createImageBitmap(blob).catch((e3) => console.error("Failed to create image: " + e3)).then((imageBitmap) => {
+        ctx.drawImage(imageBitmap, 0, 0);
+        return ctx.canvas.convertToBlob();
+      }).catch((e3) => console.error("Failed to draw image: " + e3));
     };
     Promise.all(
       qrSvgData.map(async (svgData, idx) => {
@@ -27372,14 +27373,25 @@
         if (!ctx) throw new Error("Failed to get context");
         const encodedSvgData = encodeURIComponent(svgData);
         const dataUrl = "data:image/svg+xml;charset=utf-8," + encodedSvgData;
-        return loadAndDrawImage(dataUrl, ctx).then((blob) => {
-          if (!blob) throw new Error("Failed to receive blob");
-          const pngDataUrl = URL.createObjectURL(blob);
-          pdf.addImage(pngDataUrl, "PNG", 30, 50, 150, 150);
-          URL.revokeObjectURL(pngDataUrl);
-          if (idx < qrSvgData.length - 1) pdf.addPage();
-          console.log("pdf blob", pdf.output("blob"));
-        });
+        const image = new Image();
+        let blob;
+        image.onload = () => {
+          canvas.width = image.width;
+          canvas.height = image.height;
+          ctx.drawImage(image, 0, 0);
+          blob = ctx.canvas.convertToBlob();
+        };
+        image.onerror = (e3) => {
+          console.error(e3);
+        };
+        image.src = dataUrl;
+        if (!blob) throw new Error("Failed to receive blob");
+        console.log("blob", blob);
+        const pngDataUrl = URL.createObjectURL(blob);
+        pdf.addImage(pngDataUrl, "PNG", 30, 50, 150, 150);
+        URL.revokeObjectURL(pngDataUrl);
+        if (idx < qrSvgData.length - 1) pdf.addPage();
+        console.log("pdf blob", pdf.output("blob"));
       })
     ).catch((e3) => console.error("Failed to load image: " + e3)).then(() => pdf.output("blob")).catch((e3) => console.error("Failed to output blob: " + e3)).then((pdfBlob) => {
       self.postMessage({ pdfBlob });
