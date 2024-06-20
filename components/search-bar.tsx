@@ -13,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Resident } from "@/types/resident";
 import {
   Dispatch,
@@ -52,41 +51,41 @@ export function SearchBar({
   let isSmallScreen = true;
   if (typeof self !== "undefined") isSmallScreen = self.innerWidth < 1024;
 
-  const addressOnFocus = (e: FocusEvent<HTMLInputElement, Element>) => {
+  const addressOnFocus = (e: FocusEvent<HTMLDivElement, Element>) => {
     e.preventDefault();
     setOpen(true);
     if (isSmallScreen && addressRef && addressRef.current)
       addressRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const unitNumOnFocus = (e: FocusEvent<HTMLInputElement, Element>) => {
+  const unitNumOnFocus = (e: FocusEvent<HTMLDivElement, Element>) => {
     e.preventDefault();
     setOpen(true);
     if (isSmallScreen && unitNumRef && unitNumRef.current)
       unitNumRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const nameOnFocus = (e: FocusEvent<HTMLInputElement, Element>) => {
-    e.preventDefault();
+  const nameOnFocus = () => {
     setOpen(true);
     if (isSmallScreen && nameRef && nameRef.current)
       nameRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const nameRef = useRef<HTMLInputElement | null>(null),
-    addressRef = useRef<HTMLInputElement | null>(null),
-    unitNumRef = useRef<HTMLInputElement | null>(null);
+  const nameRef = useRef<HTMLDivElement | null>(null),
+    addressRef = useRef<HTMLDivElement | null>(null),
+    unitNumRef = useRef<HTMLDivElement | null>(null);
 
-  const {
-    setError,
-    watch,
-    formState: { errors },
-  } = form;
+  const { watch, register, setValue } = form;
 
   const [showRm, setShowRm] = useState(false);
   const [showAddr, setShowAddr] = useState(false);
 
-  // for medium data
+  useEffect(() => {
+    register("name");
+    register("address");
+    register("unit_number");
+  }, []);
+
   useMemo(
     () => Send(watch),
     [watch("name"), watch("address"), watch("unit_number")]
@@ -99,7 +98,7 @@ export function SearchBar({
         (resident) =>
           resident.address
             .toLowerCase() // Ignore case
-            .replaceAll(/[^a-zA-Z0-9]/g, "") // Ignore non-alnum chars
+            .replaceAll(/[^a-zA-Z0-9]/g, "") // Ignore non-alphanum chars
             .slice(0, 25)
             .includes(
               watch("address")
@@ -127,37 +126,44 @@ export function SearchBar({
         <FormField
           control={form.control}
           name="name"
-          render={({ field }) => (
-            <div className="flex items-center gap-2">
-              <FormItem
-                tabIndex={5}
-                className="ring-offset-background border-2 border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md flex place-items-center space-y-0 w-[90%] gap-2 place-self-center"
-              >
-                <FormLabel className="text-sm bg-primary w-16 text-primary-foreground rounded-l-sm flex h-10 border-l border-y border-primary p-2">
-                  Name:
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    onFocus={nameOnFocus}
-                    {...field}
-                    ref={nameRef}
-                    type="text"
-                    className="scroll-mt-20 p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                  />
-                </FormControl>
-              </FormItem>
-              {(!showAddr || !showRm) && (
-                <span
-                  onClick={() =>
-                    !showAddr ? setShowAddr(true) : setShowRm(true)
-                  }
-                  className=""
+          render={({ field }) => {
+            return (
+              <div className="flex items-center gap-2">
+                <FormItem
+                  tabIndex={5}
+                  className="ring-offset-background border-2 border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md flex place-items-center space-y-0 w-[90%] gap-2 place-self-center"
                 >
-                  <Plus />
-                </span>
-              )}
-            </div>
-          )}
+                  <FormLabel className="text-sm bg-primary w-16 text-primary-foreground rounded-l-sm flex h-10 border-l border-y border-primary p-2">
+                    Name:
+                  </FormLabel>
+                  <FormControl>
+                    <div
+                      onFocus={nameOnFocus}
+                      {...field}
+                      onInput={(e) =>
+                        setValue("name", e.currentTarget.textContent ?? "")
+                      }
+                      ref={nameRef}
+                      contentEditable
+                      tabIndex={0}
+                      role="text-box"
+                      className="text-left scroll-mt-20 p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    />
+                  </FormControl>
+                </FormItem>
+                {(!showAddr || !showRm) && (
+                  <span
+                    onClick={() =>
+                      !showAddr ? setShowAddr(true) : setShowRm(true)
+                    }
+                    className=""
+                  >
+                    <Plus />
+                  </span>
+                )}
+              </div>
+            );
+          }}
         />
         {showAddr && (
           <FormField
@@ -173,12 +179,16 @@ export function SearchBar({
                     Address:
                   </FormLabel>
                   <FormControl>
-                    <Input
+                    <div
                       {...field}
                       ref={addressRef}
                       onFocus={addressOnFocus}
-                      type="text"
-                      className="scroll-mt-20 p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      onInput={(e) =>
+                        setValue("address", e.currentTarget.textContent ?? "")
+                      }
+                      contentEditable
+                      tabIndex={0}
+                      className="text-left scroll-mt-20 p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                   </FormControl>
                   <FormMessage />
@@ -204,12 +214,19 @@ export function SearchBar({
                     Room:
                   </FormLabel>
                   <FormControl>
-                    <Input
+                    <div
                       {...field}
                       ref={unitNumRef}
                       onFocus={unitNumOnFocus}
-                      type="text"
-                      className="scroll-mt-20 p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      onInput={(e) =>
+                        setValue(
+                          "unit_number",
+                          e.currentTarget.textContent ?? ""
+                        )
+                      }
+                      contentEditable
+                      tabIndex={0}
+                      className="text-left scroll-mt-20 p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                   </FormControl>
                   <FormMessage />
