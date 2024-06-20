@@ -4,6 +4,7 @@ import jsPDF from "jspdf";
 import { NextResponse } from "next/server";
 import QRcode from "qrcode";
 
+export const dynamic = "force-dynamic";
 export async function GET() {
   const AllResidents = await getAllResidentsDataLite().catch((e) => {
     throw new Error("Failed to Retrieve Residents Data -- Tag:24.\n\t" + e);
