@@ -72,10 +72,14 @@ export function SearchBar({
       nameRef.current.classList.add("transform", "-translate-y-{10000}");
     if (isSmallScreen && nameRef && nameRef.current) {
       setTimeout(() => {
-        if (isSmallScreen && nameRef && nameRef.current)
+        if (isSmallScreen && nameRef && nameRef.current) {
           nameRef.current.classList.remove("transform", "-translate-y-{10000}");
+          nameRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
       }, 50);
-      nameRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
