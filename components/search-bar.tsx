@@ -86,6 +86,11 @@ export function SearchBar({
     register("unit_number");
   }, []);
 
+  useEffect(() => {
+    document.addEventListener("touchstart", (e) => e.preventDefault());
+    document.addEventListener("touchmove", (e) => e.preventDefault());
+  }, []);
+
   useMemo(
     () => Send(watch),
     [watch("name"), watch("address"), watch("unit_number")]
