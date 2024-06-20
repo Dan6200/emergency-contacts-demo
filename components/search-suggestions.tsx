@@ -17,7 +17,7 @@ export const SearchSuggestions = ({
         <span onClick={() => setOpen(!open)} className="absolute top-0 right-0">
           <X />
         </span>
-        <CardContent className="my-4 pt-10 px-0 flex flex-col overflow-y-scroll max-h-[80vh] md:max-h-[40vh] gap-2">
+        <CardContent className="my-4 px-0 flex flex-col overflow-y-scroll max-h-[80vh] md:max-h-[40vh] gap-2">
           {matchingResidents.length ? (
             matchingResidents.map((resident) => (
               <Link
