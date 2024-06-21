@@ -61,6 +61,7 @@ export function SignInForm({ signIn }: SignInForm) {
     data: z.infer<typeof SignInFormSchema>
   ) {
     const { result, message, success } = await signIn(data);
+    console.log(result);
     if (success) setUser(JSON.parse(result));
     toast({ title: message, variant: success ? "default" : "destructive" });
   }

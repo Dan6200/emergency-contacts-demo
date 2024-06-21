@@ -23,7 +23,6 @@ self.addEventListener("install", (event) => {
 const isFetchEvent = (event: Event): event is FetchEvent => "request" in event;
 
 self.addEventListener("fetch", (event: Event) => {
-  console.log("fetch event fired");
   if (!isFetchEvent(event))
     throw new Error("Event must be of type FetchEvent -- Tag:21");
   const { origin } = new URL(event.request.url);
