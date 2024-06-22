@@ -5,7 +5,7 @@ import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import Header from "@/components/header";
 import Providers from "./providers";
-import { getAuthenticatedAppForUser } from "@/server";
+import { signOut } from "@/app/admin/sign-in/action";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -18,12 +18,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { currentUser } = await getAuthenticatedAppForUser();
   return (
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <Header initialUser={currentUser?.toJSON()} />
+          <Header {...{ signOut }} />
           {children}
           <Toaster />
           <Analytics />

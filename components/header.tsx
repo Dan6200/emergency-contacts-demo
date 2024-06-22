@@ -1,7 +1,6 @@
 "use client";
-import React, { MouseEventHandler, MouseEvent } from "react";
+import React, { MouseEventHandler, MouseEvent, useEffect } from "react";
 import Link from "next/link";
-import { signOut } from "@/firebase/auth";
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -18,18 +17,29 @@ import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import userAtom from "@/atoms/user";
 import { toast } from "./ui/use-toast";
-import { useUserSession } from "./auth/user";
+import { Unsubscribe } from "firebase/auth";
+import { onAuthStateChanged } from "@/firebase/auth";
 
-export default function Header({ initialUser }: { initialUser?: object }) {
+export default function Header({ signOut }: { signOut: () => Promise<void> }) {
   const router = useRouter();
-  // const [user, setUser] = useAtom(userAtom);
-  const [user] = useUserSession(initialUser);
+  const [admin, setAdmin] = useAtom(userAtom);
+
+  useEffect(() => {
+    let unsubscribe: Unsubscribe | null = null;
+    (async () => {
+      unsubscribe = await onAuthStateChanged((admin) => {
+        console.log(admin?.email);
+        setAdmin(admin);
+      });
+    })();
+    return () => (unsubscribe ? unsubscribe() : undefined);
+  }, []);
 
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
     event: MouseEvent
   ) => {
     event.preventDefault();
-    return signOut();
+    signOut().then((_) => setAdmin(null));
   };
 
   return (
@@ -52,7 +62,7 @@ export default function Header({ initialUser }: { initialUser?: object }) {
           className="hidden md:block"
         />
       </Link>
-      {user ? (
+      {admin ? (
         <DropdownMenu>
           <DropdownMenuTrigger className="rounded-full border-primary border-4 bg-primary-foreground w-12 h-12">
             <UserRound className="mx-auto" />

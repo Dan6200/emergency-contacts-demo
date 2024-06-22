@@ -1,4 +1,3 @@
-"use server";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -33,7 +32,7 @@ export async function signInWithGoogle() {}
 
 // createUserWithEmailAndPassword(auth, email, password);
 
-export async function signOut() {
+export async function signOutWrapper() {
   auth.signOut().catch(function (e) {
     throw new Error("Error signing out -- Tag:27\n\t" + e);
   });

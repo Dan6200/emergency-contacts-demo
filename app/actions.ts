@@ -1,9 +1,5 @@
 "use server";
-import {
-  createUserWithEmailAndPasswordWrapper,
-  signInWithEmailAndPasswordWrapper,
-} from "@/firebase/auth";
-import db, { auth, firebaseConfig } from "@/firebase/config";
+import db from "@/firebase/config";
 import {
   addDocWrapper,
   collectionWrapper,
@@ -14,7 +10,6 @@ import {
   queryWrapper,
   updateDocWrapper,
 } from "@/firebase/firestore";
-import { getAuthenticatedAppForUser } from "@/server";
 import {
   EmergencyContact,
   isTypeEmergencyContact,
