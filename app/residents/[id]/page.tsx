@@ -4,7 +4,7 @@ import {
   getAllResidentsData,
   getResidentData,
   deleteResidentData,
-} from "../functions";
+} from "@/app/actions";
 import DeleteResident from "./delete";
 
 export default async function ResidentPage({

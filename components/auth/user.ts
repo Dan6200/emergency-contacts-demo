@@ -1,21 +1,17 @@
-export {};
-/*
 import { onAuthStateChanged } from "@/firebase/auth";
 import { firebaseConfig } from "@/firebase/config";
 import { User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export function useUserSession(initialUser: User | null) {
+export function useUserSession(initialUser?: object | User) {
   // The initial user comes from the server via a server component
-  const [user, setUser] = useState(initialUser);
+  const [user, setUser] = useState<object | User | null>(initialUser ?? null);
   const [userLoaded, setUserLoaded] = useState(false);
   const router = useRouter();
 
   // Register  the service worker that sends auth state back to server
   // The service worker is built with npm run build-service-worker
-  /*
-	 * auth-service-worker.(ts|js) has errors
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       const serializedFirebaseConfig = encodeURIComponent(
@@ -41,8 +37,7 @@ export function useUserSession(initialUser: User | null) {
   useEffect(() => {
     onAuthStateChanged((authUser) => {
       if (user === undefined) return;
-      // refresh when user changed to ease testing
-      if (user?.email !== authUser?.email) {
+      if ((<User>user)?.email !== authUser?.email) {
         router.refresh();
       }
     });
@@ -51,4 +46,3 @@ export function useUserSession(initialUser: User | null) {
 
   return [user, userLoaded];
 }
-	*/

@@ -19,6 +19,7 @@ import { redirect, useRouter } from "next/navigation";
 import { useLayoutEffect } from "react";
 import { useAtom } from "jotai";
 import userAtom from "@/atoms/user";
+import { useUserSession } from "../auth/user";
 
 const SignInFormSchema = z.object({
   email: z.string().min(2, {
@@ -30,17 +31,17 @@ const SignInFormSchema = z.object({
 });
 
 type Authenticate = (data: { email: string; password: string }) => Promise<{
-  result: string;
+  result?: string;
   success: boolean;
   message: string;
 }>;
 
 interface SignInForm {
   signIn: Authenticate;
+  initialUser?: object;
 }
 
-export function SignInForm({ signIn }: SignInForm) {
-  const router = useRouter();
+export function SignInForm({ signIn, initialUser }: SignInForm) {
   const form = useForm<z.infer<typeof SignInFormSchema>>({
     resolver: zodResolver(SignInFormSchema),
     defaultValues: {
@@ -48,21 +49,22 @@ export function SignInForm({ signIn }: SignInForm) {
       password: "",
     },
   });
-  const [user, setUser] = useAtom(userAtom);
+  // const [user, setUser] = useAtom(userAtom);
 
+  /*
   useLayoutEffect(() => {
-    if (user) {
+    if (user && userLoaded) {
       redirect("/");
     }
-  }, [user]);
+  }, [user, userLoaded]);
+  console.log(user);
+	 */
 
   async function onSubmit(
-    signIn: Authenticate,
+    sign_in: Authenticate,
     data: z.infer<typeof SignInFormSchema>
   ) {
-    const { result, message, success } = await signIn(data);
-    console.log(result);
-    if (success) setUser(JSON.parse(result));
+    const { message, success } = await sign_in(data);
     toast({ title: message, variant: success ? "default" : "destructive" });
   }
 

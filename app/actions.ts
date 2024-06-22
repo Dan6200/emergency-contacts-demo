@@ -3,7 +3,7 @@ import {
   createUserWithEmailAndPasswordWrapper,
   signInWithEmailAndPasswordWrapper,
 } from "@/firebase/auth";
-import db from "@/firebase/config";
+import db, { auth, firebaseConfig } from "@/firebase/config";
 import {
   addDocWrapper,
   collectionWrapper,
@@ -14,6 +14,7 @@ import {
   queryWrapper,
   updateDocWrapper,
 } from "@/firebase/firestore";
+import { getAuthenticatedAppForUser } from "@/server";
 import {
   EmergencyContact,
   isTypeEmergencyContact,
@@ -190,9 +191,7 @@ export async function getAllResidentsData() {
     const residentsCollection = collectionResponse;
     const q = await queryWrapper(residentsCollection);
     const residentsData = await getDocsWrapper(q);
-
     const residents: Resident[] = [];
-
     for (const doc of residentsData.docs) {
       let resident = doc.data();
       if (!isTypeResident(resident))
@@ -243,38 +242,4 @@ export async function getAllResidentsDataLite() {
   } catch (error) {
     throw new Error("Failed to fetch All Residents Data.\n\t\t" + error);
   }
-}
-
-export async function addAdmin(data: { email: string; password: string }) {
-  return createUserWithEmailAndPasswordWrapper(data.email, data.password)
-    .then((user) => ({
-      result: JSON.stringify(user),
-      success: true,
-      message: "User Created Successfully",
-    }))
-    .catch((error) => {
-      let msg = "";
-      if (error.message.match(/(email-already-in-use)/g))
-        msg = "Email Already In Use";
-      return {
-        success: false,
-        message: "Failed to Create User: " + msg,
-      };
-    });
-}
-
-export async function signIn(data: { email: string; password: string }) {
-  return signInWithEmailAndPasswordWrapper(data.email, data.password)
-    .then((user) => ({
-      result: JSON.stringify(user),
-      success: true,
-      message: "User Signed In Successfully",
-    }))
-    .catch((error) => {
-      return {
-        result: error.message,
-        message: "Failed to Sign In User.",
-        success: false,
-      };
-    });
 }

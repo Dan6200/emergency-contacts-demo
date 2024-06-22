@@ -1,4 +1,4 @@
-import { getAllResidentsDataLite } from "@/app/residents/functions";
+import { getAllResidentsDataLite } from "@/app/actions";
 import { Resident } from "@/types/resident";
 import jsPDF from "jspdf";
 import { NextResponse } from "next/server";

@@ -1,7 +1,20 @@
+import { initializeServerApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { headers } from "next/headers";
 import "server-only";
-import { auth } from "./firebase/config";
+import { firebaseConfig } from "./firebase/config";
 
 export async function getAuthenticatedAppForUser() {
+  const idToken = headers().get("Authorization")?.split("Bearer ")[1];
+  const firebaseServerApp = initializeServerApp(
+    firebaseConfig,
+    idToken
+      ? {
+          authIdToken: idToken,
+        }
+      : {}
+  );
+  const auth = getAuth(firebaseServerApp);
   await auth.authStateReady();
-  return { currentUser: auth.currentUser };
+  return { firebaseServerApp, currentUser: auth.currentUser };
 }

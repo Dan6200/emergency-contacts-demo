@@ -1,4 +1,4 @@
-import { addAdmin } from "@/app/residents/functions";
+import { addAdmin } from "@/app/actions";
 import { GoBackLink } from "@/components/go-back-link";
 import { AddAdminForm } from "@/components/register-form";
 

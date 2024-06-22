@@ -35,6 +35,9 @@ async function fetchWithFirebaseHeaders(request: NextRequest) {
   const auth = getAuth(app);
   const installations = getInstallations(app);
   const headers = new Headers(request.headers);
+  {
+    console.log("fetch event is fired!!!");
+  }
   const [authIdToken, installationToken] = await Promise.all([
     getAuthIdToken(auth),
     getToken(installations),

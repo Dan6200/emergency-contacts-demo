@@ -19,12 +19,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { currentUser } = await getAuthenticatedAppForUser();
-  console.log("user: ", currentUser);
   return (
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <Header />
+          <Header initialUser={currentUser?.toJSON()} />
           {children}
           <Toaster />
           <Analytics />

@@ -18,16 +18,17 @@ import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import userAtom from "@/atoms/user";
 import { toast } from "./ui/use-toast";
+import { useUserSession } from "./auth/user";
 
-export default function Header() {
+export default function Header({ initialUser }: { initialUser?: object }) {
   const router = useRouter();
-  const [user, setUser] = useAtom(userAtom);
+  // const [user, setUser] = useAtom(userAtom);
+  const [user] = useUserSession(initialUser);
 
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
     event: MouseEvent
   ) => {
     event.preventDefault();
-    setUser(null);
     return signOut();
   };
 

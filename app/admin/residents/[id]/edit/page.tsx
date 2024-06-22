@@ -2,7 +2,7 @@ import {
   getAllResidentsData,
   getResidentData,
   mutateResidentData,
-} from "@/app/residents/functions";
+} from "@/app/actions";
 import { ResidentForm } from "@/components/residents/form";
 
 export default async function EditResidentPage({
