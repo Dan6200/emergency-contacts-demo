@@ -1,7 +1,6 @@
 "use client";
-import React, { MouseEventHandler, MouseEvent } from "react";
+import React, { MouseEventHandler, MouseEvent, useEffect } from "react";
 import Link from "next/link";
-import { signOut } from "@/firebase/auth";
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -17,30 +16,32 @@ import { Plus, QrCode, Search, UserRound, UserRoundPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import userAtom from "@/atoms/user";
+import { toast } from "./ui/use-toast";
 
-export default function Header() {
+export default function Header({ signOut }: { signOut: () => Promise<void> }) {
   const router = useRouter();
-  const [user, setUser] = useAtom(userAtom);
+  const [admin, setAdmin] = useAtom(userAtom);
 
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
     event: MouseEvent
   ) => {
     event.preventDefault();
-    setUser(null);
-    return signOut();
+    signOut().then((_) => setAdmin(null));
   };
 
   return (
-    <header className="fixed w-full bg-background/80 flex border-b items-center justify-between px-4 py-2">
+    <header className="fixed w-full z-10 bg-background/80 flex border-b items-center justify-between px-4 py-2">
       <Link href="/">
         <Image
+          priority
           width={100}
           height={100}
           src="/client-logo-small.png"
           alt="LinkId logo"
-          className="md:hidden"
+          className="block md:hidden"
         />
         <Image
+          priority
           width={150}
           height={150}
           src="/client-logo-large.jpeg"
@@ -48,7 +49,7 @@ export default function Header() {
           className="hidden md:block"
         />
       </Link>
-      {user ? (
+      {admin ? (
         <DropdownMenu>
           <DropdownMenuTrigger className="rounded-full border-primary border-4 bg-primary-foreground w-12 h-12">
             <UserRound className="mx-auto" />
@@ -88,7 +89,10 @@ export default function Header() {
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <span
-                  onClick={() => router.push("/admin/residents/print-qr-all")}
+                  onClick={() => {
+                    toast({ title: "Printing QR Codes..." });
+                    router.push("/admin/residents/print-qr-all");
+                  }}
                   className="cursor-pointer h-9 items-center flex justify-between capitalize mx-auto w-full"
                 >
                   Print QR Codes

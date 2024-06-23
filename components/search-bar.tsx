@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, UseFormWatch } from "react-hook-form";
 import { z } from "zod";
+import { FocusEvent } from "react";
 
 import {
   Form,
@@ -51,33 +52,74 @@ export function SearchBar({
   let isSmallScreen = true;
   if (typeof self !== "undefined") isSmallScreen = self.innerWidth < 1024;
 
-  const addressOnFocus = () => {
+  const addressOnFocus = (e: FocusEvent<HTMLInputElement, Element>) => {
     setOpen(true);
     if (isSmallScreen && addressRef && addressRef.current)
-      addressRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      addressRef.current.classList.add("transform", "-translate-y-{10000}");
+    setTimeout(() => {
+      if (isSmallScreen && addressRef && addressRef.current) {
+        addressRef.current.classList.remove(
+          "transform",
+          "-translate-y-{10000}"
+        );
+      }
+    }, 50);
+    setTimeout(() => {
+      if (isSmallScreen && addressRef && addressRef.current) {
+        addressRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 500);
   };
 
-  const unitNumOnFocus = () => {
+  const unitNumOnFocus = (e: FocusEvent<HTMLInputElement, Element>) => {
     setOpen(true);
     if (isSmallScreen && unitNumRef && unitNumRef.current)
-      unitNumRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      unitNumRef.current.classList.add("transform", "-translate-y-{10000}");
+    setTimeout(() => {
+      if (isSmallScreen && unitNumRef && unitNumRef.current) {
+        unitNumRef.current.classList.remove(
+          "transform",
+          "-translate-y-{10000}"
+        );
+      }
+    }, 50);
+    setTimeout(() => {
+      if (isSmallScreen && unitNumRef && unitNumRef.current) {
+        unitNumRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 500);
   };
 
   const nameOnFocus = () => {
     setOpen(true);
     if (isSmallScreen && nameRef && nameRef.current)
-      nameRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      nameRef.current.classList.add("transform", "-translate-y-{10000}");
+    setTimeout(() => {
+      if (isSmallScreen && nameRef && nameRef.current) {
+        nameRef.current.classList.remove("transform", "-translate-y-{10000}");
+      }
+    }, 50);
+    setTimeout(() => {
+      if (isSmallScreen && nameRef && nameRef.current) {
+        nameRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 500);
   };
 
   const nameRef = useRef<HTMLInputElement | null>(null),
     addressRef = useRef<HTMLInputElement | null>(null),
     unitNumRef = useRef<HTMLInputElement | null>(null);
 
-  const {
-    setError,
-    watch,
-    formState: { errors },
-  } = form;
+  const { watch } = form;
 
   const [showRm, setShowRm] = useState(false);
   const [showAddr, setShowAddr] = useState(false);

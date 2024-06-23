@@ -40,7 +40,6 @@ interface SignInForm {
 }
 
 export function SignInForm({ signIn }: SignInForm) {
-  const router = useRouter();
   const form = useForm<z.infer<typeof SignInFormSchema>>({
     resolver: zodResolver(SignInFormSchema),
     defaultValues: {
@@ -48,20 +47,20 @@ export function SignInForm({ signIn }: SignInForm) {
       password: "",
     },
   });
-  const [user, setUser] = useAtom(userAtom);
+  const [admin, setAdmin] = useAtom(userAtom);
 
   useLayoutEffect(() => {
-    if (user) {
+    if (admin) {
       redirect("/");
     }
-  }, [user]);
+  }, [admin]);
 
   async function onSubmit(
-    signIn: Authenticate,
+    sign_in: Authenticate,
     data: z.infer<typeof SignInFormSchema>
   ) {
-    const { result, message, success } = await signIn(data);
-    if (success) setUser(JSON.parse(result));
+    const { result, message, success } = await sign_in(data);
+    if (success) setAdmin(JSON.parse(result));
     toast({ title: message, variant: success ? "default" : "destructive" });
   }
 

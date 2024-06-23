@@ -85,9 +85,11 @@ export function ResidentForm({
   });
 
   useLayoutEffect(() => {
-    if (!admin) {
-      redirect("/");
-    }
+    setTimeout(() => {
+      if (!admin) {
+        redirect("/");
+      }
+    }, 500);
   }, [admin]);
 
   async function onSubmit(
@@ -96,6 +98,7 @@ export function ResidentForm({
   ) {
     try {
       if (residentId) {
+        // Edit Resident Information
         let newData = data;
         if (emergency_contact_ids) {
           emergency_contact_ids.length = noOfEmContacts;
@@ -111,6 +114,7 @@ export function ResidentForm({
         });
         router.back();
       } else {
+        // Add new residents
         const { result: url, message, success } = await mutateData(data);
         if (!url || !success) {
           toast({
@@ -120,8 +124,13 @@ export function ResidentForm({
           return;
         }
         toast({ title: message });
+        const { unit_number, address } = data;
+        const qParams = new URLSearchParams({ unit_number, address });
+        toast({ title: "Printing Resident's QR Code..." });
         router.push(
-          `/admin/residents/print-qr/${encodeURIComponent(url.toString())}`
+          `/admin/residents/print-qr/${encodeURIComponent(
+            url.toString()
+          )}?${qParams}`
         );
       }
     } catch (err) {

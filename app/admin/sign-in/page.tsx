@@ -1,5 +1,5 @@
-import { signIn } from "@/app/residents/functions";
 import { SignInForm } from "@/components/signin-form/";
+import { signIn } from "./action";
 
 export default async function SignInPage() {
   return (

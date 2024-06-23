@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import Header from "@/components/header";
 import Providers from "./providers";
+import { signOut } from "@/app/admin/sign-in/action";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -21,7 +22,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <Header />
+          <Header {...{ signOut }} />
           {children}
           <Toaster />
           <Analytics />

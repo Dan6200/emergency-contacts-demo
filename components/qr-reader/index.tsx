@@ -38,7 +38,7 @@ export default function QRFetchResidents() {
       debouncedFunc = debounce(() => {
         setIsQR(false);
         setFetchResidentErr(null);
-      }, 1000);
+      }, 3000);
       debouncedFunc();
     }
     return () => debouncedFunc?.cancel();
@@ -54,26 +54,30 @@ export default function QRFetchResidents() {
             if (result) {
               setIsQR(true);
               try {
-                const url = new URL(result.getText());
+                let url: URL | null = null;
+                try {
+                  url = new URL(result.getText());
+                } catch {
+                  setFetchResidentErr("Resident's QR is Invalid");
+                  return;
+                }
+                if (!url) return;
                 axios(url.toString(), { method: "HEAD" })
                   .then(() => {
                     toast({
                       title: "Retrieved Resident's Info",
                     });
-                    router.push(url.toString()); // may need need to use javascript to visit link if external
+                    router.push(url!.toString()); // may need need to use javascript to visit link if external
                   })
                   .catch((e) => {
-                    if (e.response?.status === 404)
+                    if (e.response?.status === 404) {
                       setFetchResidentErr("Resident Does Not Exist");
-                    setFetchResidentErr(
-                      "Failed to Retrieve Resident Info: " + e
-                    );
-                    console.log("response", e.response);
-                    console.log("request", e.request);
-                    console.log("message", e.message);
+                      return;
+                    }
+                    setFetchResidentErr("Failed to Retrieve Resident Info");
+                    return;
                   });
               } catch (e) {
-                setFetchResidentErr("Resident's QR is Invalid" + e);
                 console.error(e);
               }
             }

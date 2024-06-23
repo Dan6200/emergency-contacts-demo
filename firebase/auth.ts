@@ -25,16 +25,12 @@ export async function signInWithEmailAndPasswordWrapper(
   password: string
 ) {
   return signInWithEmailAndPassword(auth, email, password).catch((e) => {
-    throw new Error("Failed to sign in -- Tag:2:\n\t" + e);
+    throw new Error("Failed to sign in -- Tag:2\n\t" + e);
   });
 }
 
-export async function signInWithGoogle() {}
-
-// createUserWithEmailAndPassword(auth, email, password);
-
-export async function signOut() {
+export async function signOutWrapper() {
   auth.signOut().catch(function (e) {
-    throw new Error("Error signing out with Google: " + e);
+    throw new Error("Error signing out -- Tag:27\n\t" + e);
   });
 }

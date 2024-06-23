@@ -1,17 +1,14 @@
 "use server";
-import {
-  createUserWithEmailAndPasswordWrapper,
-  signInWithEmailAndPasswordWrapper,
-} from "@/firebase/auth";
+
 import db from "@/firebase/config";
 import {
-  addDocWrapper,
   collectionWrapper,
-  deleteDocWrapper,
-  docWrapper,
-  getDocsWrapper,
-  getDocWrapper,
   queryWrapper,
+  getDocsWrapper,
+  docWrapper,
+  getDocWrapper,
+  deleteDocWrapper,
+  addDocWrapper,
   updateDocWrapper,
 } from "@/firebase/firestore";
 import {
@@ -21,7 +18,6 @@ import {
   Resident,
   ResidentData,
 } from "@/types/resident";
-import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 
 export async function addNewResident(resident: ResidentData) {
@@ -42,8 +38,6 @@ export async function addNewResident(resident: ResidentData) {
     const residentColRef = await collectionWrapper(db, "residents");
     const { emergency_contacts, ...newResident } = resident;
     const residentsDocRef = await addDocWrapper(residentColRef, newResident);
-    revalidatePath("/admin/residents");
-    revalidatePath("/residents/[id]", "page");
     return {
       result: new URL(
         `/residents/${residentsDocRef.id}`,
@@ -56,33 +50,6 @@ export async function addNewResident(resident: ResidentData) {
     return {
       success: false,
       message: "Failed to Add a New Resident",
-    };
-  }
-}
-
-export async function deleteResidentData(
-  residentData: ResidentData,
-  residentId: string
-) {
-  try {
-    const { emergency_contact_ids: emergencyContactIds } = residentData;
-    if (emergencyContactIds) {
-      Promise.all(
-        emergencyContactIds.map(async (id) => {
-          const contactDocRef = await docWrapper(db, "emergency_contacts", id);
-          await deleteDocWrapper(contactDocRef);
-        })
-      );
-    }
-    const residentDocRef = await docWrapper(db, "residents", residentId);
-    await deleteDocWrapper(residentDocRef);
-    revalidatePath("/admin/residents");
-    revalidatePath("/residents/[id]", "page");
-    return { success: true, message: "Successfully Deleted Resident" };
-  } catch (error) {
-    return {
-      success: false,
-      message: "Failed to Delete the Resident.",
     };
   }
 }
@@ -120,9 +87,10 @@ export async function updateResident(
     }
     const residentDocRef = await docWrapper(db, "residents", residentId);
     await updateDocWrapper(residentDocRef, resident);
-    revalidatePath("/admin/residents");
-    revalidatePath("/residents/[id]", "page");
-    return { success: true };
+    return {
+      success: true,
+      message: "Successfully Updated Resident Information",
+    };
   } catch (error) {
     return {
       success: false,
@@ -184,15 +152,33 @@ export async function getResidentData(residentId: string) {
   }
 }
 
+export async function getAllResidentsDataLite() {
+  try {
+    const collectionResponse = await collectionWrapper(db, "residents");
+    const residentsCollection = collectionResponse;
+    const q = await queryWrapper(residentsCollection);
+    const residentsData = await getDocsWrapper(q);
+    return residentsData.docs.map((doc) => {
+      const resident = doc.data();
+      if (!isTypeResident(resident))
+        throw new Error("Object is not of type Resident  -- Tag:19");
+      return {
+        ...resident,
+        id: doc.id,
+      };
+    });
+  } catch (error) {
+    throw new Error("Failed to fetch All Residents Data.\n\t\t" + error);
+  }
+}
+
 export async function getAllResidentsData() {
   try {
     const collectionResponse = await collectionWrapper(db, "residents");
     const residentsCollection = collectionResponse;
     const q = await queryWrapper(residentsCollection);
     const residentsData = await getDocsWrapper(q);
-
     const residents: Resident[] = [];
-
     for (const doc of residentsData.docs) {
       let resident = doc.data();
       if (!isTypeResident(resident))
@@ -225,56 +211,27 @@ export async function getAllResidentsData() {
   }
 }
 
-export async function getAllResidentsDataLite() {
+export async function deleteResidentData(
+  residentData: ResidentData,
+  residentId: string
+) {
   try {
-    const collectionResponse = await collectionWrapper(db, "residents");
-    const residentsCollection = collectionResponse;
-    const q = await queryWrapper(residentsCollection);
-    const residentsData = await getDocsWrapper(q);
-    return residentsData.docs.map((doc) => {
-      const resident = doc.data();
-      if (!isTypeResident(resident))
-        throw new Error("Object is not of type Resident  -- Tag:19");
-      return {
-        ...resident,
-        id: doc.id,
-      };
-    });
+    const { emergency_contact_ids: emergencyContactIds } = residentData;
+    if (emergencyContactIds) {
+      Promise.all(
+        emergencyContactIds.map(async (id) => {
+          const contactDocRef = await docWrapper(db, "emergency_contacts", id);
+          await deleteDocWrapper(contactDocRef);
+        })
+      );
+    }
+    const residentDocRef = await docWrapper(db, "residents", residentId);
+    await deleteDocWrapper(residentDocRef);
+    return { success: true, message: "Successfully Deleted Resident" };
   } catch (error) {
-    throw new Error("Failed to fetch All Residents Data.\n\t\t" + error);
+    return {
+      success: false,
+      message: "Failed to Delete the Resident.",
+    };
   }
-}
-
-export async function addAdmin(data: { email: string; password: string }) {
-  return createUserWithEmailAndPasswordWrapper(data.email, data.password)
-    .then((user) => ({
-      result: JSON.stringify(user),
-      success: true,
-      message: "User Created Successfully",
-    }))
-    .catch((error) => {
-      let msg = "";
-      if (error.message.match(/(email-already-in-use)/g))
-        msg = "Email Already In Use";
-      return {
-        success: false,
-        message: "Failed to Create User: " + msg,
-      };
-    });
-}
-
-export async function signIn(data: { email: string; password: string }) {
-  return signInWithEmailAndPasswordWrapper(data.email, data.password)
-    .then((user) => ({
-      result: JSON.stringify(user),
-      success: true,
-      message: "User Signed In Successfully",
-    }))
-    .catch((error) => {
-      return {
-        result: error.message,
-        message: "Failed to Sign In User.",
-        success: false,
-      };
-    });
 }

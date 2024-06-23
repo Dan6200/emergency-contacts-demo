@@ -17,12 +17,13 @@ export default function Search({ residents }: SearchProps) {
   );
   const admin = useAtomValue(userAtom);
   const [open, setOpen] = useState(true);
-  console.log(open);
 
   useLayoutEffect(() => {
-    if (!admin) {
-      redirect("/");
-    }
+    setTimeout(() => {
+      if (!admin) {
+        redirect("/");
+      }
+    }, 500);
   }, [admin]);
 
   return (
