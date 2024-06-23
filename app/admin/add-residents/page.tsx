@@ -1,4 +1,4 @@
-import { mutateResidentData } from "@/app/actions";
+import { mutateResidentData } from "@/app/admin/residents/data";
 import { GoBackLink } from "@/components/go-back-link";
 import { ResidentForm } from "@/components/residents/form";
 

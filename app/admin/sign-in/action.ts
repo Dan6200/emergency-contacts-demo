@@ -9,7 +9,6 @@ export async function signOut() {
 }
 
 export async function signIn(data: { email: string; password: string }) {
-  console.log("runs on server");
   return signInWithEmailAndPasswordWrapper(data.email, data.password)
     .then(({ user }) => ({
       result: JSON.stringify(user),

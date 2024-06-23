@@ -1,3 +1,4 @@
+"use server";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -27,10 +28,6 @@ export async function signInWithEmailAndPasswordWrapper(
     throw new Error("Failed to sign in -- Tag:2\n\t" + e);
   });
 }
-
-export async function signInWithGoogle() {}
-
-// createUserWithEmailAndPassword(auth, email, password);
 
 export async function signOutWrapper() {
   auth.signOut().catch(function (e) {

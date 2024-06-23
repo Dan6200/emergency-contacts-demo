@@ -1,5 +1,7 @@
-import { getAllResidentsDataLite } from "@/app/actions";
+import { getAllResidentsDataLite } from "./data";
 import Search from "@/components/residents/search";
+
+export const revalidate = 60;
 
 export default async function Residents() {
   const residents = await getAllResidentsDataLite().catch((e) => {

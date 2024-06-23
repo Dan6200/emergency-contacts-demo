@@ -1,11 +1,11 @@
 import Resident from "@/components/resident";
 import { notFound } from "next/navigation";
+import DeleteResident from "./delete";
 import {
-  getAllResidentsData,
   getResidentData,
   deleteResidentData,
-} from "@/app/actions";
-import DeleteResident from "./delete";
+  getAllResidentsData,
+} from "@/app/admin/residents/data";
 
 export default async function ResidentPage({
   params: { id },

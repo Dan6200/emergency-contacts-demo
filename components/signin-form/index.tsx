@@ -30,7 +30,7 @@ const SignInFormSchema = z.object({
 });
 
 type Authenticate = (data: { email: string; password: string }) => Promise<{
-  result?: string;
+  result: string;
   success: boolean;
   message: string;
 }>;
@@ -60,7 +60,7 @@ export function SignInForm({ signIn }: SignInForm) {
     data: z.infer<typeof SignInFormSchema>
   ) {
     const { result, message, success } = await sign_in(data);
-    if (result) setAdmin(JSON.parse(result));
+    if (success) setAdmin(JSON.parse(result));
     toast({ title: message, variant: success ? "default" : "destructive" });
   }
 

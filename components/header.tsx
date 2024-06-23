@@ -17,23 +17,10 @@ import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import userAtom from "@/atoms/user";
 import { toast } from "./ui/use-toast";
-import { Unsubscribe } from "firebase/auth";
-import { onAuthStateChanged } from "@/firebase/auth";
 
 export default function Header({ signOut }: { signOut: () => Promise<void> }) {
   const router = useRouter();
   const [admin, setAdmin] = useAtom(userAtom);
-
-  useEffect(() => {
-    let unsubscribe: Unsubscribe | null = null;
-    (async () => {
-      unsubscribe = await onAuthStateChanged((admin) => {
-        console.log(admin?.email);
-        setAdmin(admin);
-      });
-    })();
-    return () => (unsubscribe ? unsubscribe() : undefined);
-  }, []);
 
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
     event: MouseEvent

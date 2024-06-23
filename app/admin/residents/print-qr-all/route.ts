@@ -1,4 +1,4 @@
-import { getAllResidentsDataLite } from "@/app/actions";
+import { getAllResidentsDataLite } from "@/app/admin/residents/data";
 import { Resident } from "@/types/resident";
 import jsPDF from "jspdf";
 import { NextResponse } from "next/server";
@@ -13,7 +13,7 @@ export async function GET() {
   await Promise.all(
     AllResidents.map(async ({ id, address, unit_number }: Resident, idx) => {
       const qrCodeDataUri = await QRcode.toDataURL(
-        new URL(`/residents/${id}`, process.env.NEXT_PUBLIC_DOMAIN).toString()
+        new URL(`/residents/${id}`, process.env.DOMAIN).toString()
       );
       doc.text(`Unit Number: ${unit_number}`, 30, 20);
       doc.text(`Address: ${address}`, 30, 35);
