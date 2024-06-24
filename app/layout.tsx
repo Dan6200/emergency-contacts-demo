@@ -11,6 +11,7 @@ const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: "LinkID",
+  description: "System To Manage Patient Information",
 };
 
 export default async function RootLayout({

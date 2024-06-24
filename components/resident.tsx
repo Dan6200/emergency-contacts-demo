@@ -28,36 +28,38 @@ export default function Resident({
         <p className="font-semibold">Room: {resident.unit_number}</p>
         <p className="">{resident.address}</p>
       </section>
-      <section className="mb-8 flex flex-col md:flex-row md:justify-center md:flex-wrap gap-6 w-full">
-        {emergencyContacts &&
-          emConIds &&
-          emergencyContacts.map((contact, index) => (
-            <Link
-              href={`tel:${contact.phone_number
-                .replaceAll(/\s/g, "-")
-                .replaceAll(/\(|\)/g, "")}`}
-              key={emConIds[index]}
-              className="h-fit"
-            >
-              {/* className="md:basis-[40vw] md:grow md:shrink h-fit" */}
-              <Card className="hover:bg-green-700/10 active:bg-green-700/10 flex shadow-md p-4 w-full md:p-6 items-center md:h-[30vh] min-w-[40vw]">
-                <CardContent className="grow p-0 flex flex-col justify-between h-3/5 text-left">
-                  <h3 className="capitalize font-semibold md:text-xl">
-                    {contact.name}
-                  </h3>
-                  <p className="capitalize">{contact.relationship}</p>
-                  <p className="text-green-700 font-semibold">
-                    {contact.phone_number}
-                  </p>
-                </CardContent>
-                <CardFooter className="shrink p-2">
-                  <span className="border-4 border-green-700 w-16 h-16 flex items-center rounded-full">
-                    <PhoneCall className="text-green-700 font-bold mx-auto" />
-                  </span>
-                </CardFooter>
-              </Card>
-            </Link>
-          ))}
+      <section>
+        <h4 className="text-xl mb-8 font-bold">Emergency Contacts</h4>
+        <div className="mb-8 flex flex-col md:flex-row md:justify-center md:flex-wrap gap-6 w-full">
+          {emergencyContacts &&
+            emConIds &&
+            emergencyContacts.map((contact, index) => (
+              <Link
+                href={`tel:${contact.phone_number
+                  .replaceAll(/\s/g, "-")
+                  .replaceAll(/\(|\)/g, "")}`}
+                key={emConIds[index]}
+                className="h-fit"
+              >
+                <Card className="hover:bg-green-700/10 active:bg-green-700/10 flex shadow-md p-4 w-full md:p-6 items-center md:h-[20vh] min-w-[40vw]">
+                  <CardContent className="grow p-0 flex flex-col justify-between h-3/5 text-left">
+                    <h3 className="capitalize font-semibold md:text-xl">
+                      {contact.name}
+                    </h3>
+                    <p className="capitalize">{contact.relationship}</p>
+                    <p className="text-green-700 font-semibold">
+                      {contact.phone_number}
+                    </p>
+                  </CardContent>
+                  <CardFooter className="shrink p-2">
+                    <span className="border-4 border-green-700 w-16 h-16 flex items-center rounded-full">
+                      <PhoneCall className="text-green-700 font-bold mx-auto" />
+                    </span>
+                  </CardFooter>
+                </Card>
+              </Link>
+            ))}
+        </div>
       </section>
       <section className="my-8 flex flex-col md:flex-row md:justify-center md:flex-wrap gap-6 w-full md:w-4/5 lg:w-2/3 mx-auto">
         {admin && (
