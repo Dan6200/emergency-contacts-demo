@@ -57,8 +57,8 @@ export default function QRFetchResidents() {
                 let url: URL | null = null;
                 try {
                   url = new URL(result.getText());
-                } catch {
-                  setFetchResidentErr("Resident's QR is Invalid");
+                } catch (e) {
+                  setFetchResidentErr("Resident's QR is Invalid: " + e);
                   return;
                 }
                 if (!url) return;
@@ -71,10 +71,12 @@ export default function QRFetchResidents() {
                   })
                   .catch((e) => {
                     if (e.response?.status === 404) {
-                      setFetchResidentErr("Resident Does Not Exist");
+                      setFetchResidentErr("Resident Does Not Exist: " + e);
                       return;
                     }
-                    setFetchResidentErr("Failed to Retrieve Resident Info");
+                    setFetchResidentErr(
+                      "Failed to Retrieve Resident Info: " + e
+                    );
                     return;
                   });
               } catch (e) {
