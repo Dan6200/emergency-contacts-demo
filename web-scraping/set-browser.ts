@@ -6,7 +6,7 @@ puppeteer.use(stealth());
 
 export const browser = await puppeteer.launch({
   headless: "new",
-  // headless: false,
+  //headless: false,
   args: [
     // `--proxy-server=${anonProxy}`,
     "--no-sandbox",

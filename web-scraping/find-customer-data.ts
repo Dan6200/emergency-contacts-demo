@@ -1,16 +1,12 @@
 // cspell:ignore trumpia ccyoung
 
 import { Page } from "puppeteer";
-import { getCustomerData } from "./get-customer-data.js";
+import getCustomerData from "./get-customer-data.js";
 import { browser } from "./set-browser.js";
 import Resident from "./types.js";
 import { delay, _locator } from "./utils.js";
 
-export default async function (
-  page: Page,
-  residents: Resident[],
-  ssNo: number
-) {
+export default async function (page: Page, ssNo: number) {
   await page.screenshot({
     fullPage: true,
     path: `data/screenshots/${++ssNo}.jpg`,
@@ -21,7 +17,7 @@ export default async function (
   await page.locator(".basic_table tr > td").click();
   const buttons = await _locator(page, ".basic_table #button a");
   await buttons[0].click();
-  await delay(50_000);
+  await delay(30_000);
   const [, page2] = await browser.pages();
   page2.setDefaultTimeout(10_000_000);
   await page.close();
@@ -31,5 +27,5 @@ export default async function (
   });
   await page2.locator("#btn_go_new_trumpia").click();
   await delay(50_000);
-  await getCustomerData(page2, residents, ssNo);
+  await getCustomerData(page2, ssNo);
 }

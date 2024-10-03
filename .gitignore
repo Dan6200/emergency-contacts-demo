@@ -43,6 +43,7 @@ notes.md
 
 # vscode
 .vscode/*
+**/.vscode/*
 
 # webscraping
 web-scraping/screenshots/*

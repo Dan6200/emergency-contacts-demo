@@ -40,7 +40,7 @@
     "mobx": "^6.12.3",
     "mobx-react-lite": "^4.0.7",
     "mobx-state-tree": "^6.0.0",
-    "next": "14.2.4",
+    "next": "14.2.14",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "pusher-js": "8.4.0-rc2",

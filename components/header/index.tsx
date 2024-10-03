@@ -10,15 +10,29 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Button } from "./ui/button";
-import { Plus, QrCode, Search, UserRound, UserRoundPlus } from "lucide-react";
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import {
+  Plus,
+  QrCode,
+  SearchIcon,
+  UserRound,
+  UserRoundPlus,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import userAtom from "@/atoms/user";
-import { toast } from "./ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
+import Search from "./search/index";
+import { Resident } from "@/types/resident";
 
-export default function Header({ signOut }: { signOut: () => Promise<void> }) {
+export default function Header({
+  signOut,
+  residents,
+}: {
+  signOut: () => Promise<void>;
+  residents: Resident[];
+}) {
   const router = useRouter();
   const [admin, setAdmin] = useAtom(userAtom);
 
@@ -49,6 +63,7 @@ export default function Header({ signOut }: { signOut: () => Promise<void> }) {
           className="hidden md:block"
         />
       </Link>
+      <Search {...{ residents }} />
       {admin ? (
         <DropdownMenu>
           <DropdownMenuTrigger className="rounded-full border-primary border-4 bg-primary-foreground w-12 h-12">
@@ -66,7 +81,7 @@ export default function Header({ signOut }: { signOut: () => Promise<void> }) {
                   className="cursor-pointer h-9 items-center flex justify-between mx-auto w-full"
                 >
                   Search Residents
-                  <Search className="w-4 mr-2" />
+                  <SearchIcon className="w-4 mr-2" />
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem>

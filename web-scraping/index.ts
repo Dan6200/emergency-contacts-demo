@@ -1,19 +1,27 @@
-import { appendFile } from "fs/promises";
+import deleteAllFilesInDirectory from "@/dev-utils/delete-all-files-in-directory.js";
 import findCustomerData from "./find-customer-data.js";
 import login from "./login.js";
 import { page } from "./set-browser.js";
-import Resident from "./types.js";
+import { delay } from "./utils.js";
 
 const ssNo = 0;
-const residents: Resident[] = [];
 
-try {
-  await login(page);
-  await findCustomerData(page, residents, ssNo);
-} catch (e) {
-  console.log("An error occurred!");
-  console.error(e);
-} finally {
-  console.log("written to file!");
-  await appendFile("data/raw_data.json", JSON.stringify(residents, null, 2));
+await deleteAllFilesInDirectory("data/screenshots");
+
+let _page = page;
+
+while (true) {
+  try {
+    console.log("starting...");
+    _page.setDefaultTimeout(500_000);
+    await login(_page);
+    await findCustomerData(_page, ssNo);
+  } catch (e) {
+    console.log("An error occurred!");
+    console.error(e);
+  } finally {
+    await delay(30_000);
+    _page.close();
+    ({ page: _page } = await import("./set-browser.js"));
+  }
 }
