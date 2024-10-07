@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { SearchSuggestions } from "@/components/search-suggestions";
+import { Suggestions } from "@/components/header/search/suggestions";
 import { redirect } from "next/navigation";
 import { useAtomValue } from "jotai";
 import userAtom from "@/atoms/user";
@@ -27,11 +27,11 @@ export default function Search({ residents }: SearchProps) {
   }, [admin]);
 
   return (
-    <main className="w-full sm:w-4/5 md:w-3/5 px-[5vw] sm:px-8 mx-auto py-8">
+    <div className="flex-1">
       <SearchBar {...{ residents, setMatchingResidents, setOpen }} />
       {matchingResidents && open && (
-        <SearchSuggestions {...{ matchingResidents, setOpen }} />
+        <Suggestions {...{ matchingResidents, setOpen }} />
       )}
-    </main>
+    </div>
   );
 }

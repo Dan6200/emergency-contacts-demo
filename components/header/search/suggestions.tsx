@@ -4,7 +4,7 @@ import Link from "next/link";
 import { X } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 
-export const SearchSuggestions = ({
+export const Suggestions = ({
   matchingResidents,
   setOpen,
 }: {
@@ -12,7 +12,7 @@ export const SearchSuggestions = ({
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   return (
-    <Card className="mt-4 py-0 w-full mx-auto">
+    <Card className="absolute mt-4 py-0 w-1/2 left-1/4">
       <div className="w-11/12 relative mx-auto ">
         <span
           onClick={() => setOpen(!open)}
@@ -20,7 +20,7 @@ export const SearchSuggestions = ({
         >
           <X className="text-background" />
         </span>
-        <CardContent className="my-4 px-0 flex flex-col overflow-y-scroll max-h-[80vh] md:max-h-[60vh] gap-2">
+        <CardContent className="my-4 px-0 flex flex-col overflow-y-scroll max-h-[80vh] md:max-h-[40vh] gap-2">
           {matchingResidents.length ? (
             matchingResidents.map((resident) => (
               <Link

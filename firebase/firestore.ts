@@ -11,6 +11,7 @@ import {
   CollectionReference,
   DocumentData,
   Query,
+  QueryConstraint,
   query,
   DocumentReference,
   getDoc,
@@ -84,9 +85,12 @@ export const deleteDocWrapper = async (
   });
 };
 
-export const queryWrapper = async (_query: Query<Resident, DocumentData>) => {
+export const queryWrapper = async (
+  _query: Query<Resident, DocumentData>,
+  ...constraints: QueryConstraint[]
+) => {
   try {
-    return query(_query);
+    return query(_query, ...constraints);
   } catch (e) {
     throw new Error("Error querying the Database -- Tag:8.\n\t" + e);
   }

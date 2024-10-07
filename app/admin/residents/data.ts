@@ -1,3 +1,7 @@
+/*************************************
+ * BIG TODO!!!!
+ * *************************************/
+
 "use server";
 
 import db from "@/firebase/config";
@@ -11,32 +15,20 @@ import {
   addDocWrapper,
   updateDocWrapper,
 } from "@/firebase/firestore";
+import { where, limit } from "firebase/firestore";
 import {
   EmergencyContact,
   isTypeEmergencyContact,
+  isTypeResidence,
   isTypeResident,
   Resident,
-  ResidentData,
+  Residence,
 } from "@/types/resident";
 import { notFound } from "next/navigation";
 
-export async function addNewResident(resident: ResidentData) {
+export async function addNewResident(newResident: Resident) {
   try {
-    const { emergency_contacts: emergencyContacts } = resident;
-    resident.emergency_contact_ids = resident.emergency_contact_ids ?? [];
-    if (emergencyContacts && emergencyContacts.length)
-      for (const contact of emergencyContacts) {
-        const contactColRef = await collectionWrapper(db, "emergency_contacts");
-        const contactDocRef = await addDocWrapper(contactColRef, contact);
-        if (!contactDocRef.id)
-          return {
-            message: "Failed to Add Emergency Contact Info.",
-            success: false,
-          };
-        resident.emergency_contact_ids.push(contactDocRef.id);
-      }
     const residentColRef = await collectionWrapper(db, "residents");
-    const { emergency_contacts, ...newResident } = resident;
     const residentsDocRef = await addDocWrapper(residentColRef, newResident);
     return {
       result: new URL(
@@ -55,38 +47,12 @@ export async function addNewResident(resident: ResidentData) {
 }
 
 export async function updateResident(
-  resident: ResidentData,
+  newResidentData: Resident,
   residentId: string
 ) {
   try {
-    const { emergency_contacts, emergency_contact_ids } = resident;
-    if (
-      emergency_contacts &&
-      emergency_contact_ids &&
-      emergency_contacts.length
-    ) {
-      const emergencyContacts = emergency_contacts.map((ec, i) => ({
-        ...ec,
-        id: emergency_contact_ids[i],
-      }));
-      Promise.all(
-        emergencyContacts.map(async (contact) => {
-          if (!contact.id)
-            return {
-              message: "Must include Id in Emergency Contact Object",
-              success: false,
-            };
-          const contactDocRef = await docWrapper(
-            db,
-            "emergency_contacts",
-            contact.id
-          );
-          await updateDocWrapper(contactDocRef, contact);
-        })
-      );
-    }
     const residentDocRef = await docWrapper(db, "residents", residentId);
-    await updateDocWrapper(residentDocRef, resident);
+    await updateDocWrapper(residentDocRef, newResidentData);
     return {
       success: true,
       message: "Successfully Updated Resident Information",
@@ -100,17 +66,17 @@ export async function updateResident(
 }
 
 export async function mutateResidentData(
-  resident: ResidentData
+  resident: Resident
 ): Promise<
   | { result?: string; message: string; success: boolean }
   | { result?: string; message: string; success: boolean }
 >;
 export async function mutateResidentData(
-  resident: ResidentData,
+  resident: Resident,
   residentId: string
 ): Promise<{ success: boolean } | { success: boolean; message?: string }>;
 export async function mutateResidentData(
-  resident: ResidentData,
+  resident: Resident,
   residentId?: string
 ) {
   if (residentId) return updateResident(resident, residentId);
@@ -121,38 +87,17 @@ export async function getResidentData(residentId: string) {
   try {
     const residentsDocRef = await docWrapper(db, "residents", residentId);
     const residentsSnap = await getDocWrapper(residentsDocRef);
-    const residentData = residentsSnap.data();
-    if (!residentData) throw notFound();
-    if (!isTypeResident(residentData))
-      throw new Error("Object is not of type Resident  -- Tag:16");
-    const emContactData: EmergencyContact[] = [];
-    for (const emContactId of residentData.emergency_contact_ids) {
-      const emContactsDoc = await docWrapper(
-        db,
-        "emergency_contacts",
-        emContactId
-      );
-      const emContactsSnap = await getDocWrapper(emContactsDoc);
-      const singleEmConData = emContactsSnap.data();
-
-      if (!isTypeEmergencyContact(singleEmConData))
-        throw new Error("Object is not of type Emergency Contact  -- Tag:23");
-      emContactData.push(singleEmConData);
-    }
-    const resident = {
-      ...residentData,
-      id: residentId,
-      emergency_contacts: emContactData,
-    };
+    const resident = residentsSnap.data();
+    if (!resident) throw notFound();
     if (!isTypeResident(resident))
-      throw new Error("Object is not of type Resident  -- Tag:17");
+      throw new Error("Object is not of type Resident  -- Tag:16");
     return resident;
   } catch (error) {
-    throw new Error("Failed to fetch resident Data.\n\t\t" + error);
+    throw new Error("Failed to fetch resident.\n\t\t" + error);
   }
 }
 
-export async function getAllResidentsDataLite() {
+export async function getResidents() {
   try {
     const collectionResponse = await collectionWrapper(db, "residents");
     const residentsCollection = collectionResponse;
@@ -162,70 +107,132 @@ export async function getAllResidentsDataLite() {
       const resident = doc.data();
       if (!isTypeResident(resident))
         throw new Error("Object is not of type Resident  -- Tag:19");
-      return {
-        ...resident,
-        id: doc.id,
-      };
+      return resident;
     });
   } catch (error) {
     throw new Error("Failed to fetch All Residents Data.\n\t\t" + error);
   }
 }
 
-export async function getAllResidentsData() {
+export async function getAllRooms() {
   try {
-    const collectionResponse = await collectionWrapper(db, "residents");
-    const residentsCollection = collectionResponse;
-    const q = await queryWrapper(residentsCollection);
-    const residentsData = await getDocsWrapper(q);
-    const residents: Resident[] = [];
+    const collectionResponse = await collectionWrapper(db, "residence");
+    const roomsCollection = collectionResponse;
+    const q = await queryWrapper(roomsCollection);
+    const roomsData = await getDocsWrapper(q);
+    return roomsData.docs.map((doc) => {
+      const residence = doc.data();
+      if (!isTypeResidence(residence))
+        throw new Error("Object is not of type Residence  -- Tag:19");
+      return residence;
+    });
+  } catch (error) {
+    throw new Error("Failed to fetch All Residence Data.\n\t\t" + error);
+  }
+}
+
+export async function getResidentsData(residenceId: string) {
+  /******************************************
+   * Create a Join Between Residence,
+   * Emergency Contacts and Resident documents on residenceId
+   * *********************************************************/
+
+  try {
+    const addressCollection = await collectionWrapper(db, "residence");
+    const residentsCollection = await collectionWrapper(db, "residents");
+    const emContactsCollection = await collectionWrapper(
+      db,
+      "emergency_contacts"
+    );
+
+    const resident_id_map: any = [];
+    const room_map: any = [];
+
+    // Fetch resident data...
+    const resQ = await queryWrapper(
+      residentsCollection,
+      where("residence_id", "==", residenceId)
+    );
+    const residentsData = await getDocsWrapper(resQ);
     for (const doc of residentsData.docs) {
       let resident = doc.data();
       if (!isTypeResident(resident))
         throw new Error("Object is not of type Resident -- Tag:9");
-      const emContactData: EmergencyContact[] = [];
-      for (const emContactId of resident.emergency_contact_ids) {
-        const emContactsDoc = await docWrapper(
-          db,
-          "emergency_contacts",
-          emContactId
-        );
-        const emContactsSnap = await getDocWrapper(emContactsDoc);
-        const singleEmConData = emContactsSnap.data();
-        if (!isTypeEmergencyContact(singleEmConData))
-          throw new Error("Object is not of type Emergency Contact -- Tag:18");
-        emContactData.push(singleEmConData);
-      }
-      resident = {
+
+      // Add each resident to the map
+      resident_id_map[resident.resident_id] = {
         ...resident,
-        id: doc.id,
-        emergency_contacts: emContactData,
+        ...resident_id_map[resident.resident_id],
       };
-      if (!isTypeResident(resident))
-        throw new Error("Object is not of type Resident -- Tag:10");
-      residents.push(resident);
+
+      // Add all residents in the resident map to the room map
+      room_map[resident.residence_id] = {
+        ...room_map[resident.residence_id],
+        residents: [
+          ...(room_map[resident.residence_id].residents ?? []),
+          resident_id_map[resident.resident_id],
+        ],
+      };
     }
-    return residents;
+
+    // Fetch and join contact data...
+    const contQ = await queryWrapper(emContactsCollection);
+    const contactData = await getDocsWrapper(contQ);
+    for (const doc of contactData.docs) {
+      let contact = doc.data();
+      if (!isTypeEmergencyContact(contact))
+        throw new Error("Object is not of type Emergency Contacts -- Tag:11");
+
+      if (resident_id_map[contact.resident_id]) {
+        resident_id_map[contact.resident_id].contacts = [
+          ...(resident_id_map[contact.resident_id].contacts ?? []),
+          contact,
+        ];
+      }
+
+      // Update room map with modified residents map...
+      const residenceId = resident_id_map[contact.resident_id].residence_id;
+      room_map[residenceId] = {
+        ...room_map[residenceId],
+        residents: [
+          ...(room_map[residenceId]?.residents || []),
+          resident_id_map[contact.resident_id],
+        ],
+      };
+    }
+
+    // Fetch and join address data...
+    const addressQ = await queryWrapper(
+      addressCollection,
+      where("residence_id", "==", residenceId),
+      limit(1)
+    );
+    let addressSnap = await getDocsWrapper(addressQ);
+    for (const doc of addressSnap.docs) {
+      const address = doc.data();
+      if (!isTypeResidence(address))
+        throw new Error("Object is not of type Residence -- Tag:10");
+      room_map[address.residence_id] = {
+        ...room_map[address.residence_id],
+        address,
+      };
+    }
+
+    return Object.entries(room_map);
   } catch (error) {
     throw new Error("Failed to fetch All Residents Data:\n\t\t" + error);
   }
 }
 
-export async function deleteResidentData(
-  residentData: ResidentData,
-  residentId: string
-) {
+export async function deleteResidentData(residentId: string) {
   try {
-    const { emergency_contact_ids: emergencyContactIds } = residentData;
-    if (emergencyContactIds) {
-      Promise.all(
-        emergencyContactIds.map(async (id) => {
-          const contactDocRef = await docWrapper(db, "emergency_contacts", id);
-          await deleteDocWrapper(contactDocRef);
-        })
-      );
-    }
     const residentDocRef = await docWrapper(db, "residents", residentId);
+    const addressDocRef = await docWrapper(db, "residence", residentId);
+    const contactDocRef = await docWrapper(
+      db,
+      "emergency_contacts",
+      residentId
+    );
     await deleteDocWrapper(residentDocRef);
     return { success: true, message: "Successfully Deleted Resident" };
   } catch (error) {

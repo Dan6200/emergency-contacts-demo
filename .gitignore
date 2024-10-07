@@ -51,3 +51,4 @@ web-scraping/data/*
 
 # dev utilities
 dev-utils/*
+data/*.json

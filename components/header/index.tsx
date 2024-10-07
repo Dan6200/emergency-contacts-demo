@@ -45,14 +45,14 @@ export default function Header({
 
   return (
     <header className="fixed w-full z-10 bg-background/80 flex border-b items-center justify-between px-4 py-2">
-      <Link href="/">
+      <Link href="/" className="flex-1">
         <Image
           priority
           width={100}
           height={100}
           src="/client-logo-small.png"
           alt="LinkId logo"
-          className="block md:hidden"
+          className="block md:hidden flex-1"
         />
         <Image
           priority
@@ -61,73 +61,77 @@ export default function Header({
           src="/client-logo-large.jpeg"
           alt="LinkId logo"
           className="hidden md:block"
+          //className="md:hidden"
         />
       </Link>
       <Search {...{ residents }} />
       {admin ? (
         <DropdownMenu>
-          <DropdownMenuTrigger className="rounded-full border-primary border-4 bg-primary-foreground w-12 h-12">
-            <UserRound className="mx-auto" />
-          </DropdownMenuTrigger>
+          <div className="flex-1 flex justify-end">
+            <DropdownMenuTrigger className="rounded-full border-primary border-4 bg-primary-foreground w-12 h-12">
+              <UserRound className="mx-auto" />
+            </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="text-center gap-5 p-2 md:gap-5 bg-background border-2 mr-4 w-[60vw] sm:w-[40vw] md:w-[20vw]">
-            <DropdownMenuLabel>Admin</DropdownMenuLabel>
-
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <span
-                  onClick={() => router.push("/admin/residents")}
-                  className="cursor-pointer h-9 items-center flex justify-between mx-auto w-full"
-                >
-                  Search Residents
-                  <SearchIcon className="w-4 mr-2" />
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <span
-                  onClick={() => router.push("/admin/add-residents")}
-                  className="cursor-pointer h-9 items-center flex justify-between mx-auto w-full"
-                >
-                  Add New Residents
-                  <Plus className="w-4 mr-2" />
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <span
-                  onClick={() => router.push("/admin/new")}
-                  className="cursor-pointer h-9 items-center flex justify-between mx-auto w-full"
-                >
-                  Add New Admin
-                  <UserRoundPlus className="w-6" />
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <span
-                  onClick={() => {
-                    toast({ title: "Printing QR Codes..." });
-                    router.push("/admin/residents/print-qr-all");
-                  }}
-                  className="cursor-pointer h-9 items-center flex justify-between capitalize mx-auto w-full"
-                >
-                  Print QR Codes
-                  <QrCode className="w-6" />
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Button onClick={handleSignOut} className="w-full mx-auto">
-                  Sign Out
-                </Button>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
+            <DropdownMenuContent className="text-center gap-5 p-2 md:gap-5 bg-background border-2 mr-4 w-[60vw] sm:w-[40vw] md:w-[20vw]">
+              <DropdownMenuLabel>Admin</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem>
+                  <span
+                    onClick={() =>
+                      router.push("/admin/residents/advanced-search")
+                    }
+                    className="cursor-pointer h-9 items-center flex justify-between mx-auto w-full"
+                  >
+                    Search Residents
+                    <SearchIcon className="w-4 mr-2" />
+                  </span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <span
+                    onClick={() => router.push("/admin/add-residents")}
+                    className="cursor-pointer h-9 items-center flex justify-between mx-auto w-full"
+                  >
+                    Add New Residents
+                    <Plus className="w-4 mr-2" />
+                  </span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <span
+                    onClick={() => router.push("/admin/new")}
+                    className="cursor-pointer h-9 items-center flex justify-between mx-auto w-full"
+                  >
+                    Add New Admin
+                    <UserRoundPlus className="w-6" />
+                  </span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <span
+                    onClick={() => {
+                      toast({ title: "Printing QR Codes..." });
+                      router.push("/admin/residents/print-qr-all");
+                    }}
+                    className="cursor-pointer h-9 items-center flex justify-between capitalize mx-auto w-full"
+                  >
+                    Print QR Codes
+                    <QrCode className="w-6" />
+                  </span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Button onClick={handleSignOut} className="w-full mx-auto">
+                    Sign Out
+                  </Button>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </div>
         </DropdownMenu>
       ) : (
-        <Link href="/admin/sign-in" className="">
-          <Button className="capitalize hidden md:flex">
+        <Link href="/admin/sign-in" className="flex-1 flex">
+          <Button className="capitalize hidden md:flex justify-end">
             sign in as admin
           </Button>
-          <Button className="capitalize md:hidden">admin</Button>
+          <Button className="capitalize md:hidden justify-end">admin</Button>
         </Link>
       )}
     </header>
