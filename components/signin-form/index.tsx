@@ -49,22 +49,16 @@ export function SignInForm({ signIn }: SignInForm) {
     },
   });
   const [admin, setAdmin] = useAtom(userAtom);
+  useEffect(() => {
+    (async () => {
+      console.log(await getUser());
+      if (await getUser()) {
+        setAdmin(await getUser());
+        redirect("/");
+      }
+    })();
+  });
 
-  //useEffect(() => {
-  //  (async () => {
-  //    setAdmin(await getUser());
-  //  })();
-  //});
-  //
-  //useEffect(() => {
-  //  (async () => {
-  //    console.log(await getUser());
-  //    if (await getUser()) {
-  //      redirect("/");
-  //    }
-  //  })();
-  //});
-  //
   async function onSubmit(
     sign_in: Authenticate,
     data: z.infer<typeof SignInFormSchema>

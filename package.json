@@ -41,8 +41,6 @@
     "mobx-react-lite": "^4.0.7",
     "mobx-state-tree": "^6.0.0",
     "next": "14.2.14",
-    "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "pusher-js": "8.4.0-rc2",
     "qrcode": "^1.5.3",
     "qrcode.react": "^3.1.0",
@@ -60,6 +58,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
