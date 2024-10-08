@@ -10,27 +10,28 @@ import {
 import { Residence } from "@/types/resident";
 import Link from "next/link";
 import { getAllRooms } from "./admin/residents/data-actions";
+import { redirect } from "next/navigation";
 
 export const revalidate = 60;
 
 export default async function Home() {
   const rooms = await getAllRooms().catch((e) => {
-    throw new Error("Failed to Retrieve Residents Data -- Tag:14.\n\t" + e);
+    if (e.message.match(/insufficient permissions/)) redirect("/admin/sign-in");
   });
   // TODO: switch to tables
   return (
     <main className="sm:container bg-background text-center mx-auto py-24">
-      <Table className="text-base w-fit mx-auto">
+      <Table className="text-base w-4/5 mx-auto">
         <TableCaption>All Rooms In The Facility.</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-left w-48">Keyword</TableHead>
-            <TableHead className="text-left w-32">Room</TableHead>
+            <TableHead className="text-center w-48">Keyword</TableHead>
+            <TableHead className="text-center w-48">Room</TableHead>
             <TableHead className="text-left">Address</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rooms.map(
+          {rooms?.map(
             ({
               id,
               roomNo,
@@ -39,10 +40,10 @@ export default async function Home() {
             }: Residence & { id: string }) => {
               return (
                 <TableRow key={id}>
-                  <TableCell className="text-left">
+                  <TableCell className="text-center">
                     <Link href={`/room/${id}`}>{residence_id}</Link>
                   </TableCell>
-                  <TableCell className="text-left">
+                  <TableCell className="text-center">
                     <Link href={`/room/${id}`}>{roomNo}</Link>
                   </TableCell>
                   <TableCell className="text-left">

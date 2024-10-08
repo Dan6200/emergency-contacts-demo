@@ -5,7 +5,7 @@ import stealth from "puppeteer-extra-plugin-stealth";
 puppeteer.use(stealth());
 
 export const browser = await puppeteer.launch({
-  headless: "new",
+  //headless: "new",
   //headless: false,
   args: [
     // `--proxy-server=${anonProxy}`,

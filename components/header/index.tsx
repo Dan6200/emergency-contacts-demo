@@ -25,16 +25,30 @@ import userAtom from "@/atoms/user";
 import { toast } from "@/components/ui/use-toast";
 import Search from "./search/index";
 import { Residence } from "@/types/resident";
+import { getUser } from "@/firebase/auth/actions";
+import { User } from "firebase/auth";
 
 export default function Header({
+  initialUser,
   signOut,
   rooms,
 }: {
+  initialUser: object | null;
   signOut: () => Promise<void>;
-  rooms: (Residence & { id: string })[];
+  rooms: (Residence & { id: string })[] | null;
 }) {
   const router = useRouter();
   const [admin, setAdmin] = useAtom(userAtom);
+
+  useEffect(() => {
+    if (initialUser) setAdmin((initialUser as User) ?? null), [];
+  });
+
+  useEffect(() => {
+    (async () => {
+      setAdmin(await getUser());
+    })();
+  });
 
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
     event: MouseEvent
@@ -64,7 +78,7 @@ export default function Header({
           //className="md:hidden"
         />
       </Link>
-      <Search {...{ rooms }} />
+      {rooms && <Search {...{ rooms }} />}
       {admin ? (
         <DropdownMenu>
           <div className="flex-1 flex justify-end">
@@ -127,11 +141,8 @@ export default function Header({
           </div>
         </DropdownMenu>
       ) : (
-        <Link href="/admin/sign-in" className="flex-1 flex">
-          <Button className="capitalize hidden md:flex justify-end">
-            sign in as admin
-          </Button>
-          <Button className="capitalize md:hidden justify-end">admin</Button>
+        <Link href="/admin/sign-in" className="flex-1 flex justify-end">
+          <Button className="capitalize hidden md:flex">sign in</Button>
         </Link>
       )}
     </header>

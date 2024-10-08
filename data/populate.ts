@@ -34,9 +34,8 @@ const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
 });
 
-let file1 = "data/emergency-contacts.json",
-  file2 = "data/resident.json",
-  file3 = "data/residence.json";
+let file1 = "data/emergency-contacts.json";
+let file3 = "data/residence.json";
 
 interface Resident {
   resident_id: string;
@@ -61,19 +60,19 @@ interface Residence {
 }
 
 const emergencyContacts = JSON.parse(await readFile(file1, "utf8"));
-const residents = JSON.parse(await readFile(file2, "utf8"));
+//const residents = JSON.parse(await readFile(file2, "utf8"));
 const residences = JSON.parse(await readFile(file3, "utf8"));
 
-const residentsPromise = residents.map(async (resident: Resident) => {
-  const residentColRef = await collectionWrapper(db, "residents");
-  await addDocWrapper(residentColRef, resident).catch((error) => {
-    console.log({
-      success: false,
-      message: "Failed to Add a New Resident: " + error.toString(),
-    });
-  });
-});
-
+//const residentsPromise = residents.map(async (resident: Resident) => {
+//  const residentColRef = await collectionWrapper(db, "residents");
+//  await addDocWrapper(residentColRef, resident).catch((error) => {
+//    console.log({
+//      success: false,
+//      message: "Failed to Add a New Resident: " + error.toString(),
+//    });
+//  });
+//});
+//
 const residencePromise = residences.map(async (residence: Residence) => {
   const residenceColRef = await collectionWrapper(db, "residence");
   await addDocWrapper(residenceColRef, residence).catch((error) => {
@@ -96,4 +95,4 @@ const contactPromise = emergencyContacts.map(
   }
 );
 
-await Promise.all([residentsPromise, residencePromise, contactPromise]);
+await Promise.all([contactPromise]);

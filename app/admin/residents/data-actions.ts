@@ -85,7 +85,7 @@ export async function mutateResidentData(
   return addNewResident(resident);
 }
 
-export async function getResident(residentId: string) {
+export async function getResidentData(residentId: string) {
   try {
     const residentsColRef = await collectionWrapper(db, "residents");
     const resQ = await queryWrapper(
@@ -101,7 +101,28 @@ export async function getResident(residentId: string) {
     if (!resident) throw notFound();
     if (!isTypeResident(resident))
       throw new Error("Object is not of type Resident  -- Tag:16");
-    return resident;
+
+    //Fetch and join contact data...
+    const emergencyContacts = [];
+    const emContactsCollection = await collectionWrapper(
+      db,
+      "emergency_contacts"
+    );
+    const contQ = await queryWrapper(
+      emContactsCollection,
+      where("resident_id", "==", residentId)
+    );
+    const contactData = await getDocsWrapper(contQ);
+    for (const doc of contactData.docs) {
+      if (!doc.exists()) throw notFound();
+      console.log(doc.data());
+      if (!isTypeEmergencyContact(doc.data()))
+        throw new Error("Object is not of type Emergency Contacts -- Tag:29");
+      const { residence_id, resident_id, ...contact } = <any>doc.data();
+      emergencyContacts.push(contact);
+    }
+
+    return { ...resident, emergencyContacts };
   } catch (error) {
     throw new Error("Failed to fetch resident.\n\t\t" + error);
   }
@@ -196,31 +217,6 @@ export async function getRoomData(residenceId: string) {
           residents_map[resident.resident_id],
         ],
       };
-    }
-
-    // Fetch and join contact data...
-    const emContactsCollection = await collectionWrapper(
-      db,
-      "emergency_contacts"
-    );
-    const contQ = await queryWrapper(
-      emContactsCollection,
-      where("resident_id", "==", Object.keys(residents_map)[0])
-    );
-    const contactData = await getDocsWrapper(contQ);
-    for (const doc of contactData.docs) {
-      if (!doc.exists()) throw notFound();
-      let contact = doc.data();
-      if (!isTypeEmergencyContact(contact))
-        throw new Error("Object is not of type Emergency Contacts -- Tag:29");
-
-      const { resident_id, residence_id, ...newContact } = contact;
-      if (residents_map[contact.resident_id]) {
-        residents_map[contact.resident_id].emergencyContacts = [
-          ...(residents_map[contact.resident_id].emergencyContacts ?? []),
-          newContact,
-        ];
-      }
     }
 
     if (Object.values(room_map).length > 1)

@@ -11,6 +11,11 @@ export async function onAuthStateChanged(cb: (authUser: User | null) => void) {
   return _onAuthStateChanged(auth, cb);
 }
 
+export async function getUser() {
+  await auth.authStateReady();
+  return auth.currentUser;
+}
+
 export async function createUserWithEmailAndPasswordWrapper(
   email: string,
   password: string

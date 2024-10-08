@@ -16,9 +16,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { redirect, useRouter } from "next/navigation";
-import { useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useAtom } from "jotai";
 import userAtom from "@/atoms/user";
+import { getUser } from "@/firebase/auth/actions";
 
 const SignInFormSchema = z.object({
   email: z.string().min(2, {
@@ -49,12 +50,21 @@ export function SignInForm({ signIn }: SignInForm) {
   });
   const [admin, setAdmin] = useAtom(userAtom);
 
-  useLayoutEffect(() => {
-    if (admin) {
-      redirect("/");
-    }
-  }, [admin]);
-
+  //useEffect(() => {
+  //  (async () => {
+  //    setAdmin(await getUser());
+  //  })();
+  //});
+  //
+  //useEffect(() => {
+  //  (async () => {
+  //    console.log(await getUser());
+  //    if (await getUser()) {
+  //      redirect("/");
+  //    }
+  //  })();
+  //});
+  //
   async function onSubmit(
     sign_in: Authenticate,
     data: z.infer<typeof SignInFormSchema>
