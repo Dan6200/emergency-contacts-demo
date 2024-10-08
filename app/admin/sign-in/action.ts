@@ -2,7 +2,7 @@
 import {
   signInWithEmailAndPasswordWrapper,
   signOutWrapper,
-} from "@/firebase/auth";
+} from "@/firebase/auth/actions";
 
 export async function signOut() {
   signOutWrapper();

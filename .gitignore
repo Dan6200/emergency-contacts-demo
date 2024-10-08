@@ -43,3 +43,12 @@ notes.md
 
 # vscode
 .vscode/*
+**/.vscode/*
+
+# webscraping
+web-scraping/screenshots/*
+web-scraping/data/*
+
+# dev utilities
+dev-utils/*
+data/*.json

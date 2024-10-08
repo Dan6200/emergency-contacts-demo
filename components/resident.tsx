@@ -1,6 +1,7 @@
 "use client";
+import Image from "next/image";
 import userAtom from "@/atoms/user";
-import type { Resident, ResidentData } from "@/types/resident";
+import type { Resident, ResidentData, RoomData } from "@/types/resident";
 import { useAtomValue } from "jotai";
 import { PhoneCall } from "lucide-react";
 import Link from "next/link";
@@ -10,71 +11,77 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardFooter } from "./ui/card";
 
 export default function Resident({
-  resident,
-  children,
+  residentData,
 }: {
-  resident: ResidentData;
-  children: ReactNode;
+  residentData: ResidentData;
 }) {
-  const emergencyContacts = resident.emergency_contacts;
-  const emConIds = resident.emergency_contact_ids;
   const admin = useAtomValue(userAtom),
     router = useRouter();
+  const { resident_name, emergencyContacts } = residentData;
 
   return (
-    <main className="bg-background flex flex-col gap-5 container md:px-16 mx-auto py-32 text-center h-fit">
-      <section className="flex flex-col gap-2 mb-8">
-        <h1 className="text-5xl mb-4 font-bold">{resident.name}</h1>
-        <p className="font-semibold">Room: {resident.unit_number}</p>
-        <p className="">{resident.address}</p>
+    <main className="bg-background flex flex-col gap-5 container md:px-16 mx-auto text-center py-24 h-fit">
+      <section className="flex flex-col items-center gap-4 mb-4">
+        <Image
+          src="/profile.svg"
+          alt="profile svg icon"
+          className="border-4 border-black rounded-full"
+          width={96}
+          height={96}
+        />
+        <h1 className="text-5xl mb-8 font-bold">{resident_name}</h1>
+        <h3 className="text-xl font-bold">Contacts</h3>
       </section>
-      <section>
-        <h4 className="text-xl mb-8 font-bold">Emergency Contacts</h4>
-        <div className="mb-8 flex flex-col md:flex-row md:justify-center md:flex-wrap gap-6 w-full">
-          {emergencyContacts &&
-            emConIds &&
-            emergencyContacts.map((contact, index) => (
-              <Link
-                href={`tel:${contact.phone_number
-                  .replaceAll(/\s/g, "-")
-                  .replaceAll(/\(|\)/g, "")}`}
-                key={emConIds[index]}
-                className="h-fit"
-              >
-                <Card className="hover:bg-green-700/10 active:bg-green-700/10 flex shadow-md p-4 w-full md:p-6 items-center md:h-[20vh] min-w-[40vw]">
-                  <CardContent className="grow p-0 flex flex-col justify-between h-3/5 text-left">
-                    <h3 className="capitalize font-semibold md:text-xl">
-                      {contact.name}
-                    </h3>
-                    <p className="capitalize">{contact.relationship}</p>
-                    <p className="text-green-700 font-semibold">
-                      {contact.phone_number}
-                    </p>
-                  </CardContent>
-                  <CardFooter className="shrink p-2">
-                    <span className="border-4 border-green-700 w-16 h-16 flex items-center rounded-full">
-                      <PhoneCall className="text-green-700 font-bold mx-auto" />
-                    </span>
-                  </CardFooter>
-                </Card>
-              </Link>
-            ))}
-        </div>
-      </section>
-      <section className="my-8 flex flex-col md:flex-row md:justify-center md:flex-wrap gap-6 w-full md:w-4/5 lg:w-2/3 mx-auto">
-        {admin && (
-          <div className="flex gap-5 flex-wrap items-center justify-center md:w-2/3">
-            <Button
-              className="md:w-full grow shrink basis-0"
-              onMouseDown={() =>
-                router.push(`/admin/residents/${resident.id}/edit`)
-              }
+      <section className="mb-8 flex justify-center flex-wrap gap-6 w-full">
+        {emergencyContacts &&
+          emergencyContacts.map((contact: any, index: number) => (
+            <Link
+              key={index + contact.contact_name.split(" ")[0]}
+              href={`tel:${contact.cell_phone}`}
+              className="w-fit"
             >
-              Edit Resident Information
-            </Button>
-            {children}
-          </div>
-        )}
+              <Card className="justify-between hover:bg-green-700/10 active:bg-green-700/10 flex shadow-md p-4 w-full md:p-6 items-center md:h-[20vh] sm:w-[30vw]">
+                <CardContent className="p-0 flex flex-col justify-between text-left ">
+                  <h3 className="capitalize font-semibold md:text-xl">
+                    {contact.contact_name}
+                  </h3>
+                  {contact.relationship && (
+                    <p className="capitalize">{contact.relationship}</p>
+                  )}
+                  {contact.cell_phone && (
+                    <p className="text-green-700 font-semibold">
+                      {contact.cell_phone}
+                    </p>
+                  )}
+                  {contact.home_phone && (
+                    <p className="text-green-700 font-semibold">
+                      {contact.home_phone}
+                    </p>
+                  )}
+                  {contact.work_phone && (
+                    <p className="text-green-700 font-semibold">
+                      {contact.work_phone}
+                    </p>
+                  )}
+                </CardContent>
+                <CardFooter className="shrink p-2">
+                  <span className="border-4 border-green-700 w-16 h-16 flex items-center rounded-full">
+                    <PhoneCall className="text-green-700 font-bold mx-auto" />
+                  </span>
+                </CardFooter>
+              </Card>
+            </Link>
+          ))}
+      </section>
+      <section className="mb-8 flex flex-col md:flex-row md:justify-center md:flex-wrap gap-6 w-full md:w-4/5 lg:w-2/3 mx-auto">
+        <Button
+          className="md:w-64"
+          onMouseDown={() =>
+            router.push(`/admin/residents/${residentData.resident_id}/edit`)
+          }
+        >
+          Edit Resident Information
+        </Button>
       </section>
     </main>
   );

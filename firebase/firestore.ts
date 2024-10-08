@@ -11,6 +11,7 @@ import {
   CollectionReference,
   DocumentData,
   Query,
+  QueryConstraint,
   query,
   DocumentReference,
   getDoc,
@@ -56,12 +57,26 @@ export const getDocsWrapper = async (query: Query<unknown, DocumentData>) => {
 };
 
 export async function docWrapper(
+  reference: CollectionReference<unknown, DocumentData>,
+  path: string,
+  ...pathSegments: string[]
+): Promise<DocumentReference<DocumentData, DocumentData>>;
+
+export async function docWrapper(
   firestore: Firestore,
+  path: string,
+  ...pathSegments: string[]
+): Promise<DocumentReference<DocumentData, DocumentData>>;
+
+export async function docWrapper(
+  firestoreOrReference: Firestore | CollectionReference<unknown, DocumentData>,
   path: string,
   ...pathSegments: string[]
 ) {
   try {
-    return doc(firestore, path, ...pathSegments);
+    if ("id" in firestoreOrReference)
+      return doc(firestoreOrReference, path, ...pathSegments);
+    return doc(firestoreOrReference, path, ...pathSegments);
   } catch (e) {
     throw new Error(`Error retrieving the ${path} Document -- Tag:13.\n\t` + e);
   }
@@ -84,9 +99,12 @@ export const deleteDocWrapper = async (
   });
 };
 
-export const queryWrapper = async (_query: Query<Resident, DocumentData>) => {
+export const queryWrapper = async (
+  _query: Query<Resident, DocumentData>,
+  ...constraints: QueryConstraint[]
+) => {
   try {
-    return query(_query);
+    return query(_query, ...constraints);
   } catch (e) {
     throw new Error("Error querying the Database -- Tag:8.\n\t" + e);
   }
