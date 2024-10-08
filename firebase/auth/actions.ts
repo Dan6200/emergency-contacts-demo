@@ -5,7 +5,7 @@ import {
   onAuthStateChanged as _onAuthStateChanged,
   type User,
 } from "firebase/auth";
-import { auth } from "./config";
+import { auth } from "../config";
 
 export async function onAuthStateChanged(cb: (authUser: User | null) => void) {
   return _onAuthStateChanged(auth, cb);
