@@ -115,7 +115,6 @@ export async function getResidentData(residentId: string) {
     const contactData = await getDocsWrapper(contQ);
     for (const doc of contactData.docs) {
       if (!doc.exists()) throw notFound();
-      console.log(doc.data());
       if (!isTypeEmergencyContact(doc.data()))
         throw new Error("Object is not of type Emergency Contacts -- Tag:29");
       const { residence_id, resident_id, ...contact } = <any>doc.data();
@@ -181,7 +180,6 @@ export async function getRoomData(residenceId: string) {
       ...(addressDoc.data() as any),
       id: addressDoc.id,
     };
-    //console.log("address", address);
     if (!isTypeResidence(address))
       throw new Error("Object is not of type Residence -- Tag:10");
     room_map[address.residence_id] = {
