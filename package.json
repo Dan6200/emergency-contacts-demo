@@ -58,8 +58,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -68,6 +66,9 @@
     "eslint-config-next": "14.2.3",
     "fast-csv": "^5.0.1",
     "postcss": "^8",
+    "puppeteer": "^23.5.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.5"
   }
