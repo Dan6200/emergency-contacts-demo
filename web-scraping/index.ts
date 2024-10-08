@@ -1,4 +1,4 @@
-import deleteAllFilesInDirectory from "@/dev-utils/delete-all-files-in-directory.js";
+//import deleteAllFilesInDirectory from "@/dev-utils/delete-all-files-in-directory.js";
 import findCustomerData from "./find-customer-data.js";
 import login from "./login.js";
 import { page } from "./set-browser.js";
@@ -6,7 +6,7 @@ import { delay } from "./utils.js";
 
 const ssNo = 0;
 
-await deleteAllFilesInDirectory("data/screenshots");
+//await deleteAllFilesInDirectory("data/screenshots");
 
 let _page = page;
 
