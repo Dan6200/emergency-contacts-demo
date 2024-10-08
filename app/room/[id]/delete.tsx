@@ -1,18 +1,18 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import { isTypeResident, ResidentData } from "@/types/resident";
+import { Resident, RoomData } from "@/types/resident";
 import { useRouter } from "next/navigation";
 
 export default function DeleteResident({
   id,
-  residentData,
+  roomData,
   deleteResidentData,
 }: {
   id: string;
-  residentData: ResidentData;
+  roomData: RoomData;
   deleteResidentData: (
-    residentData: ResidentData,
+    residentData: Resident,
     id: string
   ) => Promise<
     | {
@@ -49,7 +49,7 @@ export default function DeleteResident({
       <input
         hidden
         type="text"
-        value={JSON.stringify(residentData)}
+        value={JSON.stringify(roomData)}
         name="resident_data"
       />
       <input hidden type="text" value={id} name="id" />

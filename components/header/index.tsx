@@ -24,14 +24,14 @@ import { useAtom } from "jotai";
 import userAtom from "@/atoms/user";
 import { toast } from "@/components/ui/use-toast";
 import Search from "./search/index";
-import { Resident } from "@/types/resident";
+import { Residence } from "@/types/resident";
 
 export default function Header({
   signOut,
-  residents,
+  rooms,
 }: {
   signOut: () => Promise<void>;
-  residents: Resident[];
+  rooms: (Residence & { id: string })[];
 }) {
   const router = useRouter();
   const [admin, setAdmin] = useAtom(userAtom);
@@ -64,7 +64,7 @@ export default function Header({
           //className="md:hidden"
         />
       </Link>
-      <Search {...{ residents }} />
+      <Search {...{ rooms }} />
       {admin ? (
         <DropdownMenu>
           <div className="flex-1 flex justify-end">

@@ -25,7 +25,7 @@ export const SearchSuggestions = ({
             matchingResidents.map((resident) => (
               <Link
                 className="text-left cursor-pointer active:bg-primary/10 hover:bg-primary/10 bg-muted w-full rounded-md p-2 text-nowrap align-bottom"
-                href={`/residents/${resident.id}`}
+                href={`/room/${resident.id}`}
                 key={resident.id}
               >
                 <p className="font-semibold">{resident.name}</p>

@@ -1,7 +1,3 @@
-/*************************************
- * BIG TODO!!!!
- * *************************************/
-
 "use server";
 
 import db from "@/firebase/config";
@@ -15,7 +11,7 @@ import {
   addDocWrapper,
   updateDocWrapper,
 } from "@/firebase/firestore";
-import { where, limit } from "firebase/firestore";
+import { where, limit, writeBatch } from "firebase/firestore";
 import {
   EmergencyContact,
   isTypeEmergencyContact,
@@ -25,16 +21,13 @@ import {
   Residence,
 } from "@/types/resident";
 import { notFound } from "next/navigation";
+import util from "node:util";
 
 export async function addNewResident(newResident: Resident) {
   try {
     const residentColRef = await collectionWrapper(db, "residents");
-    const residentsDocRef = await addDocWrapper(residentColRef, newResident);
+    await addDocWrapper(residentColRef, newResident);
     return {
-      result: new URL(
-        `/residents/${residentsDocRef.id}`,
-        process.env.DOMAIN
-      ).toString(),
       message: "Successfully Added a New Resident",
       success: true,
     };
@@ -51,8 +44,17 @@ export async function updateResident(
   residentId: string
 ) {
   try {
-    const residentDocRef = await docWrapper(db, "residents", residentId);
-    await updateDocWrapper(residentDocRef, newResidentData);
+    const residentColRef = await collectionWrapper(db, "residents");
+    const resQ = await queryWrapper(
+      residentColRef,
+      where("resident_id", "==", residentId)
+    );
+    const resSnap = await getDocsWrapper(resQ);
+    if (resSnap.size > 0)
+      throw new Error(
+        "Cannot Update More Than One Resident, Possible Duplicated Data"
+      );
+    await updateDocWrapper(resSnap.docs[0].ref, newResidentData);
     return {
       success: true,
       message: "Successfully Updated Resident Information",
@@ -83,11 +85,19 @@ export async function mutateResidentData(
   return addNewResident(resident);
 }
 
-export async function getResidentData(residentId: string) {
+export async function getResident(residentId: string) {
   try {
-    const residentsDocRef = await docWrapper(db, "residents", residentId);
-    const residentsSnap = await getDocWrapper(residentsDocRef);
-    const resident = residentsSnap.data();
+    const residentsColRef = await collectionWrapper(db, "residents");
+    const resQ = await queryWrapper(
+      residentsColRef,
+      where("resident_id", "==", residentId)
+    );
+    const residentsSnap = await getDocsWrapper(resQ);
+    if (residentsSnap.size > 1)
+      throw new Error("Duplicate Resident Data Is Not Allowed!");
+    const doc = residentsSnap.docs[0];
+    if (!doc.exists) throw notFound();
+    const resident = doc.data();
     if (!resident) throw notFound();
     if (!isTypeResident(resident))
       throw new Error("Object is not of type Resident  -- Tag:16");
@@ -121,104 +131,102 @@ export async function getAllRooms() {
     const q = await queryWrapper(roomsCollection);
     const roomsData = await getDocsWrapper(q);
     return roomsData.docs.map((doc) => {
+      if (!doc.exists) throw notFound();
       const residence = doc.data();
       if (!isTypeResidence(residence))
         throw new Error("Object is not of type Residence  -- Tag:19");
-      return residence;
+      return { id: doc.id, ...residence };
     });
   } catch (error) {
-    throw new Error("Failed to fetch All Residence Data.\n\t\t" + error);
+    throw new Error("Failed to fetch All Room Data.\n\t\t" + error);
   }
 }
 
-export async function getResidentsData(residenceId: string) {
+export async function getRoomData(residenceId: string) {
   /******************************************
-   * Create a Join Between Residence,
+   * Creates a Join Between Residence,
    * Emergency Contacts and Resident documents on residenceId
    * *********************************************************/
 
   try {
-    const addressCollection = await collectionWrapper(db, "residence");
-    const residentsCollection = await collectionWrapper(db, "residents");
-    const emContactsCollection = await collectionWrapper(
-      db,
-      "emergency_contacts"
+    const addressDoc = await getDocWrapper(
+      await docWrapper(db, "residence", residenceId)
     );
 
-    const resident_id_map: any = [];
-    const room_map: any = [];
+    const residents_map: any = {};
+    const room_map: any = {};
+    if (!addressDoc.exists()) throw notFound();
+    const address = {
+      ...(addressDoc.data() as any),
+      id: addressDoc.id,
+    };
+    //console.log("address", address);
+    if (!isTypeResidence(address))
+      throw new Error("Object is not of type Residence -- Tag:10");
+    room_map[address.residence_id] = {
+      ...room_map[address.residence_id],
+      ...address,
+    };
 
-    // Fetch resident data...
+    // Fetch and join resident data...
+    const residentsCollection = await collectionWrapper(db, "residents");
     const resQ = await queryWrapper(
       residentsCollection,
-      where("residence_id", "==", residenceId)
+      where("residence_id", "==", address.residence_id)
     );
     const residentsData = await getDocsWrapper(resQ);
     for (const doc of residentsData.docs) {
+      if (!doc.exists()) throw notFound();
       let resident = doc.data();
       if (!isTypeResident(resident))
         throw new Error("Object is not of type Resident -- Tag:9");
 
-      // Add each resident to the map
-      resident_id_map[resident.resident_id] = {
-        ...resident,
-        ...resident_id_map[resident.resident_id],
-      };
+      // Add each resident to the residents map
+      // Handle duplicates
+      if (residents_map[resident.resident_id])
+        throw new Error("Duplicate Resident Data! -- Tag:28");
+      const { residence_id, ...newResident } = resident;
+      residents_map[resident.resident_id] = { ...newResident };
 
       // Add all residents in the resident map to the room map
       room_map[resident.residence_id] = {
         ...room_map[resident.residence_id],
         residents: [
           ...(room_map[resident.residence_id].residents ?? []),
-          resident_id_map[resident.resident_id],
+          residents_map[resident.resident_id],
         ],
       };
     }
 
     // Fetch and join contact data...
-    const contQ = await queryWrapper(emContactsCollection);
+    const emContactsCollection = await collectionWrapper(
+      db,
+      "emergency_contacts"
+    );
+    const contQ = await queryWrapper(
+      emContactsCollection,
+      where("resident_id", "==", Object.keys(residents_map)[0])
+    );
     const contactData = await getDocsWrapper(contQ);
     for (const doc of contactData.docs) {
+      if (!doc.exists()) throw notFound();
       let contact = doc.data();
       if (!isTypeEmergencyContact(contact))
-        throw new Error("Object is not of type Emergency Contacts -- Tag:11");
+        throw new Error("Object is not of type Emergency Contacts -- Tag:29");
 
-      if (resident_id_map[contact.resident_id]) {
-        resident_id_map[contact.resident_id].contacts = [
-          ...(resident_id_map[contact.resident_id].contacts ?? []),
-          contact,
+      const { resident_id, residence_id, ...newContact } = contact;
+      if (residents_map[contact.resident_id]) {
+        residents_map[contact.resident_id].emergencyContacts = [
+          ...(residents_map[contact.resident_id].emergencyContacts ?? []),
+          newContact,
         ];
       }
-
-      // Update room map with modified residents map...
-      const residenceId = resident_id_map[contact.resident_id].residence_id;
-      room_map[residenceId] = {
-        ...room_map[residenceId],
-        residents: [
-          ...(room_map[residenceId]?.residents || []),
-          resident_id_map[contact.resident_id],
-        ],
-      };
     }
 
-    // Fetch and join address data...
-    const addressQ = await queryWrapper(
-      addressCollection,
-      where("residence_id", "==", residenceId),
-      limit(1)
-    );
-    let addressSnap = await getDocsWrapper(addressQ);
-    for (const doc of addressSnap.docs) {
-      const address = doc.data();
-      if (!isTypeResidence(address))
-        throw new Error("Object is not of type Residence -- Tag:10");
-      room_map[address.residence_id] = {
-        ...room_map[address.residence_id],
-        address,
-      };
-    }
-
-    return Object.entries(room_map);
+    if (Object.values(room_map).length > 1)
+      throw new Error("Duplicate Room Data! -- Tag:28");
+    const roomData = Object.values(room_map)[0];
+    return roomData;
   } catch (error) {
     throw new Error("Failed to fetch All Residents Data:\n\t\t" + error);
   }
@@ -226,14 +234,31 @@ export async function getResidentsData(residenceId: string) {
 
 export async function deleteResidentData(residentId: string) {
   try {
-    const residentDocRef = await docWrapper(db, "residents", residentId);
-    const addressDocRef = await docWrapper(db, "residence", residentId);
-    const contactDocRef = await docWrapper(
+    const residentColRef = await collectionWrapper(db, "residents", residentId);
+    const contactColRef = await collectionWrapper(
       db,
       "emergency_contacts",
       residentId
     );
-    await deleteDocWrapper(residentDocRef);
+    const resQ = await queryWrapper(
+      residentColRef,
+      where("resident_id", "==", residentId)
+    );
+
+    const contQ = await queryWrapper(
+      contactColRef,
+      where("resident_id", "==", residentId)
+    );
+
+    const batch = writeBatch(db);
+    const resSnap = await getDocsWrapper(resQ);
+    const contSnap = await getDocsWrapper(contQ);
+    if (resSnap.size > 1)
+      throw new Error(
+        "Cannot Delete More Than One Resident, Possible Duplicate Data"
+      );
+    batch.delete(resSnap.docs[0].ref);
+    contSnap.forEach((doc) => batch.delete(doc.ref));
     return { success: true, message: "Successfully Deleted Resident" };
   } catch (error) {
     return {

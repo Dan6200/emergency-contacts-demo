@@ -1,14 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card";
-import type { Resident } from "@/types/resident";
+import type { Residence } from "@/types/resident";
 import Link from "next/link";
 import { X } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 
 export const Suggestions = ({
-  matchingResidents,
+  matchingRooms,
   setOpen,
 }: {
-  matchingResidents: Resident[];
+  matchingRooms: (Residence & { id: string })[];
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   return (
@@ -21,18 +21,16 @@ export const Suggestions = ({
           <X className="text-background" />
         </span>
         <CardContent className="my-4 px-0 flex flex-col overflow-y-scroll max-h-[80vh] md:max-h-[40vh] gap-2">
-          {matchingResidents.length ? (
-            matchingResidents.map((resident) => (
+          {matchingRooms.length ? (
+            matchingRooms.map((room) => (
               <Link
                 className="text-left cursor-pointer active:bg-primary/10 hover:bg-primary/10 bg-muted w-full rounded-md p-2 text-nowrap align-bottom"
-                href={`/residents/${resident.id}`}
-                key={resident.id}
+                href={`/room/${room.id}`}
+                key={room.id}
               >
-                <p className="font-semibold">{resident.name}</p>
-                <p>{resident.address}</p>
-                <p className="text-sm font-semibold">
-                  Rm: {resident.unit_number}
-                </p>
+                <p className="font-semibold">{room.residence_id}</p>
+                <p>{room.address}</p>
+                <p className="text-sm font-semibold">Rm: {room.roomNo}</p>
               </Link>
             ))
           ) : (

@@ -4,19 +4,19 @@ import { Suggestions } from "@/components/header/search/suggestions";
 import { redirect } from "next/navigation";
 import { useAtomValue } from "jotai";
 import userAtom from "@/atoms/user";
-import { Resident } from "@/types/resident";
+import { Residence } from "@/types/resident";
 import { SearchBar } from "./search-bar";
 
 interface SearchProps {
-  residents: Resident[];
+  rooms: (Residence & { id: string })[];
 }
 
-export default function Search({ residents }: SearchProps) {
-  const [matchingResidents, setMatchingResidents] = useState<null | Resident[]>(
-    null
-  );
+export default function Search({ rooms }: SearchProps) {
+  const [matchingRooms, setMatchingRooms] = useState<
+    null | (Residence & { id: string })[]
+  >(null);
   const admin = useAtomValue(userAtom);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -28,10 +28,8 @@ export default function Search({ residents }: SearchProps) {
 
   return (
     <div className="flex-1">
-      <SearchBar {...{ residents, setMatchingResidents, setOpen }} />
-      {matchingResidents && open && (
-        <Suggestions {...{ matchingResidents, setOpen }} />
-      )}
+      <SearchBar {...{ rooms, setMatchingRooms, setOpen }} />
+      {matchingRooms && open && <Suggestions {...{ matchingRooms, setOpen }} />}
     </div>
   );
 }

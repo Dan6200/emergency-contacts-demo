@@ -18,13 +18,13 @@ import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
 export const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  appId: process.env.FIREBASE_APP_ID,
+  apiKey: process.env.FIREBASE_API_KEY_BKUP,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN_BKUP,
+  projectId: process.env.FIREBASE_PROJECT_ID_BKUP,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET_BKUP,
+  appId: process.env.FIREBASE_APP_ID_BKUP,
   setConnectTimeout: 100000,
-  measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID_BKUP,
 };
 
 console.log(firebaseConfig);
@@ -56,7 +56,7 @@ interface EmergencyContact {
 
 interface Residence {
   residence_id: string;
-  room: string;
+  roomNo: string;
   address: string;
 }
 

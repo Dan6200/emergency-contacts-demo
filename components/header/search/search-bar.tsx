@@ -1,29 +1,25 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, UseFormWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Dispatch, SetStateAction, useEffect, useMemo, useRef } from "react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Resident } from "@/types/resident";
+import { Residence } from "@/types/resident";
 
 const SearchValueSchema = z.object({
   searchValue: z.string(),
 });
 
 export function SearchBar({
-  residents,
-  setMatchingResidents,
+  rooms,
+  setMatchingRooms,
   setOpen,
 }: {
-  residents: Resident[];
-  setMatchingResidents: Dispatch<SetStateAction<Resident[] | null>>;
+  rooms: (Residence & { id: string })[];
+  setMatchingRooms: Dispatch<
+    SetStateAction<(Residence & { id: string })[] | null>
+  >;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
   const form = useForm<z.infer<typeof SearchValueSchema>>({
@@ -44,26 +40,24 @@ export function SearchBar({
   }, [watch("searchValue")]); // useEffect instead of useMemo
 
   async function Send(searchValue: string) {
-    let matchingResidents: Resident[] = [];
+    let matchingRooms: (Residence & { id: string })[] = [];
     if (searchValue) {
-      matchingResidents = residents.filter(
-        (resident) =>
-          resident.address
+      matchingRooms = rooms.filter(
+        (room) =>
+          room.address
             .toLowerCase() // Ignore case
             .replaceAll(/[^a-zA-Z0-9]/g, "") // Ignore non-alnum chars
             .slice(0, 25)
             .includes(
               searchValue.toLowerCase().replaceAll(/[^a-zA-Z0-9]/g, "")
             ) ||
-          resident.unit_number
-            .toLowerCase()
-            .includes(searchValue.toLowerCase()) ||
-          resident.name.toLowerCase().includes(searchValue.toLowerCase())
+          room.roomNo.toLowerCase().includes(searchValue.toLowerCase()) ||
+          room.residence_id.toLowerCase().includes(searchValue.toLowerCase())
       );
     }
 
-    // Update matchingResidents state
-    setMatchingResidents(matchingResidents);
+    // Update matchingRooms state
+    setMatchingRooms(matchingRooms);
   }
 
   return (

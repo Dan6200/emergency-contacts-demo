@@ -6,7 +6,7 @@ import "./globals.css";
 import Header from "@/components/header";
 import Providers from "./providers";
 import { signOut } from "@/app/admin/sign-in/action";
-import { getAllResidentsDataLite } from "./admin/residents/data";
+import { getAllRooms } from "./admin/residents/data-actions";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -20,14 +20,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const residents = await getAllResidentsDataLite().catch((e) => {
-    throw new Error("Failed to Retrieve Residents Data -- Tag:14.\n\t" + e);
+  const rooms = await getAllRooms().catch((e) => {
+    throw new Error("Failed to Retrieve Rooms -- Tag:14.\n\t" + e);
   });
   return (
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <Header {...{ signOut, residents }} />
+          <Header {...{ signOut, rooms }} />
           {children}
           <Toaster />
           <Analytics />
