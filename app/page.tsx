@@ -18,9 +18,8 @@ export default async function Home() {
   const rooms = await getAllRooms().catch((e) => {
     if (e.message.match(/insufficient permissions/)) redirect("/admin/sign-in");
   });
-  // TODO: switch to tables
   return (
-    <main className="sm:container bg-background text-center mx-auto py-24">
+    <main className="sm:container bg-background text-center mx-auto py-32 sm:py-24">
       <Table className="text-base w-4/5 mx-auto">
         <TableCaption>All Rooms In The Facility.</TableCaption>
         <TableHeader>

@@ -16,7 +16,7 @@ export default function Room({ roomData }: { roomData: RoomData }) {
   const residents = roomData.residents;
 
   return (
-    <main className="bg-background flex flex-col gap-5 container mx-auto text-center py-32 h-fit">
+    <main className="bg-background flex flex-col gap-5 container mx-auto text-center py-48 sm:py-32 h-fit">
       <section className="flex flex-col gap-4 mb-8">
         <h1 className="text-5xl mb-4 font-bold">{roomData.residence_id}</h1>
         <p className="font-semibold">Room: {roomData.roomNo}</p>
@@ -32,7 +32,7 @@ export default function Room({ roomData }: { roomData: RoomData }) {
                 key={resident.resident_id}
                 className="h-fit"
               >
-                <Card className="flex-col hover:bg-green-700/10 active:bg-green-700/10 flex shadow-md p-4 md:p-4 items-center md:w-[25vw] gap-4">
+                <Card className="flex-col hover:bg-green-700/10 active:bg-green-700/10 flex shadow-md p-4 md:p-6 items-center md:w-[25vw] gap-4">
                   <CardHeader className="p-0">
                     <Image
                       src="/profile.svg"
@@ -47,7 +47,7 @@ export default function Room({ roomData }: { roomData: RoomData }) {
                       {resident.resident_name}
                     </h3>
                   </CardContent>
-                  <CardFooter className="p-2">
+                  <CardFooter className="p-0">
                     <DeleteResident
                       {...{
                         resident_id: resident.resident_id,

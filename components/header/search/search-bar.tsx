@@ -6,6 +6,7 @@ import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Residence } from "@/types/resident";
+import { Search } from "lucide-react";
 
 const SearchValueSchema = z.object({
   searchValue: z.string(),
@@ -62,7 +63,7 @@ export function SearchBar({
 
   return (
     <Form {...form}>
-      <form className="w-full mx-auto overflow-x-scroll flex flex-col">
+      <form className="w-full mx-auto overflow-x-scroll flex">
         <FormField
           control={form.control}
           name="searchValue"
@@ -70,7 +71,7 @@ export function SearchBar({
             <div className="w-full flex items-center gap-2">
               <FormItem
                 tabIndex={5}
-                className="ring-offset-background border-2 border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md flex place-items-center space-y-0 w-full gap-2 place-self-center"
+                className="px-2 ring-offset-background border-2 border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md flex place-items-center space-y-0 w-full gap-2 place-self-center"
               >
                 <FormControl>
                   <Input
@@ -78,9 +79,10 @@ export function SearchBar({
                     {...field}
                     ref={nameRef}
                     type="text"
-                    className="p-2 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="p-0 m-0 block space-y-0 w-full focus-visible:outline-none overscroll-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 </FormControl>
+                <Search />
               </FormItem>
             </div>
           )}

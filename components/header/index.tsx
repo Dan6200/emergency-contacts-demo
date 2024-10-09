@@ -58,8 +58,8 @@ export default function Header({
   };
 
   return (
-    <header className="fixed w-full z-10 bg-background/80 flex border-b items-center justify-between px-4 py-2">
-      <Link href="/" className="flex-1">
+    <header className="fixed w-full z-10 bg-background/80 gap-2 sm:gap-6 flex flex-wrap border-b items-center justify-between px-4 py-2">
+      <Link href="/" className="w-fit">
         <Image
           priority
           width={100}
@@ -75,13 +75,14 @@ export default function Header({
           src="/client-logo-large.jpeg"
           alt="LinkId logo"
           className="hidden md:block"
-          //className="md:hidden"
         />
       </Link>
-      {rooms && <Search {...{ rooms }} />}
+      {rooms && (
+        <Search className="w-full sm:w-2/5 order-2 sm:order-1" {...{ rooms }} />
+      )}
       {admin ? (
         <DropdownMenu>
-          <div className="flex-1 flex justify-end">
+          <div className="flex justify-end order-1 sm:order-2">
             <DropdownMenuTrigger className="rounded-full border-primary border-4 bg-primary-foreground w-12 h-12">
               <UserRound className="mx-auto" />
             </DropdownMenuTrigger>
@@ -141,8 +142,11 @@ export default function Header({
           </div>
         </DropdownMenu>
       ) : (
-        <Link href="/admin/sign-in" className="flex-1 flex justify-end">
-          <Button className="capitalize hidden md:flex">sign in</Button>
+        <Link
+          href="/admin/sign-in"
+          className="flex justify-end order-1 sm:order-2"
+        >
+          <Button className="capitalize flex">sign in</Button>
         </Link>
       )}
     </header>
