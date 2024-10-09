@@ -25,8 +25,8 @@ export default async function Home() {
         <TableCaption>All Rooms In The Facility.</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-center w-48">Keyword</TableHead>
-            <TableHead className="text-center w-48">Room</TableHead>
+            <TableHead className="text-center md:w-48">Keyword</TableHead>
+            <TableHead className="text-center md:w-48">Room</TableHead>
             <TableHead className="text-left">Address</TableHead>
           </TableRow>
         </TableHeader>
@@ -41,13 +41,19 @@ export default async function Home() {
               return (
                 <TableRow key={id}>
                   <TableCell className="text-center">
-                    <Link href={`/room/${id}`}>{residence_id}</Link>
+                    <Link href={`/room/${id}`} className="w-full block">
+                      {residence_id}
+                    </Link>
                   </TableCell>
                   <TableCell className="text-center">
-                    <Link href={`/room/${id}`}>{roomNo}</Link>
+                    <Link href={`/room/${id}`} className="w-full block">
+                      {roomNo}
+                    </Link>
                   </TableCell>
                   <TableCell className="text-left">
-                    <Link href={`/room/${id}`}>{address}</Link>
+                    <Link href={`/room/${id}`} className="w-full block">
+                      {address}
+                    </Link>
                   </TableCell>
                 </TableRow>
               );

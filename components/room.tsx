@@ -32,7 +32,7 @@ export default function Room({ roomData }: { roomData: RoomData }) {
                 key={resident.resident_id}
                 className="h-fit"
               >
-                <Card className="flex-col hover:bg-green-700/10 active:bg-green-700/10 flex shadow-md p-4 md:p-4 items-center w-[25vw] gap-4">
+                <Card className="flex-col hover:bg-green-700/10 active:bg-green-700/10 flex shadow-md p-4 md:p-4 items-center md:w-[25vw] gap-4">
                   <CardHeader className="p-0">
                     <Image
                       src="/profile.svg"

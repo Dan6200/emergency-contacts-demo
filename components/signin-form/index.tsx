@@ -15,11 +15,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { redirect, useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useAtom } from "jotai";
 import userAtom from "@/atoms/user";
-import { getUser } from "@/firebase/auth/actions";
 
 const SignInFormSchema = z.object({
   email: z.string().min(2, {
@@ -48,15 +47,16 @@ export function SignInForm({ signIn }: SignInForm) {
       password: "",
     },
   });
+  const router = useRouter();
   const [admin, setAdmin] = useAtom(userAtom);
+
   useEffect(() => {
-    (async () => {
-      console.log(await getUser());
-      if (await getUser()) {
-        setAdmin(await getUser());
-        redirect("/");
+    const getUserHelper = async () => {
+      if (admin) {
+        router.push("/");
       }
-    })();
+    };
+    getUserHelper();
   });
 
   async function onSubmit(

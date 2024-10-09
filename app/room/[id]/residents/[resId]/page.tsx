@@ -9,7 +9,6 @@ export default async function ResidentPage({
 }: {
   params: { resId: string };
 }) {
-  console.log(id);
   const residentData = await getResidentData(id).catch((e) => {
     if (e.message.match(/not_found/i)) throw notFound();
     if (e.message.match(/insufficient permissions/)) redirect("/admin/sign-in");
@@ -17,7 +16,6 @@ export default async function ResidentPage({
       `Unable to pass props to Resident Component -- Tag:22.\n\t${e}`
     );
   });
-  console.log(util.inspect(residentData, false, null, true));
   if (!isTypeResidentData(residentData)) throw new Error("Invalid Room Data");
   return <Resident {...{ residentData }} />;
 }
