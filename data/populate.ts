@@ -18,13 +18,13 @@ import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
 export const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY_BKUP,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN_BKUP,
-  projectId: process.env.FIREBASE_PROJECT_ID_BKUP,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET_BKUP,
-  appId: process.env.FIREBASE_APP_ID_BKUP,
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  appId: process.env.APP_ID,
   setConnectTimeout: 100000,
-  measurementId: process.env.FIREBASE_MEASUREMENT_ID_BKUP,
+  measurementId: process.env.MEASUREMENT_ID,
 };
 
 console.log(firebaseConfig);
@@ -34,8 +34,9 @@ const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
 });
 
-let file1 = "data/emergency-contacts.json";
-let file3 = "data/residence.json";
+let file1 = "data/emergency-contacts.json",
+  file2 = "data/resident.json",
+  file3 = "data/residence.json";
 
 interface Resident {
   resident_id: string;
@@ -60,19 +61,19 @@ interface Residence {
 }
 
 const emergencyContacts = JSON.parse(await readFile(file1, "utf8"));
-//const residents = JSON.parse(await readFile(file2, "utf8"));
+const residents = JSON.parse(await readFile(file2, "utf8"));
 const residences = JSON.parse(await readFile(file3, "utf8"));
 
-//const residentsPromise = residents.map(async (resident: Resident) => {
-//  const residentColRef = await collectionWrapper(db, "residents");
-//  await addDocWrapper(residentColRef, resident).catch((error) => {
-//    console.log({
-//      success: false,
-//      message: "Failed to Add a New Resident: " + error.toString(),
-//    });
-//  });
-//});
-//
+const residentsPromise = residents.map(async (resident: Resident) => {
+  const residentColRef = await collectionWrapper(db, "residents");
+  await addDocWrapper(residentColRef, resident).catch((error) => {
+    console.log({
+      success: false,
+      message: "Failed to Add a New Resident: " + error.toString(),
+    });
+  });
+});
+
 const residencePromise = residences.map(async (residence: Residence) => {
   const residenceColRef = await collectionWrapper(db, "residence");
   await addDocWrapper(residenceColRef, residence).catch((error) => {
@@ -95,4 +96,4 @@ const contactPromise = emergencyContacts.map(
   }
 );
 
-await Promise.all([contactPromise]);
+await Promise.all([residentsPromise, residencePromise, contactPromise]);

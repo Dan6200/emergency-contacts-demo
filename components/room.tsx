@@ -47,31 +47,35 @@ export default function Room({ roomData }: { roomData: RoomData }) {
                       {resident.resident_name}
                     </h3>
                   </CardContent>
-                  <CardFooter className="p-0">
-                    <DeleteResident
-                      {...{
-                        resident_id: resident.resident_id,
-                        deleteResidentData,
-                      }}
-                    />
-                  </CardFooter>
+                  {admin && (
+                    <CardFooter className="p-0">
+                      <DeleteResident
+                        {...{
+                          resident_id: resident.resident_id,
+                          deleteResidentData,
+                        }}
+                      />
+                    </CardFooter>
+                  )}
                 </Card>
               </Link>
             ))}
         </div>
       </section>
-      <section className="mb-8 flex flex-col md:flex-row md:justify-center md:flex-wrap gap-6 w-full md:w-4/5 lg:w-2/3 mx-auto">
-        <div className="flex gap-5 flex-wrap items-center justify-center md:w-2/3">
-          <Button
-            className="sm:w-64 w-full"
-            onMouseDown={() =>
-              router.push(`/admin/residents/${roomData.id}/add`)
-            }
-          >
-            Add New Resident
-          </Button>
-        </div>
-      </section>
+      {admin && (
+        <section className="mb-8 flex flex-col md:flex-row md:justify-center md:flex-wrap gap-6 w-full md:w-4/5 lg:w-2/3 mx-auto">
+          <div className="flex gap-5 flex-wrap items-center justify-center md:w-2/3">
+            <Button
+              className="sm:w-64 w-full"
+              onMouseDown={() =>
+                router.push(`/admin/residents/${roomData.id}/add`)
+              }
+            >
+              Add New Resident
+            </Button>
+          </div>
+        </section>
+      )}
     </main>
   );
 }

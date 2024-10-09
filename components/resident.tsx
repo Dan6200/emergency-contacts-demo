@@ -73,16 +73,18 @@ export default function Resident({
             </Link>
           ))}
       </section>
-      <section className="mb-8 flex justify-center flex-wrap gap-6 w-full md:w-4/5 lg:w-2/3 mx-auto">
-        <Button
-          className="sm:w-64"
-          onMouseDown={() =>
-            router.push(`/admin/residents/${residentData.resident_id}/edit`)
-          }
-        >
-          Edit Resident Information
-        </Button>
-      </section>
+      {admin && (
+        <section className="mb-8 flex justify-center flex-wrap gap-6 w-full md:w-4/5 lg:w-2/3 mx-auto">
+          <Button
+            className="sm:w-64"
+            onMouseDown={() =>
+              router.push(`/admin/residents/${residentData.resident_id}/edit`)
+            }
+          >
+            Edit Resident Information
+          </Button>
+        </section>
+      )}
     </main>
   );
 }

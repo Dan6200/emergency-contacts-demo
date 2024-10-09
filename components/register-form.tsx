@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { redirect, useRouter } from "next/navigation";
-import { useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useAtomValue } from "jotai";
 import userAtom from "@/atoms/user";
 
@@ -51,12 +51,6 @@ export function AddAdminForm({ addAdmin }: AddAdminForm) {
   });
 
   const admin = useAtomValue(userAtom);
-
-  useLayoutEffect(() => {
-    if (!admin) {
-      redirect("/");
-    }
-  }, [admin]);
 
   async function onSubmit(
     addAdmin: Authenticate,

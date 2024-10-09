@@ -44,12 +44,12 @@ export default function Header({
     if (initialUser) setAdmin((initialUser as User) ?? null), [];
   });
 
-  useEffect(() => {
-    (async () => {
-      setAdmin(await getUser());
-    })();
-  });
-
+  //useEffect(() => {
+  //  (async () => {
+  //    setAdmin(await getUser());
+  //  })();
+  //});
+  //
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
     event: MouseEvent
   ) => {
@@ -58,7 +58,11 @@ export default function Header({
   };
 
   return (
-    <header className="fixed w-full z-10 bg-background/80 gap-2 sm:gap-6 flex flex-wrap border-b items-center justify-between px-4 py-2">
+    <header
+      className={`fixed w-full z-10 bg-background/80 ${
+        admin ? "justify-between" : "md:gap-[21%]"
+      } gap-2 flex flex-wrap border-b items-center px-4 py-2`}
+    >
       <Link href="/" className="w-fit">
         <Image
           priority
@@ -78,11 +82,11 @@ export default function Header({
         />
       </Link>
       {rooms && (
-        <Search className="w-full sm:w-2/5 order-2 sm:order-1" {...{ rooms }} />
+        <Search className="w-full md:w-2/5 order-2 md:order-1" {...{ rooms }} />
       )}
-      {admin ? (
+      {admin && (
         <DropdownMenu>
-          <div className="flex justify-end order-1 sm:order-2">
+          <div className="flex justify-end order-1 md:order-2">
             <DropdownMenuTrigger className="rounded-full border-primary border-4 bg-primary-foreground w-12 h-12">
               <UserRound className="mx-auto" />
             </DropdownMenuTrigger>
@@ -141,13 +145,6 @@ export default function Header({
             </DropdownMenuContent>
           </div>
         </DropdownMenu>
-      ) : (
-        <Link
-          href="/admin/sign-in"
-          className="flex justify-end order-1 sm:order-2"
-        >
-          <Button className="capitalize flex">sign in</Button>
-        </Link>
       )}
     </header>
   );

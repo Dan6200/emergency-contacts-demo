@@ -12,7 +12,7 @@ export const Suggestions = ({
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   return (
-    <Card className="absolute mt-4 py-0 w-full sm:w-2/5 sm:left-1/3 left-0">
+    <Card className="absolute mt-4 py-0 w-full md:w-2/5 md:left-1/3 left-0">
       <div className="w-11/12 relative mx-auto ">
         <span
           onClick={() => setOpen(!open)}

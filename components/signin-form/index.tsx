@@ -72,7 +72,7 @@ export function SignInForm({ signIn }: SignInForm) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit.bind(null, signIn))}
-        className="w-full sm:w-4/5 lg:w-3/4 space-y-6"
+        className="my-8 w-full sm:w-4/5 lg:w-3/4 space-y-6"
       >
         <FormField
           control={form.control}

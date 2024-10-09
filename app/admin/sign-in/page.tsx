@@ -1,4 +1,5 @@
 import { SignInForm } from "@/components/signin-form/";
+import Link from "next/link";
 import { signIn } from "./action";
 
 export default async function SignInPage() {
@@ -8,6 +9,9 @@ export default async function SignInPage() {
         Please Sign In Before You Proceed...
       </h1>
       <SignInForm {...{ signIn }} />
+      <Link href="/admin/new" className="underline text-blue-700">
+        Don't have an account? Sign up instead.
+      </Link>
     </main>
   );
 }
