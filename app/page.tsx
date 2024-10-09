@@ -19,7 +19,7 @@ export default async function Home() {
     if (e.message.match(/insufficient permissions/)) redirect("/admin/sign-in");
   });
   return (
-    <main className="sm:container bg-background text-center mx-auto py-32 sm:py-24">
+    <main className="sm:container bg-background text-center mx-auto py-48 sm:py-24">
       <div className="w-fit rounded-md border-2 mx-auto">
         <Table className="text-base w-full">
           <TableCaption>All Rooms In The Facility.</TableCaption>

@@ -25,7 +25,7 @@ export async function GET() {
           idx
         ) => {
           const qrCodeDataUri = await QRcode.toDataURL(
-            new URL(`/residents/${id}`, process.env.DOMAIN).toString()
+            new URL(`/room/${id}/`, process.env.DOMAIN).toString()
           );
 
           // Add the LinkID logo at the top
