@@ -59,7 +59,7 @@ export async function GET() {
           doc.setFontSize(14);
           doc.text(streetName.join(""), 75, 173); // Adjust position
           doc.text("-", 112, 173); // Adjust position
-          doc.text(residence_id, 120, 173); // Adjust position
+          doc.text("#" + roomNo, 120, 173); // Adjust position
 
           // Draw arrows pointing to the QR code
           // Arrow from left
