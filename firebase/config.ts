@@ -1,5 +1,9 @@
 import "server-only";
-import { getAuth } from "firebase/auth";
+import {
+  browserLocalPersistence,
+  setPersistence,
+  getAuth,
+} from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import { initializeFirestore } from "firebase/firestore";
 
@@ -17,4 +21,5 @@ const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
 });
 export const auth = getAuth(app);
+await setPersistence(auth, browserLocalPersistence);
 export default db;
