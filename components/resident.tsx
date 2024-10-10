@@ -1,12 +1,10 @@
 "use client";
 import Image from "next/image";
-import userAtom from "@/atoms/user";
-import type { Resident, ResidentData, RoomData } from "@/types/resident";
-import { useAtomValue } from "jotai";
+import type { Resident, ResidentData } from "@/types/resident";
 import { PhoneCall } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import { onAuthStateChanged, User } from "firebase/auth";
