@@ -17,6 +17,5 @@ export default async function ResidentPage({
     );
   });
   if (!isTypeResidentData(residentData)) throw new Error("Invalid Room Data");
-  console.log(util.inspect(residentData, false, null, true));
   return <Resident {...{ residentData }} />;
 }

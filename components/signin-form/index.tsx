@@ -17,8 +17,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useAtom } from "jotai";
-import userAtom from "@/atoms/user";
+import { auth } from "@/firebase/config";
 
 const SignInFormSchema = z.object({
   email: z.string().min(2, {
@@ -29,14 +28,24 @@ const SignInFormSchema = z.object({
   }),
 });
 
-type Authenticate = (data: { email: string; password: string }) => Promise<{
-  result: string;
-  success: boolean;
-  message: string;
-}>;
+type AuthenticateResult = (
+  email: string,
+  password: string
+) => Promise<
+  | {
+      result: string;
+      message: string;
+      success: boolean;
+    }
+  | {
+      result: string;
+      message: string;
+      success: boolean;
+    }
+>;
 
 interface SignInForm {
-  signIn: Authenticate;
+  signIn: AuthenticateResult;
 }
 
 export function SignInForm({ signIn }: SignInForm) {
@@ -48,23 +57,18 @@ export function SignInForm({ signIn }: SignInForm) {
     },
   });
   const router = useRouter();
-  const [admin, setAdmin] = useAtom(userAtom);
-
-  useEffect(() => {
-    const getUserHelper = async () => {
-      if (admin) {
-        router.push("/");
-      }
-    };
-    getUserHelper();
-  });
 
   async function onSubmit(
-    sign_in: Authenticate,
+    sign_in: AuthenticateResult,
     data: z.infer<typeof SignInFormSchema>
   ) {
-    const { result, message, success } = await sign_in(data);
-    if (success) setAdmin(JSON.parse(result));
+    const { result, message, success } = await sign_in(
+      data.email,
+      data.password
+    );
+    if (success) {
+      //router.refresh(); // Navigate to the homepage
+    }
     toast({ title: message, variant: success ? "default" : "destructive" });
   }
 

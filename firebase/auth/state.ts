@@ -1,7 +1,8 @@
 import "server-only";
-import { onAuthStateChanged } from "./actions";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../config";
 
-onAuthStateChanged((admin) => {
-  if (admin) console.log("admin user signed in: " + admin.email);
-  else console.log("admin user signed out");
+onAuthStateChanged(auth, (admin) => {
+  if (admin) console.log("user signed in: " + admin.email);
+  else console.log("user signed out");
 });

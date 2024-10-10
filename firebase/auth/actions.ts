@@ -7,15 +7,6 @@ import {
 } from "firebase/auth";
 import { auth } from "../config";
 
-export async function onAuthStateChanged(cb: (authUser: User | null) => void) {
-  return _onAuthStateChanged(auth, cb);
-}
-
-export async function getUser() {
-  await auth.authStateReady();
-  return auth.currentUser;
-}
-
 export async function createUserWithEmailAndPasswordWrapper(
   email: string,
   password: string
@@ -29,9 +20,19 @@ export async function signInWithEmailAndPasswordWrapper(
   email: string,
   password: string
 ) {
-  return signInWithEmailAndPassword(auth, email, password).catch((e) => {
-    throw new Error("Failed to sign in -- Tag:2\n\t" + e);
-  });
+  return signInWithEmailAndPassword(auth, email, password)
+    .then(({ user }) => ({
+      result: JSON.stringify(user),
+      message: "User Signed In Successfully",
+      success: true,
+    }))
+    .catch((error: Error) => {
+      return {
+        result: error.toString(),
+        message: "Failed to Sign In User.",
+        success: false,
+      };
+    });
 }
 
 export async function signOutWrapper() {

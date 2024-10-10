@@ -17,7 +17,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 
-export const collectionWrapper = async (
+export const collectionWrapper = (
   firestore: Firestore,
   path: string,
   ...pathSegments: string[]

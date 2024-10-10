@@ -1,5 +1,10 @@
 "use client";
-import React, { MouseEventHandler, MouseEvent, useEffect } from "react";
+import React, {
+  MouseEventHandler,
+  MouseEvent,
+  useEffect,
+  useState,
+} from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -20,47 +25,34 @@ import {
   UserRoundPlus,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useAtom } from "jotai";
-import userAtom from "@/atoms/user";
 import { toast } from "@/components/ui/use-toast";
 import Search from "./search/index";
 import { Residence } from "@/types/resident";
-import { getUser } from "@/firebase/auth/actions";
-import { User } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "@/firebase/config";
 
 export default function Header({
-  initialUser,
+  user,
   signOut,
   rooms,
 }: {
-  initialUser: object | null;
+  user: object | null;
   signOut: () => Promise<void>;
   rooms: (Residence & { id: string })[] | null;
 }) {
   const router = useRouter();
-  const [admin, setAdmin] = useAtom(userAtom);
 
-  useEffect(() => {
-    if (initialUser) setAdmin((initialUser as User) ?? null), [];
-  });
-
-  //useEffect(() => {
-  //  (async () => {
-  //    setAdmin(await getUser());
-  //  })();
-  //});
-  //
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
     event: MouseEvent
   ) => {
     event.preventDefault();
-    signOut().then((_) => setAdmin(null));
+    signOut();
   };
 
   return (
     <header
       className={`fixed w-full z-10 bg-background/80 ${
-        admin ? "justify-between" : "md:gap-[21%]"
+        user ? "justify-between" : "md:gap-[21%]"
       } gap-2 flex flex-wrap border-b items-center px-4 py-2`}
     >
       <Link href="/" className="w-fit">
@@ -81,10 +73,10 @@ export default function Header({
           className="hidden md:block"
         />
       </Link>
-      {rooms && (
+      {user && rooms && (
         <Search className="w-full md:w-2/5 order-2 md:order-1" {...{ rooms }} />
       )}
-      {admin && (
+      {user && (
         <DropdownMenu>
           <div className="flex justify-end order-1 md:order-2">
             <DropdownMenuTrigger className="rounded-full border-primary border-4 bg-primary-foreground w-12 h-12">

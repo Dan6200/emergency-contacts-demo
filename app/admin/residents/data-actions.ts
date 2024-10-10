@@ -1,5 +1,4 @@
 "use server";
-
 import db from "@/firebase/config";
 import {
   collectionWrapper,
@@ -25,7 +24,7 @@ import util from "node:util";
 
 export async function addNewResident(newResident: Resident) {
   try {
-    const residentColRef = await collectionWrapper(db, "residents");
+    const residentColRef = collectionWrapper(db, "residents");
     await addDocWrapper(residentColRef, newResident);
     return {
       message: "Successfully Added a New Resident",
@@ -87,7 +86,7 @@ export async function mutateResidentData(
 
 export async function getResidentData(residentId: string) {
   try {
-    const residentsColRef = await collectionWrapper(db, "residents");
+    const residentsColRef = collectionWrapper(db, "residents");
     const resQ = await queryWrapper(
       residentsColRef,
       where("resident_id", "==", residentId)
@@ -104,10 +103,7 @@ export async function getResidentData(residentId: string) {
 
     //Fetch and join contact data...
     const emergencyContacts = [];
-    const emContactsCollection = await collectionWrapper(
-      db,
-      "emergency_contacts"
-    );
+    const emContactsCollection = collectionWrapper(db, "emergency_contacts");
     const contQ = await queryWrapper(
       emContactsCollection,
       where("resident_id", "==", residentId)
@@ -146,7 +142,7 @@ export async function getResidents() {
 
 export async function getAllRooms() {
   try {
-    const collectionResponse = await collectionWrapper(db, "residence");
+    const collectionResponse = collectionWrapper(db, "residence");
     const roomsCollection = collectionResponse;
     const q = await queryWrapper(roomsCollection);
     const roomsData = await getDocsWrapper(q);
