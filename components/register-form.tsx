@@ -16,10 +16,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { redirect, useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect } from "react";
-import { useAtomValue } from "jotai";
-import userAtom from "@/atoms/user";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "@/firebase/client/config";
 
 const AddAdminFormSchema = z.object({
   email: z.string().min(2, {
@@ -50,7 +50,13 @@ export function AddAdminForm({ addAdmin }: AddAdminForm) {
     },
   });
 
-  const admin = useAtomValue(userAtom);
+  const [admin, setAdmin] = useState<User | null>(null);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setAdmin(currentUser);
+    });
+    return () => unsubscribe();
+  }, [setAdmin]);
 
   async function onSubmit(
     addAdmin: Authenticate,
@@ -61,43 +67,45 @@ export function AddAdminForm({ addAdmin }: AddAdminForm) {
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit.bind(null, addAdmin))}
-        className="w-full sm:w-4/5 lg:w-3/4 space-y-6"
-      >
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input {...field} type="email" />
-              </FormControl>
-              <FormMessage />
-              <FormDescription>Add New Admin User's Email</FormDescription>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input {...field} type="password" />
-              </FormControl>
-              <FormMessage />
-              <FormDescription>Enter Admin Password</FormDescription>
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full">
-          Submit
-        </Button>
-      </form>
-    </Form>
+    admin && (
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit.bind(null, addAdmin))}
+          className="w-full sm:w-4/5 lg:w-3/4 space-y-6"
+        >
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input {...field} type="email" />
+                </FormControl>
+                <FormMessage />
+                <FormDescription>Add New Admin User's Email</FormDescription>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input {...field} type="password" />
+                </FormControl>
+                <FormMessage />
+                <FormDescription>Enter Admin Password</FormDescription>
+              </FormItem>
+            )}
+          />
+          <Button type="submit" className="w-full">
+            Submit
+          </Button>
+        </form>
+      </Form>
+    )
   );
 }

@@ -1,6 +1,6 @@
 import { getAllRooms } from "./admin/residents/data-actions";
 import { redirect } from "next/navigation";
-import RoomList from "@/components/user-list";
+import RoomList from "@/components/room-list";
 
 export const revalidate = 60;
 
