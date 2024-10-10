@@ -32,7 +32,7 @@ export async function GET() {
           doc.addImage(logo, "PNG", 77, 60, 55, 20); // Adjust dimensions and position as needed
 
           // Add the resident information title
-          doc.setFontSize(18);
+          doc.setFontSize(20);
           doc.setFont("Helvetica", "bold"); // Styling
           doc.text("RESIDENT INFORMATION - SCAN TO REVEAL", 37, 90); // Adjust position
           doc.setFont("Helvetica", "normal");
@@ -42,6 +42,7 @@ export async function GET() {
           doc.setDrawColor(255, 0, 0);
           doc.rect(75, 100, 60, 60);
           doc.addImage(qrCodeDataUri, "PNG", 75, 100, 60, 60); // Centered below text
+          doc.setFont("Helvetica", "bold"); // Styling
           doc.text("INSTANT ACCESS TO EMERGENCY INFO", 45, 183); // Adjust position
           let street = address
             .match(/^[A-Za-z ]+(?=\s\d)/gm)
@@ -56,7 +57,8 @@ export async function GET() {
           const regex = /^(?!.*(ROAD|STREET|RD|ST|DRIVE|WAY)).+$/;
           const streetName = streetRaw.filter((word) => regex.test(word));
 
-          doc.setFontSize(14);
+          doc.setFontSize(16);
+          doc.setFont("Helvetica", "normal");
           doc.text(streetName.join(""), 75, 173); // Adjust position
           doc.text("-", 112, 173); // Adjust position
           doc.text("#" + roomNo, 120, 173); // Adjust position

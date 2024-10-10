@@ -1,6 +1,5 @@
-export {};
-//"use client";
-//
+"use client";
+
 //import { zodResolver } from "@hookform/resolvers/zod";
 //import { useForm } from "react-hook-form";
 //import { z } from "zod";
@@ -22,7 +21,6 @@ export {};
 //import type { EmergencyContact, Resident } from "@/types/resident";
 //import { Minus, Plus } from "lucide-react";
 //import { useAtomValue } from "jotai";
-//import userAtom from "@/atoms/user";
 //import { isError } from "@/app/utils";
 //
 //const ResidentFormSchema = z.object({
@@ -52,28 +50,29 @@ export {};
 //    ) => Promise<{ result: string; success: boolean; message: string }>);
 //
 //interface ResidentFormProps {
-//  address: string;
-//  name: string;
-//  unit_number: string;
-//  mutateResidents: MutateResidents;
-//  residentId?: string;
-//  emergency_contacts?: EmergencyContact[];
-//  emergency_contact_ids?: string[];
+//  resident_name: string;
+//  resident_id: string;
+//  residence_id: string;
+//  emergencyContacts: {
+//    contact_name: string;
+//    cell_phone: string;
+//    home_phone: string;
+//    work_phone: string;
+//    relationship: string;
+//  }[];
 //}
 //
 //export function ResidentForm({
 //  address,
 //  name,
 //  unit_number,
-//  emergency_contacts,
-//  emergency_contact_ids,
+//  emergencyContacts,
 //  mutateResidents,
 //  residentId,
 //}: ResidentFormProps) {
 //  const router = useRouter();
-//  const admin = useAtomValue(userAtom);
 //  const [noOfEmContacts, setNoOfEmContacts] = useState(
-//    emergency_contacts?.length ?? 1
+//    emergencyContacts?.length ?? 1
 //  );
 //  const form = useForm<z.infer<typeof ResidentFormSchema>>({
 //    resolver: zodResolver(ResidentFormSchema),
@@ -81,17 +80,9 @@ export {};
 //      address,
 //      name,
 //      unit_number,
-//      emergency_contacts,
+//      emergencyContacts,
 //    },
 //  });
-//
-//  useLayoutEffect(() => {
-//    setTimeout(() => {
-//      if (!admin) {
-//        redirect("/");
-//      }
-//    }, 500);
-//  }, [admin]);
 //
 //  async function onSubmit(
 //    mutateData: MutateResidents,

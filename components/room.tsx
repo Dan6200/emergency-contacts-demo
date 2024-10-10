@@ -10,6 +10,7 @@ import DeleteResident from "@/app/room/[id]/residents/delete";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "@/firebase/client/config";
+import AddResident from "@/app/room/[id]/residents/add";
 
 export default function Room({ roomData }: { roomData: RoomData }) {
   const [admin, setAdmin] = useState<User | null>(null),
@@ -73,14 +74,7 @@ export default function Room({ roomData }: { roomData: RoomData }) {
       {admin && (
         <section className="mb-8 flex flex-col md:flex-row md:justify-center md:flex-wrap gap-6 w-full md:w-4/5 lg:w-2/3 mx-auto">
           <div className="flex gap-5 flex-wrap items-center justify-center md:w-2/3">
-            <Button
-              className="sm:w-64 w-full"
-              onMouseDown={() =>
-                router.push(`/admin/residents/${roomData.id}/add`)
-              }
-            >
-              Add New Resident
-            </Button>
+            <AddResident />
           </div>
         </section>
       )}

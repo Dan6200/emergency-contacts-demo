@@ -4,20 +4,7 @@ import { toast } from "@/components/ui/use-toast";
 import type { Resident } from "@/types/resident";
 import { useRouter } from "next/navigation";
 
-export default function AddResident({
-  addResidentData,
-}: {
-  addResidentData: (newResident: Resident) => Promise<
-    | {
-        success: boolean;
-        message?: undefined;
-      }
-    | {
-        success: boolean;
-        message: string;
-      }
-  >;
-}) {
+export default function AddResident() {
   const handleAdd = (formData: FormData) => {
     console.log(formData.entries());
     //addResidentData()
@@ -33,9 +20,8 @@ export default function AddResident({
       className="md:w-full grow shrink basis-0 text-white"
     >
       <input type="text" hidden />
-      <Button variant="destructive" type="submit" className="bg-red-700 w-full">
-        Add Resident
-      </Button>
+
+      <Button className="sm:w-64 w-full">Add New Resident</Button>
     </form>
   );
 }
