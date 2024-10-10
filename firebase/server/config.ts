@@ -1,19 +1,23 @@
-import { initializeApp } from "firebase-admin/app";
+import { getApp, initializeApp } from "firebase-admin/app";
 import fbAdmin from "firebase-admin";
 import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
 
 const { credential } = fbAdmin;
-let app = null;
-let serviceAccount: any = null;
-serviceAccount = await import(process.env.FB_SERVICE_ACCOUNT!, {
-  assert: { type: "json" },
-}).then((module) => {
-  serviceAccount = module.default;
-  return serviceAccount;
-});
+const appName = "linkID-server";
 
-app = initializeApp({
-  credential: credential.cert(serviceAccount),
-});
+if (!fbAdmin.apps.find((app) => app?.name === appName))
+  initializeApp(
+    {
+      credential: credential.cert({
+        projectId: process.env.FB_PROJECT_ID,
+        clientEmail: process.env.FB_CLIENT_EMAIL,
+        privateKey: process.env.FB_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+      }),
+    },
+    appName
+  );
 
-export const auth = getAuth(app);
+export const auth = getAuth(getApp(appName));
+const db = getFirestore(getApp(appName));
+export default db;

@@ -1,6 +1,5 @@
 import { SignInForm } from "@/components/signin-form/";
-import { signInWithEmailAndPasswordWrapper } from "@/firebase/auth/actions";
-import Link from "next/link";
+//import Link from "next/link";
 
 export default async function SignInPage() {
   return (
@@ -8,10 +7,10 @@ export default async function SignInPage() {
       <h1 className="text-2xl font-bold my-8">
         Please Sign In Before You Proceed...
       </h1>
-      <SignInForm {...{ signIn: signInWithEmailAndPasswordWrapper }} />
-      <Link href="/admin/new" className="underline text-blue-700">
+      <SignInForm />
+      {/*      <Link href="/admin/new" className="underline text-blue-700">
         Don't have an account? Sign up instead.
-      </Link>
+      </Link>*/}
     </main>
   );
 }

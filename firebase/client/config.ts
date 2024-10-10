@@ -1,22 +1,16 @@
-import {
-  browserLocalPersistence,
-  getAuth,
-  setPersistence,
-} from "firebase/auth";
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { getApp, getApps, initializeApp } from "firebase/app";
 
+const appName = "linkID-client";
 export const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
-  appId: process.env.NEXT_PUBLIC_APP_ID,
-  messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
+  apiKey: process.env.NEXT_PUBLIC_FB_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FB_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FB_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FB_STORAGE_BUCKET,
+  appId: process.env.NEXT_PUBLIC_FB_APP_ID,
+  messagingSenderId: process.env.NEXT_PUBLIC_FB_MESSAGING_SENDER_ID,
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-export const auth = getAuth(app);
-await setPersistence(auth, browserLocalPersistence);
-export default db;
+if (!getApps().find((app) => app?.name === appName))
+  initializeApp(firebaseConfig, appName);
+export const auth = getAuth(getApp(appName));

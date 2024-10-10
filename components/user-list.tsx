@@ -10,18 +10,12 @@ import {
 } from "@/components/ui/table";
 import { Residence } from "@/types/resident";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect } from "react";
 
-export default function UserList({
-  user,
+export default function RoomList({
   rooms,
 }: {
-  user: object | null;
   rooms: (Residence & { id: string })[];
 }) {
-  const router = useRouter();
-
   return (
     <div className="w-fit rounded-md border-2 mx-auto">
       <Table className="text-base w-full">

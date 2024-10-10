@@ -1,31 +1,19 @@
 "use server";
-import db from "@/firebase/config";
+import db from "@/firebase/server/config";
+import { collectionWrapper } from "@/firebase/firestore";
 import {
-  collectionWrapper,
-  queryWrapper,
-  getDocsWrapper,
-  docWrapper,
-  getDocWrapper,
-  deleteDocWrapper,
-  addDocWrapper,
-  updateDocWrapper,
-} from "@/firebase/firestore";
-import { where, limit, writeBatch } from "firebase/firestore";
-import {
-  EmergencyContact,
   isTypeEmergencyContact,
   isTypeResidence,
   isTypeResident,
   Resident,
-  Residence,
 } from "@/types/resident";
 import { notFound } from "next/navigation";
 import util from "node:util";
 
 export async function addNewResident(newResident: Resident) {
   try {
-    const residentColRef = collectionWrapper(db, "residents");
-    await addDocWrapper(residentColRef, newResident);
+    const residentColRef = collectionWrapper("residents");
+    await residentColRef.add(newResident);
     return {
       message: "Successfully Added a New Resident",
       success: true,
@@ -43,17 +31,14 @@ export async function updateResident(
   residentId: string
 ) {
   try {
-    const residentColRef = await collectionWrapper(db, "residents");
-    const resQ = await queryWrapper(
-      residentColRef,
-      where("resident_id", "==", residentId)
-    );
-    const resSnap = await getDocsWrapper(resQ);
+    const residentColRef = collectionWrapper("residents");
+    const resQ = residentColRef.where("resident_id", "==", residentId);
+    const resSnap = await resQ.get();
     if (resSnap.size > 0)
       throw new Error(
         "Cannot Update More Than One Resident, Possible Duplicated Data"
       );
-    await updateDocWrapper(resSnap.docs[0].ref, newResidentData);
+    await resSnap.docs[0].ref.update(<any>newResidentData);
     return {
       success: true,
       message: "Successfully Updated Resident Information",
@@ -86,12 +71,9 @@ export async function mutateResidentData(
 
 export async function getResidentData(residentId: string) {
   try {
-    const residentsColRef = collectionWrapper(db, "residents");
-    const resQ = await queryWrapper(
-      residentsColRef,
-      where("resident_id", "==", residentId)
-    );
-    const residentsSnap = await getDocsWrapper(resQ);
+    const residentsColRef = collectionWrapper("residents");
+    const resQ = residentsColRef.where("resident_id", "==", residentId);
+    const residentsSnap = await resQ.get();
     if (residentsSnap.size > 1)
       throw new Error("Duplicate Resident Data Is Not Allowed!");
     const doc = residentsSnap.docs[0];
@@ -103,14 +85,11 @@ export async function getResidentData(residentId: string) {
 
     //Fetch and join contact data...
     const emergencyContacts = [];
-    const emContactsCollection = collectionWrapper(db, "emergency_contacts");
-    const contQ = await queryWrapper(
-      emContactsCollection,
-      where("resident_id", "==", residentId)
-    );
-    const contactData = await getDocsWrapper(contQ);
+    const emContactsCollection = collectionWrapper("emergency_contacts");
+    const contQ = emContactsCollection.where("resident_id", "==", residentId);
+    const contactData = await contQ.get();
     for (const doc of contactData.docs) {
-      if (!doc.exists()) throw notFound();
+      if (!doc.exists) throw notFound();
       if (!isTypeEmergencyContact(doc.data()))
         throw new Error("Object is not of type Emergency Contacts -- Tag:29");
       const { residence_id, resident_id, ...contact } = <any>doc.data();
@@ -125,11 +104,9 @@ export async function getResidentData(residentId: string) {
 
 export async function getResidents() {
   try {
-    const collectionResponse = await collectionWrapper(db, "residents");
-    const residentsCollection = collectionResponse;
-    const q = await queryWrapper(residentsCollection);
-    const residentsData = await getDocsWrapper(q);
-    return residentsData.docs.map((doc) => {
+    const residentsCollection = collectionWrapper("residents");
+    const residentsSnap = await residentsCollection.get();
+    return residentsSnap.docs.map((doc) => {
       const resident = doc.data();
       if (!isTypeResident(resident))
         throw new Error("Object is not of type Resident  -- Tag:19");
@@ -142,12 +119,10 @@ export async function getResidents() {
 
 export async function getAllRooms() {
   try {
-    const collectionResponse = collectionWrapper(db, "residence");
-    const roomsCollection = collectionResponse;
-    const q = await queryWrapper(roomsCollection);
-    const roomsData = await getDocsWrapper(q);
-    return roomsData.docs.map((doc) => {
-      if (!doc.exists) throw notFound();
+    const roomsCollection = collectionWrapper("residence");
+    const roomsSnap = await roomsCollection.get();
+    if (!roomsSnap.size) throw notFound();
+    return roomsSnap.docs.map((doc) => {
       const residence = doc.data();
       if (!isTypeResidence(residence))
         throw new Error("Object is not of type Residence  -- Tag:19");
@@ -165,16 +140,14 @@ export async function getRoomData(residenceId: string) {
    * *********************************************************/
 
   try {
-    const addressDoc = await getDocWrapper(
-      await docWrapper(db, "residence", residenceId)
-    );
-
+    const addressCollection = collectionWrapper("residence");
+    const addressSnap = await addressCollection.doc(residenceId).get();
     const residents_map: any = {};
     const room_map: any = {};
-    if (!addressDoc.exists()) throw notFound();
+    if (!addressSnap.exists) throw notFound();
     const address = {
-      ...(addressDoc.data() as any),
-      id: addressDoc.id,
+      ...(addressSnap.data() as any),
+      id: addressSnap.id,
     };
     if (!isTypeResidence(address))
       throw new Error("Object is not of type Residence -- Tag:10");
@@ -184,14 +157,15 @@ export async function getRoomData(residenceId: string) {
     };
 
     // Fetch and join resident data...
-    const residentsCollection = await collectionWrapper(db, "residents");
-    const resQ = await queryWrapper(
-      residentsCollection,
-      where("residence_id", "==", address.residence_id)
+    const residentsCollection = collectionWrapper("residents");
+    const resQ = residentsCollection.where(
+      "residence_id",
+      "==",
+      address.residence_id
     );
-    const residentsData = await getDocsWrapper(resQ);
+    const residentsData = await resQ.get();
     for (const doc of residentsData.docs) {
-      if (!doc.exists()) throw notFound();
+      if (!doc.exists) throw notFound();
       let resident = doc.data();
       if (!isTypeResident(resident))
         throw new Error("Object is not of type Resident -- Tag:9");
@@ -224,25 +198,14 @@ export async function getRoomData(residenceId: string) {
 
 export async function deleteResidentData(residentId: string) {
   try {
-    const residentColRef = await collectionWrapper(db, "residents", residentId);
-    const contactColRef = await collectionWrapper(
-      db,
-      "emergency_contacts",
-      residentId
-    );
-    const resQ = await queryWrapper(
-      residentColRef,
-      where("resident_id", "==", residentId)
-    );
+    const residentColRef = collectionWrapper("residents");
+    const contactColRef = collectionWrapper("emergency_contacts");
+    const resQ = residentColRef.where("resident_id", "==", residentId);
+    const contQ = contactColRef.where("resident_id", "==", residentId);
 
-    const contQ = await queryWrapper(
-      contactColRef,
-      where("resident_id", "==", residentId)
-    );
-
-    const batch = writeBatch(db);
-    const resSnap = await getDocsWrapper(resQ);
-    const contSnap = await getDocsWrapper(contQ);
+    const batch = db.batch();
+    const resSnap = await resQ.get();
+    const contSnap = await contQ.get();
     if (resSnap.size > 1)
       throw new Error(
         "Cannot Delete More Than One Resident, Possible Duplicate Data"

@@ -24,20 +24,17 @@ import {
   UserRound,
   UserRoundPlus,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import Search from "./search/index";
 import { Residence } from "@/types/resident";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "@/firebase/config";
+import { auth } from "@/firebase/client/config";
+import { signOutWrapper } from "@/firebase/auth/actions";
 
 export default function Header({
-  user,
-  signOut,
   rooms,
 }: {
-  user: object | null;
-  signOut: () => Promise<void>;
   rooms: (Residence & { id: string })[] | null;
 }) {
   const router = useRouter();
@@ -46,13 +43,29 @@ export default function Header({
     event: MouseEvent
   ) => {
     event.preventDefault();
-    signOut();
+    signOutWrapper();
   };
+
+  const [admin, setAdmin] = useState<User | null>(null);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setAdmin(currentUser);
+      if (
+        !currentUser &&
+        pathname !== "/admin/sign-in" &&
+        !pathname.includes("residents")
+      )
+        router.push("/admin/sign-in");
+    });
+    return () => unsubscribe();
+  }, [pathname, setAdmin]);
 
   return (
     <header
       className={`fixed w-full z-10 bg-background/80 ${
-        user ? "justify-between" : "md:gap-[21%]"
+        admin ? "justify-between" : "md:gap-[21%]"
       } gap-2 flex flex-wrap border-b items-center px-4 py-2`}
     >
       <Link href="/" className="w-fit">
@@ -73,17 +86,17 @@ export default function Header({
           className="hidden md:block"
         />
       </Link>
-      {user && rooms && (
+      {admin && rooms && (
         <Search className="w-full md:w-2/5 order-2 md:order-1" {...{ rooms }} />
       )}
-      {user && (
+      {admin && (
         <DropdownMenu>
           <div className="flex justify-end order-1 md:order-2">
             <DropdownMenuTrigger className="rounded-full border-primary border-4 bg-primary-foreground w-12 h-12">
               <UserRound className="mx-auto" />
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="text-center gap-5 p-2 md:gap-5 bg-background border-2 mr-4 w-[60vw] sm:w-[40vw] md:w-[20vw]">
+            <DropdownMenuContent className="text-center gap-5 p-2 md:gap-5 bg-background border-2 mr-4 w-[60vw] sm:w-[40vw] md:w-[30vw] lg:w-[20vw]">
               <DropdownMenuLabel>Admin</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>

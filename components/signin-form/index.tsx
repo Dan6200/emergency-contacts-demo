@@ -17,7 +17,8 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { auth } from "@/firebase/config";
+import { auth } from "@/firebase/client/config";
+import { signInWithEmailAndPasswordWrapper } from "@/firebase/auth/actions";
 
 const SignInFormSchema = z.object({
   email: z.string().min(2, {
@@ -44,11 +45,7 @@ type AuthenticateResult = (
     }
 >;
 
-interface SignInForm {
-  signIn: AuthenticateResult;
-}
-
-export function SignInForm({ signIn }: SignInForm) {
+export function SignInForm() {
   const form = useForm<z.infer<typeof SignInFormSchema>>({
     resolver: zodResolver(SignInFormSchema),
     defaultValues: {
@@ -58,16 +55,11 @@ export function SignInForm({ signIn }: SignInForm) {
   });
   const router = useRouter();
 
-  async function onSubmit(
-    sign_in: AuthenticateResult,
-    data: z.infer<typeof SignInFormSchema>
-  ) {
-    const { result, message, success } = await sign_in(
-      data.email,
-      data.password
-    );
+  async function onSubmit(data: z.infer<typeof SignInFormSchema>) {
+    const { result, message, success } =
+      await signInWithEmailAndPasswordWrapper(data.email, data.password);
     if (success) {
-      //router.refresh(); // Navigate to the homepage
+      router.push("/"); // Navigate to the homepage
     }
     toast({ title: message, variant: success ? "default" : "destructive" });
   }
@@ -75,7 +67,7 @@ export function SignInForm({ signIn }: SignInForm) {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit.bind(null, signIn))}
+        onSubmit={form.handleSubmit(onSubmit)}
         className="my-8 w-full sm:w-4/5 lg:w-3/4 space-y-6"
       >
         <FormField

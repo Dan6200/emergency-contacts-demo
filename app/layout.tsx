@@ -7,9 +7,6 @@ import "./globals.css";
 import Header from "@/components/header/index";
 import Providers from "./providers";
 import { getAllRooms } from "./admin/residents/data-actions";
-//import { auth } from "@/firebase/config";
-import { signOutWrapper } from "@/firebase/auth/actions";
-import { auth } from "@/firebase/config";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -23,8 +20,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await auth.authStateReady();
-  const user = auth.currentUser;
   const rooms =
     (await getAllRooms().catch((e) => {
       console.log("Failed to Retrieve Rooms -- Tag:14.\n\t" + e);
@@ -35,9 +30,7 @@ export default async function RootLayout({
         <Providers>
           <Header
             {...{
-              user: user?.toJSON() ?? null,
               rooms,
-              signOut: signOutWrapper,
             }}
           />
           {children}

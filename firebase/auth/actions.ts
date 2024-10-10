@@ -1,11 +1,10 @@
-"use server";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   onAuthStateChanged as _onAuthStateChanged,
   type User,
 } from "firebase/auth";
-import { auth } from "../config";
+import { auth } from "../client/config";
 
 export async function createUserWithEmailAndPasswordWrapper(
   email: string,

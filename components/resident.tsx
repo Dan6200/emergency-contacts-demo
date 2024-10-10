@@ -6,18 +6,28 @@ import { useAtomValue } from "jotai";
 import { PhoneCall } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardFooter } from "./ui/card";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "@/firebase/client/config";
 
 export default function Resident({
   residentData,
 }: {
   residentData: ResidentData;
 }) {
-  const admin = useAtomValue(userAtom),
+  const [admin, setAdmin] = useState<User | null>(null),
     router = useRouter();
+
   const { resident_name, emergencyContacts } = residentData;
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setAdmin(currentUser);
+    });
+    return () => unsubscribe();
+  }, [setAdmin]);
 
   return (
     <main className="bg-background flex flex-col gap-5 container md:px-16 mx-auto text-center py-32 sm:py-24 h-fit">
