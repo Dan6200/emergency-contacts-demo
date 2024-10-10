@@ -1,7 +1,5 @@
 "use client";
-import userAtom from "@/atoms/user";
 import type { RoomData } from "@/types/resident";
-import { useAtomValue } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
