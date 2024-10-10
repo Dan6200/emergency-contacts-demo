@@ -32,15 +32,15 @@ export default function Room({ roomData }: { roomData: RoomData }) {
       </section>
       <section className="my-8 w-full">
         <h1 className="text-xl font-semibold mb-8">Residents</h1>
-        <div className="flex gap-8 justify-center mx-auto">
+        <div className="flex gap-8 justify-center mx-auto flex-col items-center md:flex-row">
           {residents &&
             residents.map((resident) => (
               <Link
                 href={`/room/${roomData.id}/residents/${resident.id}`}
                 key={resident.resident_id}
-                className="h-fit"
+                className="h-fit w-fit"
               >
-                <Card className="flex-col hover:bg-green-700/10 active:bg-green-700/10 flex shadow-md p-4 md:p-6 items-center md:w-[25vw] gap-4">
+                <Card className="flex-col hover:bg-green-700/10 active:bg-green-700/10 flex shadow-md p-4 md:p-6 items-center w-[80vw] sm:w-[50vw] md:w-[25vw] gap-4">
                   <CardHeader className="p-0">
                     <Image
                       src="/profile.svg"

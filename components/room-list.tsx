@@ -30,13 +30,13 @@ export default function RoomList({
   return (
     admin && (
       <div className="w-fit rounded-md border-2 mx-auto">
-        <Table className="text-base w-full">
+        <Table className="text-base w-[90vw] md:w-[70vw] lg:w-[60vw]">
           <TableCaption>All Rooms In The Facility.</TableCaption>
           <TableHeader className="bg-foreground/20 font-bold rounded-md">
             <TableRow>
-              <TableHead className="text-center md:w-48">Keyword</TableHead>
-              <TableHead className="text-center md:w-48">Room</TableHead>
-              <TableHead className="text-left">Address</TableHead>
+              <TableHead className="text-center md:w-[5vw]">Keyword</TableHead>
+              <TableHead className="text-center md:w-[5vw]">Room</TableHead>
+              <TableHead className="text-center md:w-[20vw]">Address</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -59,7 +59,7 @@ export default function RoomList({
                         {roomNo}
                       </Link>
                     </TableCell>
-                    <TableCell className="text-left">
+                    <TableCell className="text-center">
                       <Link href={`/room/${id}`} className="w-full block">
                         {address}
                       </Link>

@@ -10,7 +10,7 @@ export default async function Home() {
   });
   if (!rooms) throw new Error("Unable To Fetch Rooms");
   return (
-    <main className="sm:container bg-background text-center mx-auto py-48 sm:py-24">
+    <main className="sm:container bg-background text-center mx-auto py-32 md:py-24">
       <RoomList {...{ rooms }} />
     </main>
   );
