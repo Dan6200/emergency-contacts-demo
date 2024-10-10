@@ -55,7 +55,8 @@ export default function Header({
       if (
         !currentUser &&
         pathname !== "/admin/sign-in" &&
-        !pathname.includes("residents")
+        !pathname.includes("residents") &&
+        !pathname.includes("room")
       )
         router.push("/admin/sign-in");
     });
