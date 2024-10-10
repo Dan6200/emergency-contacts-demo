@@ -17,65 +17,60 @@ export async function GET() {
   const doc = new jsPDF();
 
   await Promise.all(
-    rooms
-      .slice(0, 10)
-      .map(
-        async (
-          { id, residence_id, roomNo, address }: Residence & { id: string },
-          idx
-        ) => {
-          const qrCodeDataUri = await QRcode.toDataURL(
-            new URL(`/room/${id}/`, process.env.DOMAIN).toString()
+    rooms.map(
+      async ({ id, roomNo, address }: Residence & { id: string }, idx) => {
+        const qrCodeDataUri = await QRcode.toDataURL(
+          new URL(`/room/${id}/`, process.env.DOMAIN).toString()
+        );
+
+        // Add the LinkID logo at the top
+        doc.addImage(logo, "PNG", 77, 60, 55, 20); // Adjust dimensions and position as needed
+
+        // Add the resident information title
+        doc.setFontSize(20);
+        doc.setFont("Helvetica", "bold"); // Styling
+        doc.text("RESIDENT INFORMATION - SCAN TO REVEAL", 30, 90); // Adjust position
+        doc.setFont("Helvetica", "normal");
+
+        // Add the QR code
+        doc.setLineWidth(8);
+        doc.setDrawColor(255, 0, 0);
+        doc.rect(75, 100, 60, 60);
+        doc.addImage(qrCodeDataUri, "PNG", 75, 100, 60, 60); // Centered below text
+        doc.setFont("Helvetica", "bold"); // Styling
+        doc.text("INSTANT ACCESS TO EMERGENCY INFO", 35, 183); // Adjust position
+        let street = address
+          .match(/^[A-Za-z ]+(?=\s\d)/gm)
+          ?.join(" ")
+          .toUpperCase();
+
+        if (!street)
+          throw new Error(
+            "Please provide the street name to address: " + address
           );
+        const streetRaw = street.split(" ");
+        const regex = /^(?!.*(ROAD|STREET|RD|ST|DRIVE|WAY)).+$/;
+        const streetName = streetRaw.filter((word) => regex.test(word));
 
-          // Add the LinkID logo at the top
-          doc.addImage(logo, "PNG", 77, 60, 55, 20); // Adjust dimensions and position as needed
+        doc.setFontSize(16);
+        doc.setFont("Helvetica", "normal");
+        doc.text(streetName.join(""), 75, 173); // Adjust position
+        doc.text("-", 112, 173); // Adjust position
+        doc.text("#" + roomNo, 120, 173); // Adjust position
 
-          // Add the resident information title
-          doc.setFontSize(20);
-          doc.setFont("Helvetica", "bold"); // Styling
-          doc.text("RESIDENT INFORMATION - SCAN TO REVEAL", 37, 90); // Adjust position
-          doc.setFont("Helvetica", "normal");
+        // Draw arrows pointing to the QR code
+        // Arrow from left
+        //doc.line(60, 90, 75, 100); // Arrowhead - left side
+        //doc.line(65, 60, 70, 75); // Arrowhead - left side
 
-          // Add the QR code
-          doc.setLineWidth(8);
-          doc.setDrawColor(255, 0, 0);
-          doc.rect(75, 100, 60, 60);
-          doc.addImage(qrCodeDataUri, "PNG", 75, 100, 60, 60); // Centered below text
-          doc.setFont("Helvetica", "bold"); // Styling
-          doc.text("INSTANT ACCESS TO EMERGENCY INFO", 45, 183); // Adjust position
-          let street = address
-            .match(/^[A-Za-z ]+(?=\s\d)/gm)
-            ?.join(" ")
-            .toUpperCase();
+        // Arrow from bottom
+        //doc.line(60, 140, 90, 100); // First line for the arrow
+        //doc.line(60, 140, 63, 137); // Arrowhead - left side
+        //doc.line(60, 140, 63, 143); // Arrowhead - right side
 
-          if (!street)
-            throw new Error(
-              "Please provide the street name to address: " + address
-            );
-          const streetRaw = street.split(" ");
-          const regex = /^(?!.*(ROAD|STREET|RD|ST|DRIVE|WAY)).+$/;
-          const streetName = streetRaw.filter((word) => regex.test(word));
-
-          doc.setFontSize(16);
-          doc.setFont("Helvetica", "normal");
-          doc.text(streetName.join(""), 75, 173); // Adjust position
-          doc.text("-", 112, 173); // Adjust position
-          doc.text("#" + roomNo, 120, 173); // Adjust position
-
-          // Draw arrows pointing to the QR code
-          // Arrow from left
-          //doc.line(60, 90, 75, 100); // Arrowhead - left side
-          //doc.line(65, 60, 70, 75); // Arrowhead - left side
-
-          // Arrow from bottom
-          //doc.line(60, 140, 90, 100); // First line for the arrow
-          //doc.line(60, 140, 63, 137); // Arrowhead - left side
-          //doc.line(60, 140, 63, 143); // Arrowhead - right side
-
-          if (idx < rooms.length - 1) doc.addPage(); // Add new page for next resident
-        }
-      )
+        if (idx < rooms.length - 1) doc.addPage(); // Add new page for next resident
+      }
+    )
   );
 
   return new NextResponse(new Uint8Array(doc.output("arraybuffer")), {

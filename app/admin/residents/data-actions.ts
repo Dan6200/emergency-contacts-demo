@@ -50,13 +50,14 @@ export async function updateResident(
 export async function mutateResidentData(
   resident: Resident
 ): Promise<
-  | { result?: string; message: string; success: boolean }
-  | { result?: string; message: string; success: boolean }
+  { message: string; success: boolean } | { message: string; success: boolean }
 >;
 export async function mutateResidentData(
   resident: Resident,
   residentId: string
-): Promise<{ success: boolean } | { success: boolean; message?: string }>;
+): Promise<
+  { message: string; success: boolean } | { message: string; success: boolean }
+>;
 export async function mutateResidentData(
   resident: Resident,
   residentId?: string
