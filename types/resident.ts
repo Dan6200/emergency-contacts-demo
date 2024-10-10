@@ -106,6 +106,7 @@ export interface RoomData {
   address: string;
   residents: [
     {
+      id: string;
       resident_id: string;
       resident_name: string | null;
     }
@@ -130,6 +131,7 @@ export const isTypeRoomData = (data: unknown): data is RoomData => {
     return (data as any).residents.every(
       (resident: any) =>
         typeof resident === "object" &&
+        "id" in data &&
         "resident_id" in resident &&
         typeof resident.resident_id === "string" &&
         "resident_name" in resident &&

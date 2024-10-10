@@ -28,7 +28,7 @@ export default function Room({ roomData }: { roomData: RoomData }) {
           {residents &&
             residents.map((resident) => (
               <Link
-                href={`/room/${roomData.id}/residents/${resident.resident_id}`}
+                href={`/room/${roomData.id}/residents/${resident.id}`}
                 key={resident.resident_id}
                 className="h-fit"
               >
