@@ -135,7 +135,8 @@ export default function Header({
                     onMouseDown={() => {
                       toast({ title: "Printing QR Codes..." });
                     }}
-                    download={process.env.NEXT_PUBLIC_QR_PRINT_URL!}
+                    href={process.env.NEXT_PUBLIC_QR_PRINT_URL!}
+                    download
                     className="cursor-pointer h-9 items-center flex justify-between capitalize mx-auto w-full"
                   >
                     Print QR Codes
