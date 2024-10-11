@@ -134,7 +134,8 @@ export default function Header({
                   <span
                     onClick={() => {
                       toast({ title: "Printing QR Codes..." });
-                      router.push("/admin/residents/print-qr-all");
+                      window.location.href =
+                        "http://104.225.141.225:3000/admin/residents/print-qr-all";
                     }}
                     className="cursor-pointer h-9 items-center flex justify-between capitalize mx-auto w-full"
                   >

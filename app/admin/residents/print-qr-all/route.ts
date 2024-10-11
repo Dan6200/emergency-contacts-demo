@@ -1,15 +1,32 @@
+// cspell:disable
+export {};
+/***** Moved To A Standalone Application *******************/
+/*
 import { getAllRooms } from "@/app/admin/residents/data-actions";
-import { Residence, Resident } from "@/types/resident";
+import { Residence } from "@/types/resident";
 import jsPDF from "jspdf";
 import { NextResponse } from "next/server";
 import logo from "./logo";
 import QRcode from "qrcode";
+import redis from "@/lib/redis";
 
 // Add base64 for the logo if you want it embedded
 // You can convert the logo into base64 using an online tool and place the result here
 
 export const dynamic = "force-dynamic";
 export async function GET() {
+  const cacheKey = "residents-pdf"; // Define a cache key for the generated PDF
+
+  // Check Redis for cached PDF
+  const cachedPDF = await redis.get(cacheKey);
+  if (cachedPDF) {
+    return new NextResponse(new Uint8Array(Buffer.from(cachedPDF, "base64")), {
+      headers: {
+        "content-type": "application/pdf",
+        "content-disposition": 'attachment; filename="Residents Qr Codes.pdf"',
+      },
+    });
+  }
   const rooms = await getAllRooms().catch((e) => {
     throw new Error("Failed to Retrieve Residents Data -- Tag:24.\n\t" + e);
   });
@@ -58,20 +75,17 @@ export async function GET() {
         doc.text("-", 112, 173); // Adjust position
         doc.text("#" + roomNo, 120, 173); // Adjust position
 
-        // Draw arrows pointing to the QR code
-        // Arrow from left
-        //doc.line(60, 90, 75, 100); // Arrowhead - left side
-        //doc.line(65, 60, 70, 75); // Arrowhead - left side
-
-        // Arrow from bottom
-        //doc.line(60, 140, 90, 100); // First line for the arrow
-        //doc.line(60, 140, 63, 137); // Arrowhead - left side
-        //doc.line(60, 140, 63, 143); // Arrowhead - right side
-
         if (idx < rooms.length - 1) doc.addPage(); // Add new page for next resident
       }
     )
   );
+
+  // Convert the document to arraybuffer and base64 encode it
+  const pdfOutput = doc.output("arraybuffer");
+  const pdfBase64 = Buffer.from(pdfOutput).toString("base64");
+
+  // Cache the generated PDF in Redis for 1 hour (3600 seconds)
+  await redis.setex(cacheKey, 3600, pdfBase64);
 
   return new NextResponse(new Uint8Array(doc.output("arraybuffer")), {
     headers: {
@@ -80,33 +94,4 @@ export async function GET() {
     },
   });
 }
-//import { getAllResidentsDataLite } from "@/app/admin/residents/data";
-//import { Resident } from "@/types/resident";
-//import jsPDF from "jspdf";
-//import { NextResponse } from "next/server";
-//import QRcode from "qrcode";
-//
-//export const dynamic = "force-dynamic";
-//export async function GET() {
-//  const AllResidents = await getAllResidentsDataLite().catch((e) => {
-//    throw new Error("Failed to Retrieve Residents Data -- Tag:24.\n\t" + e);
-//  });
-//  const doc = new jsPDF();
-//  await Promise.all(
-//    AllResidents.map(async ({ id, address, unit_number }: Resident, idx) => {
-//      const qrCodeDataUri = await QRcode.toDataURL(
-//        new URL(`/residents/${id}`, process.env.DOMAIN).toString()
-//      );
-//      doc.text(`Unit Number: ${unit_number}`, 30, 20);
-//      doc.text(`Address: ${address}`, 30, 35);
-//      doc.addImage(qrCodeDataUri, "PNG", 30, 75, 150, 150);
-//      if (idx < AllResidents.length - 1) doc.addPage();
-//    })
-//  );
-//  return new NextResponse(new Uint8Array(doc.output("arraybuffer")), {
-//    headers: {
-//      "content-type": "application/pdf",
-//      "content-disposition": 'attachment; filename="Residents Qr Codes.pdf"',
-//    },
-//  });
-//}
+*/
