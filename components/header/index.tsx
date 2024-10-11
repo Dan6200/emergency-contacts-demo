@@ -131,17 +131,16 @@ export default function Header({
                   </span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <span
-                    onClick={() => {
+                  <a
+                    onMouseDown={() => {
                       toast({ title: "Printing QR Codes..." });
-                      window.location.href =
-                        process.env.NEXT_PUBLIC_QR_PRINT_URL!;
                     }}
+                    download={process.env.NEXT_PUBLIC_QR_PRINT_URL!}
                     className="cursor-pointer h-9 items-center flex justify-between capitalize mx-auto w-full"
                   >
                     Print QR Codes
                     <QrCode className="w-6" />
-                  </span>
+                  </a>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Button onClick={handleSignOut} className="w-full mx-auto">
