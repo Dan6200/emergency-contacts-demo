@@ -134,7 +134,8 @@ export default function Header({
                   <span
                     onClick={() => {
                       toast({ title: "Printing QR Codes..." });
-                      window.location.href = process.env.QR_PRINT_URL!;
+                      window.location.href =
+                        process.env.NEXT_PUBLIC_QR_PRINT_URL!;
                     }}
                     className="cursor-pointer h-9 items-center flex justify-between capitalize mx-auto w-full"
                   >
