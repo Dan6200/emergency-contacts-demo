@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Suggestions } from "@/components/header/search/suggestions";
 import { Residence } from "@/types/resident";
 import { SearchBar } from "./search-bar";
@@ -18,7 +18,7 @@ export default function Search({ rooms, className }: SearchProps) {
 
   return (
     <div className={cn("", className)}>
-      <SearchBar {...{ rooms, setMatchingRooms, setOpen }} />
+      <SearchBar {...{ rooms, matchingRooms, setMatchingRooms, setOpen }} />
       {matchingRooms && open && <Suggestions {...{ matchingRooms, setOpen }} />}
     </div>
   );

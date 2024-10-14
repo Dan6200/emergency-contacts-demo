@@ -2,27 +2,32 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import { Dispatch, forwardRef, SetStateAction, useEffect, useRef } from "react";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Residence } from "@/types/resident";
 import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const SearchValueSchema = z.object({
   searchValue: z.string(),
 });
 
-export function SearchBar({
-  rooms,
-  setMatchingRooms,
-  setOpen,
-}: {
+interface SearchBarProps {
   rooms: (Residence & { id: string })[];
+  matchingRooms: (Residence & { id: string })[] | null;
   setMatchingRooms: Dispatch<
     SetStateAction<(Residence & { id: string })[] | null>
   >;
   setOpen: Dispatch<SetStateAction<boolean>>;
-}) {
+}
+
+export const SearchBar = ({
+  rooms,
+  matchingRooms,
+  setMatchingRooms,
+  setOpen,
+}: SearchBarProps) => {
   const form = useForm<z.infer<typeof SearchValueSchema>>({
     resolver: zodResolver(SearchValueSchema),
     defaultValues: {
@@ -30,15 +35,27 @@ export function SearchBar({
     },
   });
 
-  const nameRef = useRef<HTMLInputElement | null>(null);
+  const router = useRouter();
 
   const { watch } = form;
 
+  const nameRef = useRef<HTMLInputElement | null>(null);
   // Run effect when searchValue changes
   useEffect(() => {
     const searchValue = watch("searchValue");
     Send(searchValue);
   }, [watch("searchValue")]); // useEffect instead of useMemo
+
+  useEffect(() => {
+    const handleClick = (e: Event) => {
+      if (nameRef?.current && !nameRef?.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("click", handleClick);
+    () => document.removeEventListener("click", handleClick);
+  }, [nameRef?.current]);
 
   async function Send(searchValue: string) {
     let matchingRooms: (Residence & { id: string })[] = [];
@@ -61,9 +78,17 @@ export function SearchBar({
     setMatchingRooms(matchingRooms);
   }
 
+  async function onSubmit() {
+    router.push(`/room/${matchingRooms?.[0].id}`);
+    setOpen(!open);
+  }
+
   return (
     <Form {...form}>
-      <form className="w-full mx-auto overflow-x-scroll flex">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="w-full mx-auto overflow-x-scroll flex"
+      >
         <FormField
           control={form.control}
           name="searchValue"
@@ -90,4 +115,4 @@ export function SearchBar({
       </form>
     </Form>
   );
-}
+};
