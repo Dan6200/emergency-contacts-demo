@@ -150,6 +150,7 @@ export async function getRoomData(residenceId: string) {
     room_map[address.residence_id] = {
       ...room_map[address.residence_id],
       ...address,
+      residents: null,
     };
 
     // Fetch and join resident data...

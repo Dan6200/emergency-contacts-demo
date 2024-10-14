@@ -70,8 +70,6 @@ export default async function (page: Page, ssNo: number) {
         emergencyContact,
       };
       await writeFile("data/last_count.txt", (++residentCount).toString());
-      console.log("resident no", residentCount);
-      console.log(resident);
       await appendFile(
         "data/raw_data.json",
         JSON.stringify(resident, null, 2) + ","

@@ -104,40 +104,38 @@ export interface RoomData {
   residence_id: string;
   roomNo: string;
   address: string;
-  residents: [
-    {
-      id: string;
-      resident_id: string;
-      resident_name: string | null;
-    }
-  ];
+  residents:
+    | [
+        {
+          id: string;
+          resident_id: string;
+          resident_name: string | null;
+        }
+      ]
+    | null;
 }
 
-export const isTypeRoomData = (data: unknown): data is RoomData => {
-  if (
-    !!data &&
-    typeof data === "object" &&
-    "id" in data &&
-    typeof (data as any).id === "string" &&
-    "residence_id" in data &&
-    typeof (data as any).residence_id === "string" &&
-    "roomNo" in data &&
-    typeof (data as any).roomNo === "string" &&
-    "address" in data &&
-    typeof (data as any).address === "string" &&
-    "residents" in data &&
-    Array.isArray((data as any).residents)
-  ) {
-    return (data as any).residents.every(
-      (resident: any) =>
-        typeof resident === "object" &&
-        "id" in data &&
-        "resident_id" in resident &&
-        typeof resident.resident_id === "string" &&
-        "resident_name" in resident &&
-        (typeof resident.resident_name === "string" ||
-          resident.resident_name === null)
-    );
-  }
-  return false;
-};
+export const isTypeRoomData = (data: unknown): data is RoomData =>
+  !!data &&
+  typeof data === "object" &&
+  "id" in data &&
+  typeof (data as any).id === "string" &&
+  "residence_id" in data &&
+  typeof (data as any).residence_id === "string" &&
+  "roomNo" in data &&
+  typeof (data as any).roomNo === "string" &&
+  "address" in data &&
+  typeof (data as any).address === "string" &&
+  "residents" in data &&
+  ((data as any).residents === null ||
+    (Array.isArray((data as any).residents) &&
+      (data as any).residents.every(
+        (resident: any) =>
+          typeof resident === "object" &&
+          "id" in data &&
+          "resident_id" in resident &&
+          typeof resident.resident_id === "string" &&
+          "resident_name" in resident &&
+          (typeof resident.resident_name === "string" ||
+            resident.resident_name === null)
+      )));

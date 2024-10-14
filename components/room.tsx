@@ -33,7 +33,7 @@ export default function Room({ roomData }: { roomData: RoomData }) {
       <section className="my-8 w-full">
         <h1 className="text-xl font-semibold mb-8">Residents</h1>
         <div className="flex gap-8 justify-center mx-auto flex-col items-center md:flex-row">
-          {residents &&
+          {residents ? (
             residents.map((resident) => (
               <Link
                 href={`/room/${roomData.id}/residents/${resident.id}`}
@@ -67,7 +67,12 @@ export default function Room({ roomData }: { roomData: RoomData }) {
                   )}
                 </Card>
               </Link>
-            ))}
+            ))
+          ) : admin ? (
+            <p className="capitalize">This room is vacant.</p>
+          ) : (
+            <p className="capitalize">This room is Vacant.</p>
+          )}
         </div>
       </section>
       {admin && (
