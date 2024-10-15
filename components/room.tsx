@@ -24,7 +24,7 @@ export default function Room({ roomData }: { roomData: RoomData }) {
   }, [setAdmin]);
 
   return (
-    <main className="bg-background flex flex-col gap-5 container mx-auto text-center py-48 sm:py-32 h-fit">
+    <main className="bg-background flex flex-col gap-8 sm:gap-5 container mx-auto text-center py-56 sm:py-48 h-[130vh]">
       <section className="flex flex-col gap-4 mb-8">
         <h1 className="text-5xl mb-4 font-bold">{roomData.residence_id}</h1>
         <p className="font-semibold">Room: {roomData.roomNo}</p>
