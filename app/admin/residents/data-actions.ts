@@ -1,6 +1,6 @@
 "use server";
-import db from "@/firebase/server/config";
 import { collectionWrapper } from "@/firebase/firestore";
+import db from "@/firebase/server/config";
 import {
   isTypeEmergencyContact,
   isTypeResidence,
@@ -8,7 +8,6 @@ import {
   Resident,
 } from "@/types/resident";
 import { notFound } from "next/navigation";
-import util from "node:util";
 
 export async function addNewResident(newResident: Resident) {
   try {
