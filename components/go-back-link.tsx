@@ -6,12 +6,20 @@ import { FC, ReactNode } from "react";
 interface GoBackLinkProps {
   className: string;
   children: ReactNode;
+  url?: string;
 }
 
-export const GoBackLink: FC<GoBackLinkProps> = ({ className, children }) => {
+export const GoBackLink: FC<GoBackLinkProps> = ({
+  className,
+  children,
+  url,
+}) => {
   const router = useRouter();
   return (
-    <a className={className} onClick={() => router.back()}>
+    <a
+      className={className}
+      onClick={url ? () => router.push(url) : () => router.back()}
+    >
       <ArrowLeft />
       {children}
     </a>

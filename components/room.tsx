@@ -81,7 +81,9 @@ export default function Room({ roomData }: { roomData: RoomData }) {
             <Button
               className="sm:w-64 w-full"
               onMouseDown={() =>
-                router.push(`/admin/room/${roomData.id}/residents/add`)
+                router.push(
+                  `/admin/room/${roomData.id}/residents/add?room=${roomData.residence_id}`
+                )
               }
             >
               Add New Resident

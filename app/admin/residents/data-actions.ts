@@ -2,14 +2,36 @@
 import { collectionWrapper } from "@/firebase/firestore";
 import db from "@/firebase/server/config";
 import {
+  EmergencyContact,
   isTypeEmergencyContact,
   isTypeResidence,
   isTypeResident,
   Resident,
+  ResidentData,
 } from "@/types/resident";
 import { notFound } from "next/navigation";
 
-export async function addNewResident(newResident: Resident) {
+export async function addNewEmergencyContact(
+  newContact: EmergencyContact,
+  residence_id: string
+) {
+  try {
+    const residentColRef = collectionWrapper("emergency_contacts");
+    await residentColRef.add({ ...newContact, residence_id });
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export async function addNewResident(
+  newResident: Omit<ResidentData, "resident_id">
+) {
+  console.log(newResident);
+  const { emergencyContacts } = newResident;
+  if (emergencyContacts && emergencyContacts.length) {
+    console.log(emergencyContacts);
+  }
   try {
     const residentColRef = collectionWrapper("residents");
     await residentColRef.add(newResident);
@@ -26,7 +48,7 @@ export async function addNewResident(newResident: Resident) {
 }
 
 export async function updateResident(
-  newResidentData: Resident,
+  newResidentData: Omit<Resident, "resident_id">,
   residentId: string
 ) {
   try {
@@ -47,18 +69,18 @@ export async function updateResident(
 }
 
 export async function mutateResidentData(
-  resident: Resident
+  resident: Omit<ResidentData, "resident_id">
 ): Promise<
   { message: string; success: boolean } | { message: string; success: boolean }
 >;
 export async function mutateResidentData(
-  resident: Resident,
+  resident: Omit<ResidentData, "resident_id">,
   residentId: string
 ): Promise<
   { message: string; success: boolean } | { message: string; success: boolean }
 >;
 export async function mutateResidentData(
-  resident: Resident,
+  resident: Omit<ResidentData, "resident_id">,
   residentId?: string
 ) {
   if (residentId) return updateResident(resident, residentId);
@@ -163,6 +185,7 @@ export async function getRoomData(residenceId: string) {
     for (const doc of residentsData.docs) {
       if (!doc.exists) throw notFound();
       let resident = doc.data();
+      console.log("resident", resident);
       if (!isTypeResident(resident))
         throw new Error("Object is not of type Resident -- Tag:9");
 

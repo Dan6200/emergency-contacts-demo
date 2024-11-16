@@ -29,21 +29,22 @@ const ResidentFormSchema = z.object({
   resident_name: z.string().min(2, {
     message: "resident name must be at least 2 characters.",
   }),
-  resident_id: z.string().min(2),
-  residence_id: z.string().length(6, {
-    message: "residence id must be 6 characters. In the form CCXXXX",
-  }),
-  emergencyContacts: z.array(
-    z.object({
-      contact_name: z.string().min(2, {
-        message: "contact name must be at least 2 characters.",
-      }),
-      relationship: z.string().min(2),
-      cell_phone: z.string().min(9),
-      home_phone: z.string().min(9),
-      work_phone: z.string().min(9),
-    })
-  ),
+  emergencyContacts: z
+    .array(
+      z.object({
+        contact_name: z
+          .string()
+          .min(2, {
+            message: "contact name must be at least 2 characters.",
+          })
+          .optional(),
+        relationship: z.string().min(2).optional(),
+        cell_phone: z.string(),
+        home_phone: z.string().optional(),
+        work_phone: z.string().optional(),
+      })
+    )
+    .optional(),
 });
 
 export type MutateResidents =
@@ -81,14 +82,15 @@ export function ResidentForm({
   const form = useForm<z.infer<typeof ResidentFormSchema>>({
     resolver: zodResolver(ResidentFormSchema),
     defaultValues: {
-      resident_id,
       resident_name,
-      residence_id,
       emergencyContacts,
     },
   });
 
+  console.log(form.formState.errors);
+
   async function onSubmit(data: z.infer<typeof ResidentFormSchema>) {
+    console.log(data);
     try {
       if (resident_id) {
         // Edit Resident Information
@@ -98,7 +100,7 @@ export function ResidentForm({
           newData = { ...data, emergencyContacts };
         }
         const { message, success } = await mutateResidentData(
-          newData,
+          { ...newData, residence_id },
           resident_id
         );
         toast({
@@ -108,7 +110,10 @@ export function ResidentForm({
         router.back();
       } else {
         // Add new residents
-        const { message, success } = await mutateResidentData(data);
+        const { message, success } = await mutateResidentData({
+          ...data,
+          residence_id,
+        });
         if (!success) {
           toast({
             title: success ? "Unable to Add New Resident" : message,
@@ -146,24 +151,8 @@ export function ResidentForm({
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="residence_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Residence ID</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormDescription>
-                Resident's room ID. Usually in the format CCXXXX
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <div className="flex justify-end border-b w-full">
-          <h4 className="gap-2 flex pb-4">
+          <h4 className="gap-2 flex items-center pb-4">
             {(noOfEmContacts < 2 ? "Add " : "") + "Emergency Contacts"}
             <span
               onClick={() =>
@@ -171,6 +160,7 @@ export function ResidentForm({
                   noOfEmContacts < 5 ? noOfEmContacts + 1 : noOfEmContacts
                 )
               }
+              className="p-1 border hover:bg-primary/10 rounded-md"
             >
               <Plus />
             </span>
@@ -181,6 +171,7 @@ export function ResidentForm({
                     noOfEmContacts > 1 ? noOfEmContacts - 1 : noOfEmContacts
                   )
                 }
+                className="p-1 border hover:bg-primary/10 rounded-md"
               >
                 <Minus />
               </span>

@@ -1,3 +1,15 @@
+import redis from "@/lib/redis";
+
+export async function cacheResidentID(resident_id: string) {
+  const cacheKey = "reSiDentId";
+  return redis.set(cacheKey, resident_id);
+}
+
+export async function getCachedResidentID() {
+  const cacheKey = "reSiDentId";
+  return redis.get(cacheKey);
+}
+
 export const isError = (_object: unknown): _object is Error =>
   typeof _object === "object" &&
   typeof _object !== null &&

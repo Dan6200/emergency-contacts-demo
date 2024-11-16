@@ -114,15 +114,6 @@ export default function Header({
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <span
-                    onClick={() => router.push("/admin/add-residents")}
-                    className="cursor-pointer h-9 items-center flex justify-between mx-auto w-full"
-                  >
-                    Add New Residents
-                    <Plus className="w-4 mr-2" />
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span
                     onClick={() => router.push("/admin/new")}
                     className="cursor-pointer h-9 items-center flex justify-between mx-auto w-full"
                   >

@@ -21,16 +21,14 @@ export interface ResidentData {
   resident_id: string;
   residence_id: string;
   resident_name: string | null;
-  emergencyContacts:
-    | [
-        {
-          contact_name: string | null;
-          cell_phone: string | null;
-          work_phone: string | null;
-          home_phone: string | null;
-          relationship: string | null;
-        }
-      ]
+  emergencyContacts?:
+    | {
+        contact_name?: string;
+        cell_phone: string;
+        work_phone?: string;
+        home_phone?: string;
+        relationship?: string;
+      }[]
     | null;
 }
 
