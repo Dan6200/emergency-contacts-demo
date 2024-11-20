@@ -57,3 +57,7 @@ dev-utils/**/*.xlsx*
 dev-utils/**/.*.xlsx*
 data/*.json
 secret-key/*
+
+# redis config
+redis-config/*
+redis.conf

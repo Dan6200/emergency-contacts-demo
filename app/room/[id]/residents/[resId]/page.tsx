@@ -16,6 +16,7 @@ export default async function ResidentPage({
       `Unable to pass props to Resident Component -- Tag:22.\n\t${e}`
     );
   });
-  if (!isTypeResidentData(residentData)) throw new Error("Invalid Room Data");
+  if (!isTypeResidentData(residentData))
+    throw new Error("Invalid Resident Data");
   return <Resident {...{ residentData }} />;
 }

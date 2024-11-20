@@ -35,12 +35,14 @@ export default function Room({ roomData }: { roomData: RoomData }) {
         <div className="flex gap-8 justify-center mx-auto flex-col items-center md:flex-row">
           {residents ? (
             residents.map((resident) => (
-              <Link
-                href={`/room/${roomData.id}/residents/${resident.id}`}
-                key={resident.resident_id}
-                className="h-fit w-fit"
+              <Card
+                className="flex-col flex p-3 md:p-5 shadow-md items-center gap-4 w-[80vw] sm:w-[50vw] md:w-[25vw] "
+                key={resident.document_id}
               >
-                <Card className="flex-col hover:bg-green-700/10 active:bg-green-700/10 flex shadow-md p-4 md:p-6 items-center w-[80vw] sm:w-[50vw] md:w-[25vw] gap-4">
+                <Link
+                  href={`/room/${roomData.document_id}/residents/${resident.document_id}`}
+                  className="flex flex-col gap-6 items-center rounded-md py-2 px-6 md:py-6 md:px-6 h-fit w-full hover:bg-green-700/10 active:bg-green-700/10"
+                >
                   <CardHeader className="p-0">
                     <Image
                       src="/profile.svg"
@@ -55,18 +57,18 @@ export default function Room({ roomData }: { roomData: RoomData }) {
                       {resident.resident_name}
                     </h3>
                   </CardContent>
-                  {admin && (
-                    <CardFooter className="p-0">
-                      <DeleteResident
-                        {...{
-                          resident_id: resident.resident_id,
-                          deleteResidentData,
-                        }}
-                      />
-                    </CardFooter>
-                  )}
-                </Card>
-              </Link>
+                </Link>
+                {admin && (
+                  <CardFooter className="w-full p-0">
+                    <DeleteResident
+                      {...{
+                        resident_id: resident.document_id,
+                        deleteResidentData,
+                      }}
+                    />
+                  </CardFooter>
+                )}
+              </Card>
             ))
           ) : admin ? (
             <p className="capitalize">This room is vacant.</p>
@@ -82,7 +84,7 @@ export default function Room({ roomData }: { roomData: RoomData }) {
               className="sm:w-64 w-full"
               onMouseDown={() =>
                 router.push(
-                  `/admin/room/${roomData.id}/residents/add?room=${roomData.residence_id}`
+                  `/admin/room/${roomData.document_id}/residents/add?room=${roomData.residence_id}`
                 )
               }
             >

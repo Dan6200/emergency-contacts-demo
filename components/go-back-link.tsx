@@ -7,14 +7,17 @@ interface GoBackLinkProps {
   className: string;
   children: ReactNode;
   url?: string;
+  refresh: boolean;
 }
 
 export const GoBackLink: FC<GoBackLinkProps> = ({
   className,
   children,
   url,
+  refresh,
 }) => {
   const router = useRouter();
+  if (refresh) router.refresh();
   return (
     <a
       className={className}

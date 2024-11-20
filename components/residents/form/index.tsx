@@ -57,20 +57,22 @@ export type MutateResidents =
     ) => Promise<{ result: string; success: boolean; message: string }>);
 
 interface ResidentFormProps {
-  resident_name: string;
+  resident_name?: string;
+  document_id?: string;
   resident_id?: string;
   residence_id: string;
-  emergencyContacts: {
-    contact_name: string;
+  emergencyContacts?: {
+    contact_name?: string;
     cell_phone: string;
-    home_phone: string;
-    work_phone: string;
-    relationship: string;
+    home_phone?: string;
+    work_phone?: string;
+    relationship?: string;
   }[];
 }
 
 export function ResidentForm({
   resident_name,
+  document_id,
   resident_id,
   residence_id,
   emergencyContacts,
@@ -87,21 +89,33 @@ export function ResidentForm({
     },
   });
 
-  console.log(form.formState.errors);
-
   async function onSubmit(data: z.infer<typeof ResidentFormSchema>) {
-    console.log(data);
+    let residentData: ResidentData = {} as any;
+    residentData.resident_name = null;
+    if (!residentData.emergencyContacts) residentData.emergencyContacts = null;
     try {
-      if (resident_id) {
+      if (document_id && resident_id) {
         // Edit Resident Information
-        let newData = data;
         if (emergencyContacts) {
           emergencyContacts.length = noOfEmContacts;
-          newData = { ...data, emergencyContacts };
+          // Initialize all values to null
+          const _emergencyContacts = emergencyContacts.map((contact) => ({
+            work_phone: null,
+            home_phone: null,
+            contact_name: null,
+            relationship: null,
+            ...contact,
+          }));
+
+          residentData.emergencyContacts = [
+            ...(residentData.emergencyContacts ?? []),
+            ...(_emergencyContacts as any),
+          ];
         }
+        residentData = { ...residentData, ...data } as any;
         const { message, success } = await mutateResidentData(
-          { ...newData, residence_id },
-          resident_id
+          { ...residentData, residence_id, resident_id },
+          document_id
         );
         toast({
           title: message,
@@ -110,8 +124,21 @@ export function ResidentForm({
         router.back();
       } else {
         // Add new residents
+        residentData = { ...residentData, ...data } as any;
+        if (data.emergencyContacts) {
+          // Initialize all values to null
+          const _emergencyContacts = data.emergencyContacts.map((contact) => ({
+            work_phone: contact.work_phone ?? null,
+            home_phone: contact.home_phone ?? null,
+            contact_name: contact.contact_name ?? null,
+            relationship: contact.relationship ?? null,
+            cell_phone: contact.cell_phone,
+          }));
+
+          residentData.emergencyContacts = [...(_emergencyContacts as any)];
+        }
         const { message, success } = await mutateResidentData({
-          ...data,
+          ...residentData,
           residence_id,
         });
         if (!success) {
@@ -122,6 +149,7 @@ export function ResidentForm({
           return;
         }
         toast({ title: message });
+        form.reset({ resident_name: "", emergencyContacts: [] });
       }
     } catch (err) {
       if (isError(err)) toast({ title: err.message, variant: "destructive" });
@@ -265,7 +293,7 @@ export function ResidentForm({
             </div>
           </div>
         ))}
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full sm:w-[10vw]">
           Submit
         </Button>
       </form>

@@ -19,6 +19,7 @@ export default function DeleteResident({
       }
   >;
 }) {
+  const router = useRouter();
   const handleDelete = () => {
     if (!resident_id) {
       toast({ title: "Unable to Delete Resident", variant: "destructive" });
@@ -30,6 +31,7 @@ export default function DeleteResident({
         toast({ title: "Unable to Delete Resident", variant: "destructive" });
       })
       .then((_) => toast({ title: "Successfully Deleted Resident" }));
+    router.refresh();
   };
   return (
     <form

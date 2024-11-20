@@ -15,6 +15,7 @@ export default function AddResidentPage({
       <GoBackLink
         url={`/room/${id}`}
         className="cursor-pointer text-blue-700 flex w-full sm:w-3/5 gap-2 sm:gap-5"
+        refresh
       >
         Go To Previous Page
       </GoBackLink>

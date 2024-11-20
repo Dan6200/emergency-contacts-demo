@@ -41,7 +41,7 @@ export default function Resident({
         <h3 className="text-xl font-bold">Contacts</h3>
       </section>
       <section className="mb-8 flex justify-center flex-col sm:flex-wrap sm:flex-row gap-6 w-full">
-        {emergencyContacts &&
+        {emergencyContacts ? (
           emergencyContacts.map((contact: any, index: number) => (
             <Link
               key={index + contact.contact_name.split(" ")[0]}
@@ -79,7 +79,10 @@ export default function Resident({
                 </CardFooter>
               </Card>
             </Link>
-          ))}
+          ))
+        ) : (
+          <p>No Emergency Contacts On Record</p>
+        )}
       </section>
       {admin && (
         <section className="mb-8 flex justify-center flex-wrap gap-6 w-full md:w-4/5 lg:w-2/3 mx-auto">

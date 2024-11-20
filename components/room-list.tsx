@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 export default function RoomList({
   rooms,
 }: {
-  rooms: (Residence & { id: string })[];
+  rooms: (Residence & { document_id: string })[];
 }) {
   const [admin, setAdmin] = useState<User | null>(null);
   useEffect(() => {
@@ -42,25 +42,34 @@ export default function RoomList({
           <TableBody>
             {rooms?.map(
               ({
-                id,
+                document_id,
                 roomNo,
                 residence_id,
                 address,
-              }: Residence & { id: string }) => {
+              }: Residence & { document_id: string }) => {
                 return (
-                  <TableRow key={id}>
+                  <TableRow key={document_id}>
                     <TableCell className="text-center">
-                      <Link href={`/room/${id}`} className="w-full block">
+                      <Link
+                        href={`/room/${document_id}`}
+                        className="w-full block"
+                      >
                         {residence_id}
                       </Link>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Link href={`/room/${id}`} className="w-full block">
+                      <Link
+                        href={`/room/${document_id}`}
+                        className="w-full block"
+                      >
                         {roomNo}
                       </Link>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Link href={`/room/${id}`} className="w-full block">
+                      <Link
+                        href={`/room/${document_id}`}
+                        className="w-full block"
+                      >
                         {address}
                       </Link>
                     </TableCell>

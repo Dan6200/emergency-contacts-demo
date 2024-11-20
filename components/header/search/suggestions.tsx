@@ -11,7 +11,7 @@ interface SuggestionProps {
 
 export const Suggestions = ({ matchingRooms, setOpen }: SuggestionProps) => {
   return (
-    <Card className="absolute mt-4 py-0 w-full md:w-2/5 md:left-1/3 left-0">
+    <Card className="disable-scrollbars absolute mt-4 py-0 w-full md:w-2/5 md:left-1/3 left-0">
       <div className="w-11/12 relative mx-auto ">
         <CardContent className="my-4 px-0 flex flex-col overflow-y-scroll max-h-[80vh] md:max-h-[40vh] gap-2">
           {matchingRooms.length ? (

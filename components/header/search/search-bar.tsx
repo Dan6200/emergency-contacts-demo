@@ -87,7 +87,7 @@ export const SearchBar = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full mx-auto overflow-x-scroll flex"
+        className="disable-scrollbars w-full mx-auto overflow-x-scroll flex"
       >
         <FormField
           control={form.control}
