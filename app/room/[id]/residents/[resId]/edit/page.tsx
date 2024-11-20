@@ -26,7 +26,11 @@ export default async function EditResidentPage({
       >
         Go To Previous Page
       </GoBackLink>
-      <ResidentForm {...{ ...residentData }} />
+      <ResidentForm
+        {...{
+          ...(residentData as any),
+        }}
+      />
     </main>
   );
 }

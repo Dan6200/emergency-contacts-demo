@@ -22,7 +22,7 @@ export const isTypeResidence = (data: unknown): data is Residence =>
 export interface Resident {
   resident_id: string;
   residence_id: string;
-  resident_name?: string;
+  resident_name: string | null;
 }
 
 export interface ResidentData {
