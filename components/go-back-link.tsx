@@ -7,7 +7,7 @@ interface GoBackLinkProps {
   className: string;
   children: ReactNode;
   url?: string;
-  refresh: boolean;
+  refresh?: boolean;
 }
 
 export const GoBackLink: FC<GoBackLinkProps> = ({
