@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 
 interface SuggestionProps {
-  matchingRooms: (Residence & { id: string })[];
+  matchingRooms: (Residence & { document_id: string })[];
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -18,8 +18,8 @@ export const Suggestions = ({ matchingRooms, setOpen }: SuggestionProps) => {
             matchingRooms.map((room) => (
               <Link
                 className="text-left cursor-pointer active:bg-primary/10 hover:bg-primary/10 bg-muted w-full rounded-md p-2 text-nowrap align-bottom"
-                href={`/room/${room.id}`}
-                key={room.id}
+                href={`/room/${room.document_id}`}
+                key={room.document_id}
                 onClick={() => setOpen(false)}
               >
                 <p className="font-semibold">{room.residence_id}</p>

@@ -14,10 +14,10 @@ const SearchValueSchema = z.object({
 });
 
 interface SearchBarProps {
-  rooms: (Residence & { id: string })[];
-  matchingRooms: (Residence & { id: string })[] | null;
+  rooms: (Residence & { document_id: string })[];
+  matchingRooms: (Residence & { document_id: string })[] | null;
   setMatchingRooms: Dispatch<
-    SetStateAction<(Residence & { id: string })[] | null>
+    SetStateAction<(Residence & { document_id: string })[] | null>
   >;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -58,7 +58,7 @@ export const SearchBar = ({
   }, [nameRef?.current]);
 
   async function Send(searchValue: string) {
-    let matchingRooms: (Residence & { id: string })[] = [];
+    let matchingRooms: (Residence & { document_id: string })[] = [];
     if (searchValue) {
       matchingRooms = rooms.filter(
         (room) =>
@@ -79,7 +79,7 @@ export const SearchBar = ({
   }
 
   async function onSubmit() {
-    router.push(`/room/${matchingRooms?.[0].id}`);
+    router.push(`/room/${matchingRooms?.[0].document_id}`);
     setOpen(!open);
   }
 

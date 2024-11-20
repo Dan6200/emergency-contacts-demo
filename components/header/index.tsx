@@ -35,7 +35,7 @@ import { signOutWrapper } from "@/firebase/auth/actions";
 export default function Header({
   rooms,
 }: {
-  rooms: (Residence & { id: string })[] | null;
+  rooms: (Residence & { document_id: string })[] | null;
 }) {
   const router = useRouter();
 
