@@ -11,8 +11,10 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "@/firebase/client/config";
 
 export default function Resident({
+  resId,
   residentData,
 }: {
+  resId: string;
   residentData: ResidentData;
 }) {
   const [admin, setAdmin] = useState<User | null>(null),
@@ -88,9 +90,7 @@ export default function Resident({
         <section className="mb-8 flex justify-center flex-wrap gap-6 w-full md:w-4/5 lg:w-2/3 mx-auto">
           <Button
             className="sm:w-64"
-            onMouseDown={() =>
-              router.push(`/admin/residents/${residentData.resident_id}/edit`)
-            }
+            onMouseDown={() => router.push(`/admin/residents/${resId}/edit`)}
           >
             Edit Resident Information
           </Button>

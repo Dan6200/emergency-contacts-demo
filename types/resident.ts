@@ -1,4 +1,5 @@
-import { FieldValue } from "firebase/firestore";
+//import { FieldValue } from "firebase/firestore";
+export type Nullable<T> = T | null | undefined;
 
 import {
   DocumentData,
@@ -22,23 +23,23 @@ export const isTypeResidence = (data: unknown): data is Residence =>
 export interface Resident {
   resident_id: string;
   residence_id: string;
-  resident_name: string | null;
+  resident_name: Nullable<string>;
 }
 
 export interface ResidentData {
   resident_id: string;
   residence_id: string;
-  resident_name: string | null;
-  document_id?: string;
-  emergencyContacts:
-    | {
-        contact_name: string | null;
-        cell_phone: string;
-        work_phone: string | null;
-        home_phone: string | null;
-        relationship: string | null;
-      }[]
-    | null;
+  resident_name: Nullable<string>;
+  document_id?: Nullable<string>;
+  emergencyContacts: Nullable<
+    {
+      contact_name: Nullable<string>;
+      cell_phone: string;
+      work_phone: Nullable<string>;
+      home_phone: Nullable<string>;
+      relationship: Nullable<string>;
+    }[]
+  >;
 }
 
 export const isTypeResidentData = (data: unknown): data is ResidentData => {
@@ -56,7 +57,7 @@ export const isTypeResidentData = (data: unknown): data is ResidentData => {
     "emergencyContacts" in data &&
     ((Array.isArray(data.emergencyContacts) &&
       data.emergencyContacts.every(
-        (contact: any) =>
+        (contact: unknown) =>
           typeof (contact as any).cell_phone === "string" &&
           (typeof (contact as any).contact_name === "string" ||
             (contact as any).contact_name === null) &&
@@ -81,11 +82,11 @@ export const isTypeResident = (data: unknown): data is Resident =>
 export interface EmergencyContact {
   residence_id: string;
   resident_id: string;
-  contact_name: string | null;
+  contact_name: Nullable<string>;
   cell_phone: string;
-  work_phone: string | null;
-  home_phone: string | null;
-  relationship: string | null;
+  work_phone: Nullable<string>;
+  home_phone: Nullable<string>;
+  relationship: Nullable<string>;
 }
 
 //export interface EmergencyContact {
@@ -125,7 +126,7 @@ export interface RoomData {
         {
           document_id: string;
           resident_id: string;
-          resident_name: string | null;
+          resident_name: Nullable<string>;
         }
       ]
     | null;

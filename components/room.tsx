@@ -62,6 +62,7 @@ export default function Room({ roomData }: { roomData: RoomData }) {
                   <CardFooter className="w-full p-0">
                     <DeleteResident
                       {...{
+                        resident_name: resident.resident_name,
                         resident_id: resident.document_id,
                         deleteResidentData,
                       }}

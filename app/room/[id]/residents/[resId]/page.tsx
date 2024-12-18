@@ -5,11 +5,11 @@ import util from "node:util";
 import Resident from "@/components/resident";
 
 export default async function ResidentPage({
-  params: { resId: id },
+  params: { resId },
 }: {
   params: { resId: string };
 }) {
-  const residentData = await getResidentData(id).catch((e) => {
+  const residentData = await getResidentData(resId).catch((e) => {
     if (e.message.match(/not_found/i)) throw notFound();
     if (e.message.match(/insufficient permissions/)) redirect("/admin/sign-in");
     throw new Error(
@@ -18,5 +18,5 @@ export default async function ResidentPage({
   });
   if (!isTypeResidentData(residentData))
     throw new Error("Invalid Resident Data");
-  return <Resident {...{ residentData }} />;
+  return <Resident {...{ residentData, resId }} />;
 }

@@ -3,11 +3,12 @@ import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FC, ReactNode } from "react";
 
-interface GoBackLinkProps {
+export interface GoBackLinkProps {
   className: string;
   children: ReactNode;
   url?: string;
   refresh?: boolean;
+  id?: string;
 }
 
 export const GoBackLink: FC<GoBackLinkProps> = ({

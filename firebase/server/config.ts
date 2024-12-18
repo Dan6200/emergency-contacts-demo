@@ -1,7 +1,7 @@
 import { getApp, initializeApp } from "firebase-admin/app";
 import fbAdmin from "firebase-admin";
 import { getAuth } from "firebase-admin/auth";
-import { getFirestore } from "firebase-admin/firestore";
+import { Firestore, initializeFirestore } from "firebase-admin/firestore";
 
 const { credential } = fbAdmin;
 const appName = "linkID-server";
@@ -19,5 +19,8 @@ if (!fbAdmin.apps.find((app) => app?.name === appName))
   );
 
 export const auth = getAuth(getApp(appName));
-const db = getFirestore(getApp(appName));
+let db: Firestore;
+if (process.env.NODE_ENV === "production")
+  db = initializeFirestore(getApp(appName));
+else db = initializeFirestore(getApp(appName), {}, "linkid-backup");
 export default db;

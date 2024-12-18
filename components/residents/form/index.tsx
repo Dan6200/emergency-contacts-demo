@@ -1,3 +1,4 @@
+"use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -18,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type {
   EmergencyContact,
+  Nullable,
   Resident,
   ResidentData,
 } from "@/types/resident";
@@ -25,26 +27,23 @@ import { Minus, Plus } from "lucide-react";
 import { isError } from "@/app/utils";
 import { mutateResidentData } from "@/app/admin/residents/data-actions";
 
-const ResidentFormSchema = z.object({
-  resident_name: z.string().min(2, {
-    message: "resident name must be at least 2 characters.",
-  }),
-  emergencyContacts: z
-    .array(
-      z.object({
-        contact_name: z
-          .string()
-          .min(2, {
-            message: "contact name must be at least 2 characters.",
-          })
-          .optional(),
-        relationship: z.string().min(2).optional(),
-        cell_phone: z.string(),
-        home_phone: z.string().optional(),
-        work_phone: z.string().optional(),
-      })
-    )
+const emergencyContactSchema = z.object({
+  contact_name: z
+    .string()
+    .min(3, {
+      message: "contact name must be at least 3 characters.",
+    })
+    .nullable()
     .optional(),
+  cell_phone: z.string(),
+  home_phone: z.string().nullable().optional(),
+  work_phone: z.string().nullable().optional(),
+  relationship: z.string().nullable().optional(),
+});
+
+const ResidentFormSchema = z.object({
+  resident_name: z.string().nullable(),
+  emergencyContacts: z.array(emergencyContactSchema).nullable().optional(),
 });
 
 export type MutateResidents =
@@ -57,17 +56,19 @@ export type MutateResidents =
     ) => Promise<{ result: string; success: boolean; message: string }>);
 
 interface ResidentFormProps {
-  resident_name?: string;
-  document_id?: string;
-  resident_id?: string;
+  resident_name?: Nullable<string>;
+  document_id?: Nullable<string>;
+  resident_id?: Nullable<string>;
   residence_id: string;
-  emergencyContacts?: {
-    contact_name?: string;
-    cell_phone: string;
-    home_phone?: string;
-    work_phone?: string;
-    relationship?: string;
-  }[];
+  emergencyContacts?: Nullable<
+    {
+      contact_name?: Nullable<string>;
+      cell_phone: string;
+      home_phone?: Nullable<string>;
+      work_phone?: Nullable<string>;
+      relationship?: Nullable<string>;
+    }[]
+  >;
 }
 
 export function ResidentForm({
@@ -79,42 +80,63 @@ export function ResidentForm({
 }: ResidentFormProps) {
   const router = useRouter();
   const [noOfEmContacts, setNoOfEmContacts] = useState(
-    emergencyContacts?.length ?? 1
+    emergencyContacts?.length ?? 0
   );
   const form = useForm<z.infer<typeof ResidentFormSchema>>({
     resolver: zodResolver(ResidentFormSchema),
     defaultValues: {
-      resident_name,
-      emergencyContacts,
+      resident_name: resident_name ?? undefined,
+      emergencyContacts:
+        emergencyContacts?.map(
+          ({
+            contact_name,
+            cell_phone,
+            home_phone,
+            work_phone,
+            relationship,
+          }) => ({
+            contact_name: contact_name ?? undefined,
+            cell_phone,
+            home_phone: home_phone ?? undefined,
+            work_phone: work_phone ?? undefined,
+            relationship: relationship ?? undefined,
+          })
+        ) ?? [],
     },
   });
 
   async function onSubmit(data: z.infer<typeof ResidentFormSchema>) {
     let residentData: ResidentData = {} as any;
     residentData.resident_name = null;
-    if (!residentData.emergencyContacts) residentData.emergencyContacts = null;
+    if (!emergencyContacts) residentData.emergencyContacts = null;
+    else
+      residentData.emergencyContacts = { ...emergencyContacts } as Omit<
+        EmergencyContact,
+        "resident_id" | "residence_id"
+      >[];
     try {
       if (document_id && resident_id) {
         // Edit Resident Information
-        if (emergencyContacts) {
-          emergencyContacts.length = noOfEmContacts;
+        if (data.emergencyContacts) {
           // Initialize all values to null
-          const _emergencyContacts = emergencyContacts.map((contact) => ({
-            work_phone: null,
-            home_phone: null,
-            contact_name: null,
-            relationship: null,
-            ...contact,
+          const _emergencyContacts = data.emergencyContacts.map((contact) => ({
+            work_phone: contact.work_phone ?? null,
+            home_phone: contact.home_phone ?? null,
+            contact_name: contact.contact_name ?? null,
+            relationship: contact.relationship ?? null,
+            cell_phone: contact.cell_phone,
+            residence_id,
           }));
 
-          residentData.emergencyContacts = [
-            ...(residentData.emergencyContacts ?? []),
-            ...(_emergencyContacts as any),
-          ];
+          residentData = {
+            ...data,
+            residence_id,
+            resident_id,
+            emergencyContacts: [...(_emergencyContacts as any)],
+          };
         }
-        residentData = { ...residentData, ...data } as any;
         const { message, success } = await mutateResidentData(
-          { ...residentData, residence_id, resident_id },
+          { ...residentData },
           document_id
         );
         toast({
@@ -133,6 +155,7 @@ export function ResidentForm({
             contact_name: contact.contact_name ?? null,
             relationship: contact.relationship ?? null,
             cell_phone: contact.cell_phone,
+            residence_id,
           }));
 
           residentData.emergencyContacts = [...(_emergencyContacts as any)];
@@ -159,7 +182,9 @@ export function ResidentForm({
   return (
     <Form {...form}>
       <h1 className="font-semibold mb-8 text-2xl ">
-        {!resident_id ? "Add A New Resident" : "Edit Resident Information"}
+        {!document_id && !resident_id
+          ? "Add A New Resident"
+          : "Edit Resident Information"}
       </h1>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
@@ -172,7 +197,7 @@ export function ResidentForm({
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} value={field.value ?? ""} />
               </FormControl>
               <FormDescription>Residents Name.</FormDescription>
               <FormMessage />
@@ -181,22 +206,22 @@ export function ResidentForm({
         />
         <div className="flex justify-end border-b w-full">
           <h4 className="gap-2 flex items-center pb-4">
-            {(noOfEmContacts < 2 ? "Add " : "") + "Emergency Contacts"}
+            {(noOfEmContacts < 1 ? "Add " : "") + "Emergency Contacts"}
             <span
               onClick={() =>
                 setNoOfEmContacts(
-                  noOfEmContacts < 5 ? noOfEmContacts + 1 : noOfEmContacts
+                  noOfEmContacts < 10 ? noOfEmContacts + 1 : noOfEmContacts
                 )
               }
               className="p-1 border hover:bg-primary/10 rounded-md"
             >
               <Plus />
             </span>
-            {noOfEmContacts > 1 && (
+            {noOfEmContacts > 0 && (
               <span
                 onClick={() =>
                   setNoOfEmContacts(
-                    noOfEmContacts > 1 ? noOfEmContacts - 1 : noOfEmContacts
+                    noOfEmContacts > 0 ? noOfEmContacts - 1 : noOfEmContacts
                   )
                 }
                 className="p-1 border hover:bg-primary/10 rounded-md"
@@ -206,93 +231,96 @@ export function ResidentForm({
             )}
           </h4>
         </div>
-        {new Array(noOfEmContacts).fill(null).map((_, i) => (
-          <div key={i} className="mb-8 border-b py-4">
-            <h3 className="font-semibold mb-8">
-              Emergency Contact {i > 0 ? i + 1 : ""}
-            </h3>
-            <div className="space-y-6">
-              <FormField
-                control={form.control}
-                name={`emergencyContacts.${i}.contact_name`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormDescription>Emergency Contact's Name</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`emergencyContacts.${i}.relationship`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Relationship</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Emergency Contact's Relationship
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`emergencyContacts.${i}.cell_phone`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Cell Phone</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Emergency Contact's Cell Phone Number
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`emergencyContacts.${i}.home_phone`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Home Phone</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Emergency Contact's Home Phone Number
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`emergencyContacts.${i}.work_phone`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Work Phone</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Emergency Contact's Work Phone Number
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        {noOfEmContacts > 0 &&
+          new Array(noOfEmContacts).fill(null).map((_, i) => (
+            <div key={i} className="mb-8 border-b py-4">
+              <h3 className="font-semibold mb-8">
+                Emergency Contact {i > 0 ? i + 1 : ""}
+              </h3>
+              <div className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name={`emergencyContacts.${i}.contact_name`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value ?? ""} />
+                      </FormControl>
+                      <FormDescription>
+                        Emergency Contact's Name
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`emergencyContacts.${i}.relationship`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Relationship</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value ?? ""} />
+                      </FormControl>
+                      <FormDescription>
+                        Emergency Contact's Relationship
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`emergencyContacts.${i}.cell_phone`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cell Phone</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Emergency Contact's Cell Phone Number
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`emergencyContacts.${i}.home_phone`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Home Phone</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value ?? ""} />
+                      </FormControl>
+                      <FormDescription>
+                        Emergency Contact's Home Phone Number
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`emergencyContacts.${i}.work_phone`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Work Phone</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value ?? ""} />
+                      </FormControl>
+                      <FormDescription>
+                        Emergency Contact's Work Phone Number
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
         <Button type="submit" className="w-full sm:w-[10vw]">
           Submit
         </Button>

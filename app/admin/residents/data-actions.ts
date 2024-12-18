@@ -80,34 +80,36 @@ export async function updateResident(
   documentId: string
 ) {
   try {
-    const residentColRef = collectionWrapper("residents");
-    const resSnap = await residentColRef.doc(documentId).get();
-    if (!resSnap.exists) throw notFound();
-    const { emergencyContacts } = newResidentData;
-    if (emergencyContacts && emergencyContacts.length) {
-      const emContactsCollection = collectionWrapper("emergency_contacts");
-      const contQ = emContactsCollection.where(
-        "resident_id",
-        "==",
-        newResidentData.resident_id
-      );
-      const contactData = await contQ.get();
-      const batch = db.batch();
-      const contSnap = await contQ.get();
-      contSnap.forEach((doc) => batch.delete(doc.ref));
-      await batch.commit();
-
-      const newBatch = db.batch();
-      emergencyContacts.forEach((contact) => {
-        const newDocRef = emContactsCollection.doc();
-        newBatch.set(newDocRef, {
-          ...contact,
-          resident_id: newResidentData.resident_id,
+    await db.runTransaction(async (transaction) => {
+      const residentRef = collectionWrapper("residents").doc(documentId);
+      const resSnap = await transaction.get(residentRef);
+      if (!resSnap.exists) throw notFound();
+      const { emergencyContacts } = newResidentData;
+      if (emergencyContacts && emergencyContacts.length) {
+        const newContactsMap = new Map(
+          emergencyContacts.map((contact) => [contact.cell_phone, contact])
+        );
+        const emContactsCollection = collectionWrapper("emergency_contacts");
+        const existingContactsSnap = await emContactsCollection
+          .where("resident_id", "==", newResidentData.resident_id)
+          .get();
+        existingContactsSnap.forEach((doc) => {
+          const existingContact = doc.data();
+          const existingCellPhone = existingContact.cell_phone;
+          if (newContactsMap.has(existingCellPhone))
+            transaction.delete(doc.ref);
         });
-      });
-      await newBatch.commit();
-    }
-    await resSnap.ref.update(<any>newResidentData);
+
+        emergencyContacts.forEach((contact) => {
+          const newDocRef = emContactsCollection.doc();
+          transaction.set(newDocRef, {
+            ...contact,
+            resident_id: newResidentData.resident_id,
+          });
+        });
+      }
+      transaction.update(residentRef, <any>newResidentData);
+    });
     return {
       success: true,
       message: "Successfully Updated Resident Information",
@@ -161,7 +163,6 @@ export async function getResidentData(residentId: string) {
     if (contactData.empty) emergencyContacts = null;
     else {
       for (const doc of contactData.docs) {
-        console.log(doc.data());
         if (!isTypeEmergencyContact(doc.data()))
           throw new Error("Object is not of type Emergency Contacts -- Tag:29");
         const { residence_id, resident_id, ...contact } = <any>doc.data();
@@ -179,7 +180,7 @@ export async function getResidents() {
   try {
     const residentsCollection = collectionWrapper("residents");
     const residentsSnap = await residentsCollection.get();
-    return residentsSnap.docs.map((doc) => {
+    return residentsSnap.docs.map((doc: any) => {
       const resident = doc.data();
       if (!isTypeResident(resident))
         throw new Error("Object is not of type Resident  -- Tag:19");
@@ -241,7 +242,6 @@ export async function getRoomData(residenceId: string) {
     for (const doc of residentsData.docs) {
       if (!doc.exists) throw notFound();
       let resident = doc.data();
-      console.log("resident", resident);
       if (!isTypeResident(resident))
         throw new Error("Object is not of type Resident -- Tag:9");
 
@@ -274,7 +274,7 @@ export async function getRoomData(residenceId: string) {
   }
 }
 
-export async function deleteResidentData(residentId: string) {
+export async function deleteResidentData(documentId: string) {
   try {
     await db.runTransaction(async (transaction) => {
       const metadataRef = collectionWrapper("metadata").doc("lastResidentID");
@@ -282,12 +282,10 @@ export async function deleteResidentData(residentId: string) {
       if (!metadataSnap.exists)
         throw new Error("lastResidentID metadata not found");
       const { resident_id: oldResidentId } = <any>metadataSnap.data();
-      const residentDocRef = collectionWrapper("residents").doc(residentId);
+      const residentDocRef = collectionWrapper("residents").doc(documentId);
       const contactColRef = collectionWrapper("emergency_contacts");
 
-      console.log("resident document id", residentId);
       const resSnap = await transaction.get(residentDocRef);
-      console.log(resSnap.data());
       if (!resSnap.exists) throw notFound();
 
       const contactQuery = contactColRef.where(
