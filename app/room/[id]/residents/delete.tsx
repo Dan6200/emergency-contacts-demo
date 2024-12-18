@@ -56,7 +56,7 @@ export default function DeleteResident({
       <DialogContent className="flex flex-col gap-8">
         {resident_name ? (
           <h4 className="text-center capitalize text-2xl">
-            are you sure you wish to delete resident
+            are you sure you wish to delete resident{" "}
             <span className="font-bold">{resident_name}</span>?
           </h4>
         ) : (
