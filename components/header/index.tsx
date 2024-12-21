@@ -103,12 +103,10 @@ export default function Header({
               <DropdownMenuGroup>
                 <DropdownMenuItem>
                   <span
-                    onClick={() =>
-                      router.push("/admin/residents/advanced-search")
-                    }
+                    onClick={() => router.push("/")}
                     className="cursor-pointer h-9 items-center flex justify-between mx-auto w-full"
                   >
-                    Search Residents
+                    All Residents
                     <SearchIcon className="w-4 mr-2" />
                   </span>
                 </DropdownMenuItem>

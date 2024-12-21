@@ -277,11 +277,6 @@ export async function getRoomData(residenceId: string) {
 export async function deleteResidentData(documentId: string) {
   try {
     await db.runTransaction(async (transaction) => {
-      const metadataRef = collectionWrapper("metadata").doc("lastResidentID");
-      const metadataSnap = await transaction.get(metadataRef);
-      if (!metadataSnap.exists)
-        throw new Error("lastResidentID metadata not found");
-      const { resident_id: oldResidentId } = <any>metadataSnap.data();
       const residentDocRef = collectionWrapper("residents").doc(documentId);
       const contactColRef = collectionWrapper("emergency_contacts");
 
@@ -297,8 +292,6 @@ export async function deleteResidentData(documentId: string) {
 
       transaction.delete(resSnap.ref);
       contactSnap.forEach((doc) => transaction.delete(doc.ref));
-      const resident_id = (parseInt(oldResidentId as any) - 1).toString();
-      transaction.update(metadataRef, { resident_id });
     });
     return { success: true, message: "Successfully Deleted Resident" };
   } catch (error) {
