@@ -22,7 +22,7 @@ export default async function RootLayout({
 }>) {
   const rooms =
     (await getAllRooms().catch((e) => {
-      console.log("Failed to Retrieve Rooms -- Tag:14.\n\t" + e);
+      console.log("Failed to Retrieve Rooms.\n\t" + e);
     })) ?? null;
   return (
     <html lang="en">

@@ -12,6 +12,8 @@ import {
 import { Transaction } from "firebase/firestore";
 import { notFound } from "next/navigation";
 
+/** TODO: Replace all Fetching with Real-Time listeners **/
+
 export async function addNewEmergencyContact(
   contact: EmergencyContact,
   transaction: Transaction
@@ -203,7 +205,7 @@ export async function getAllRooms() {
       return { document_id: doc.id, ...residence };
     });
   } catch (error) {
-    throw new Error("Failed to fetch All Room Data.\n\t\t" + error);
+    throw new Error("Failed to fetch All Room Data -- Tag:14.\n\t\t" + error);
   }
 }
 

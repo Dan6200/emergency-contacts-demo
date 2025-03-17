@@ -6,7 +6,7 @@ import { getAllRooms } from "@/app/admin/residents/data-actions";
 import { Residence } from "@/types/resident";
 import jsPDF from "jspdf";
 import { NextResponse } from "next/server";
-import logo from "./logo";
+//import logo from "./logo";
 import QRcode from "qrcode";
 import redis from "@/lib/redis";
 

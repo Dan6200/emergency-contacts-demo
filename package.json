@@ -53,7 +53,6 @@
     "react-dom": "^18",
     "react-hook-form": "^7.51.5",
     "react-qr-code": "^2.0.14",
-    "react-qr-reader": "3.0.0-beta-1",
     "server-only": "^0.0.1",
     "sharp": "^0.33.4",
     "tailwind-merge": "^2.3.0",
@@ -70,9 +69,6 @@
     "eslint-config-next": "14.2.3",
     "fast-csv": "^5.0.1",
     "postcss": "^8",
-    "puppeteer": "^23.5.1",
-    "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.5"
   }

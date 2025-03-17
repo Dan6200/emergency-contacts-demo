@@ -70,22 +70,7 @@ export default function Header({
       } gap-2 flex flex-wrap border-b items-center px-4 py-2`}
     >
       <Link href="/" className="w-fit">
-        <Image
-          priority
-          width={100}
-          height={100}
-          src="/client-logo-small.png"
-          alt="LinkId logo"
-          className="block md:hidden flex-1"
-        />
-        <Image
-          priority
-          width={150}
-          height={150}
-          src="/client-logo-large.jpeg"
-          alt="LinkId logo"
-          className="hidden md:block"
-        />
+        <span className="text-3xl uppercase font-bold">Logo</span>
       </Link>
       {admin && rooms && (
         <Search className="w-full md:w-2/5 order-2 md:order-1" {...{ rooms }} />
