@@ -2,8 +2,6 @@
 reader-for-code-snip.mjs
 shadcn-download.sh
 todo.md
-*.csv
-data/*.csv
 
 # dependencies
 /node_modules
@@ -30,7 +28,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
+.env*
 
 # vercel
 .vercel
@@ -45,19 +43,22 @@ notes.md
 .vscode/*
 **/.vscode/*
 
-# webscraping
-web-scraping/screenshots/*
-web-scraping/data/*
-
-# dev utilities
-dev-utils/*.json
-dev-utils/**/.venv
-dev-utils/**/*.json
-dev-utils/**/*.xlsx*
-dev-utils/**/.*.xlsx*
-data/*.json
+# Secrets
 secret-key/*
 
 # redis config
 redis-config/*
 redis.conf
+
+# Python
+__pycache__
+*venv*
+.venv*
+
+# Dev utilities
+/dev-utils/
+
+# Data
+/data/
+change*.json
+*.csv
