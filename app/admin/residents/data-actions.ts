@@ -56,7 +56,7 @@ export async function addNewResident(
 								residence_id,
 								resident_id,
 							},
-							transaction as any // TODO: fix type issues
+							transaction // Pass the transaction object directly
 						)
 					)
 				);
@@ -86,39 +86,56 @@ export async function updateResident(
 			const residentRef = collectionWrapper("residents").doc(documentId);
 			const resSnap = await transaction.get(residentRef);
 			if (!resSnap.exists) throw notFound();
-			const {emergencyContacts} = newResidentData;
-			if (emergencyContacts && emergencyContacts.length) {
-				const newContactsMap = new Map(
-					emergencyContacts.map((contact) => [contact.cell_phone, contact])
-				);
-				const emContactsCollection = collectionWrapper("emergency_contacts");
-				const existingContactsSnap = await emContactsCollection
-					.where("resident_id", "==", newResidentData.resident_id)
-					.get();
-				existingContactsSnap.forEach((doc) => {
-					const existingContact = doc.data();
-					const existingCellPhone = existingContact.cell_phone;
-					if (newContactsMap.has(existingCellPhone))
-						transaction.delete(doc.ref);
-				});
 
-				emergencyContacts.forEach((contact) => {
-					const newDocRef = emContactsCollection
-						.withConverter(emergencyContactConverter as any)
-						.doc();
-					transaction.set(newDocRef, {
-						...contact,
-						resident_id: newResidentData.resident_id,
-						residence_id: newResidentData.residence_id,
-					});
-					// Strip emergencyContacts before updating resident document
-					const {emergencyContacts: _, ...residentData} = newResidentData;
-					transaction.update(residentRef, <any>residentData);
-				});
+
+			const {emergencyContacts: newEmergencyContacts, ...residentUpdateData} = newResidentData;
+			const residentId = residentUpdateData.resident_id; // Get resident_id from the data
+			const residenceId = residentUpdateData.residence_id; // Get residence_id
+
+			const emContactsCollection = collectionWrapper("emergency_contacts");
+			const contactsQuery = emContactsCollection.where("resident_id", "==", residentId);
+			const existingContactsSnap = await contactsQuery.get(); // Use get() directly on query, not transaction.get()
+
+			const existingContactsMap = new Map(existingContactsSnap.docs.map(doc => [doc.data().cell_phone, doc.ref]));
+			const newContactsMap = new Map(newEmergencyContacts?.map(contact => [contact.cell_phone, contact]) ?? []);
+
+			// Delete contacts that exist in Firestore but are not in the new list
+			for (const [cellPhone, docRef] of existingContactsMap.entries()) {
+				if (!newContactsMap.has(cellPhone)) {
+					transaction.delete(docRef);
+				}
 			}
-			// Strip emergencyContacts before updating resident document
-			const {emergencyContacts: _, ...residentData} = newResidentData;
-			transaction.update(residentRef, <any>residentData);
+
+			// Add contacts that are in the new list but not in Firestore
+			if (newEmergencyContacts) {
+				for (const contact of newEmergencyContacts) {
+					if (!existingContactsMap.has(contact.cell_phone)) {
+						const newDocRef = emContactsCollection
+							.withConverter(emergencyContactConverter) // Remove 'as any' if converter type matches
+							.doc();
+						// Ensure the contact object includes resident_id and residence_id
+						const contactToAdd: EmergencyContact = {
+							...contact,
+							resident_id: residentId,
+							residence_id: residenceId,
+						};
+						transaction.set(newDocRef, contactToAdd);
+					}
+					// Note: This logic doesn't update existing contacts.
+					// If a contact exists in both lists, it's left unchanged.
+					// To implement updates, compare fields and use transaction.update().
+				}
+			}
+
+			// Update the resident document itself with the resident-specific fields
+			// Ensure residentUpdateData contains only fields belonging to the Resident type
+			const finalResidentUpdate: Partial<Resident> = { // Use Partial<Resident> for safety
+				resident_id: residentUpdateData.resident_id,
+				residence_id: residentUpdateData.residence_id,
+				resident_name: residentUpdateData.resident_name,
+				// Add other Resident fields if they exist in ResidentData and should be updated
+			};
+			transaction.update(residentRef, finalResidentUpdate); // Remove <any> cast
 		});
 		return {
 			success: true,

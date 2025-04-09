@@ -1,5 +1,4 @@
 import type {Metadata} from "next";
-import "@/firebase/auth/state";
 import {Inter} from "next/font/google";
 import {Toaster} from "@/components/ui/toaster";
 import {Analytics} from "@vercel/analytics/react";

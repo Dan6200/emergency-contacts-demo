@@ -62,3 +62,6 @@ __pycache__
 /data/
 change*.json
 *.csv
+
+# Backup files
+*.bak
