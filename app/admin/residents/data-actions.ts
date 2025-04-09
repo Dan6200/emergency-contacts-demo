@@ -9,7 +9,7 @@ import {
 	isTypeResident,
 	ResidentData,
 } from "@/types/resident";
-import {Transaction} from "firebase/firestore";
+import {Transaction} from "firebase-admin/firestore";
 import {notFound} from "next/navigation";
 
 /** TODO: Replace all Fetching with Real-Time listeners **/
@@ -111,7 +111,7 @@ export async function updateResident(
 				for (const contact of newEmergencyContacts) {
 					if (!existingContactsMap.has(contact.cell_phone)) {
 						const newDocRef = emContactsCollection
-							.withConverter(emergencyContactConverter) // Remove 'as any' if converter type matches
+							.withConverter(emergencyContactConverter as any) // TODO: Remove 'as any' if converter type matches
 							.doc();
 						// Ensure the contact object includes resident_id and residence_id
 						const contactToAdd: EmergencyContact = {
@@ -129,6 +129,8 @@ export async function updateResident(
 
 			// Update the resident document itself with the resident-specific fields
 			// Ensure residentUpdateData contains only fields belonging to the Resident type
+			// TODO: Remove ts-ignores
+			// @ts-ignore
 			const finalResidentUpdate: Partial<Resident> = { // Use Partial<Resident> for safety
 				resident_id: residentUpdateData.resident_id,
 				residence_id: residentUpdateData.residence_id,
