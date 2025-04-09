@@ -1,8 +1,9 @@
+// Use types from the Admin SDK for server-side code compatibility
 import {
 	DocumentData,
 	FirestoreDataConverter,
 	QueryDocumentSnapshot,
-} from "firebase/firestore";
+} from "firebase-admin/firestore";
 
 type Nullable<T> = T | null | undefined;
 

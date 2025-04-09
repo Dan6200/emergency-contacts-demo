@@ -4,11 +4,19 @@ import db from "@/firebase/server/config";
 import {
 	EmergencyContact,
 	emergencyContactConverter,
-	isTypeEmergencyContact,
-	isTypeResidence,
-	isTypeResident,
+	// isTypeEmergencyContact,
+} from "@/types/emergency_contacts";
+import {
+	Resident,
+	residentConverter,
+	// isTypeResident,
 	ResidentData,
 } from "@/types/resident";
+import {
+	Residence,
+	residenceConverter,
+	isTypeResidence,
+} from "@/types/residence";
 import {Transaction} from "firebase-admin/firestore";
 import {notFound} from "next/navigation";
 
@@ -19,10 +27,12 @@ export async function addNewEmergencyContact(
 	transaction: Transaction
 ) {
 	try {
+		// Apply the converter
 		const contactRef = collectionWrapper("emergency_contacts")
-			.withConverter(emergencyContactConverter as any)
+			.withConverter(emergencyContactConverter)
 			.doc();
-		transaction.set(contactRef as any, contact);
+		// The transaction methods should infer the type from the converted collection reference
+		transaction.set(contactRef, contact);
 		return true;
 	} catch (error) {
 		return false;
@@ -44,7 +54,10 @@ export async function addNewResident(
 				...residentData,
 				resident_id,
 			};
-			const residentRef = collectionWrapper("residents").doc();
+			// Apply the converter
+			const residentRef = collectionWrapper("residents")
+				.withConverter(residentConverter)
+				.doc();
 
 			if (emergencyContacts && emergencyContacts.length) {
 				const {residence_id} = resident;
@@ -61,7 +74,13 @@ export async function addNewResident(
 					)
 				);
 			}
-			transaction.set(residentRef, resident);
+			// Ensure the 'resident' object matches the 'Resident' type for the converter
+			const residentToSave: Resident = {
+				resident_id: resident.resident_id,
+				residence_id: resident.residence_id,
+				resident_name: resident.resident_name,
+			};
+			transaction.set(residentRef, residentToSave);
 			transaction.update(metadataRef, {resident_id});
 		});
 		return {
@@ -83,19 +102,31 @@ export async function updateResident(
 ) {
 	try {
 		await db.runTransaction(async (transaction) => {
-			const residentRef = collectionWrapper("residents").doc(documentId);
+			// Apply the converter
+			const residentRef = collectionWrapper("residents")
+				.withConverter(residentConverter)
+				.doc(documentId);
 			const resSnap = await transaction.get(residentRef);
 			if (!resSnap.exists) throw notFound();
+			// resSnap.data() will now return a typed Resident object
+			const existingResidentData = resSnap.data();
+			if (!existingResidentData) throw new Error('Invalid Conversion')
 
 
 			const {emergencyContacts: newEmergencyContacts, ...residentUpdateData} = newResidentData;
 			const residentId = residentUpdateData.resident_id; // Get resident_id from the data
-			const residenceId = residentUpdateData.residence_id; // Get residence_id
+			// Use existingResidentData from the typed snapshot
+			const residenceId = existingResidentData.residence_id;
 
-			const emContactsCollection = collectionWrapper("emergency_contacts");
+			// Apply the converter
+			const emContactsCollection = collectionWrapper("emergency_contacts")
+				.withConverter(emergencyContactConverter);
 			const contactsQuery = emContactsCollection.where("resident_id", "==", residentId);
-			const existingContactsSnap = await contactsQuery.get(); // Use get() directly on query, not transaction.get()
+			// Fetch contacts outside the transaction for reads, or use transaction.get if needed within transaction logic
+			const existingContactsSnap = await contactsQuery.get();
+			if (!existingContactsSnap) throw new Error('Invalid Conversion')
 
+			// doc.data() is now typed via the converter
 			const existingContactsMap = new Map(existingContactsSnap.docs.map(doc => [doc.data().cell_phone, doc.ref]));
 			const newContactsMap = new Map(newEmergencyContacts?.map(contact => [contact.cell_phone, contact]) ?? []);
 
@@ -110,10 +141,10 @@ export async function updateResident(
 			if (newEmergencyContacts) {
 				for (const contact of newEmergencyContacts) {
 					if (!existingContactsMap.has(contact.cell_phone)) {
-						const newDocRef = emContactsCollection
-							.withConverter(emergencyContactConverter as any) // TODO: Remove 'as any' if converter type matches
-							.doc();
+						// Collection already has converter applied
+						const newDocRef = emContactsCollection.doc();
 						// Ensure the contact object includes resident_id and residence_id
+						if (!residenceId) throw new Error("Residence ID should be obtained from the old resident document")
 						const contactToAdd: EmergencyContact = {
 							...contact,
 							resident_id: residentId,
@@ -128,16 +159,17 @@ export async function updateResident(
 			}
 
 			// Update the resident document itself with the resident-specific fields
-			// Ensure residentUpdateData contains only fields belonging to the Resident type
-			// TODO: Remove ts-ignores
-			// @ts-ignore
-			const finalResidentUpdate: Partial<Resident> = { // Use Partial<Resident> for safety
-				resident_id: residentUpdateData.resident_id,
+
+			// Construct the update payload using only fields from the Resident type
+			const finalResidentUpdate: Partial<Resident> = {
+				// resident_id should generally not be updated, but included if necessary
+				// residence_id might change if the resident moves rooms
 				residence_id: residentUpdateData.residence_id,
 				resident_name: residentUpdateData.resident_name,
-				// Add other Resident fields if they exist in ResidentData and should be updated
+				// Add other Resident fields here if they are part of residentUpdateData
 			};
-			transaction.update(residentRef, finalResidentUpdate); // Remove <any> cast
+			// Use the typed residentRef from above
+			transaction.update(residentRef, finalResidentUpdate);
 		});
 		return {
 			success: true,
@@ -171,62 +203,81 @@ export async function mutateResidentData(
 	return addNewResident(resident);
 }
 
-export async function getResidentData(residentId: string) {
+export async function getResidentData(documentId: string) { // Changed parameter name for clarity
 	try {
-		const residentsColRef = collectionWrapper("residents");
-		const residentsSnap = await residentsColRef.doc(residentId).get();
+		// Apply the converter
+		const residentsColRef = collectionWrapper("residents")
+			.withConverter(residentConverter);
+		const residentsSnap = await residentsColRef.doc(documentId).get();
 		if (!residentsSnap.exists) throw notFound();
+		// resident is now typed by the converter
 		const resident = residentsSnap.data();
-		if (!isTypeResident(resident))
-			throw new Error("Object is not of type Resident  -- Tag:16");
+		// The type guard check might become redundant if the converter handles validation
+		// if (!isTypeResident(resident)) // Keep or remove based on converter's strictness
+		// 	throw new Error("Object is not of type Resident  -- Tag:16");
 
 		//Fetch and join contact data...
-		let emergencyContacts: EmergencyContact[] | null = [];
-		const emContactsCollection = collectionWrapper("emergency_contacts");
+		let emergencyContacts: EmergencyContact[] = []; // Initialize as empty array
+		// Apply the converter
+		const emContactsCollection = collectionWrapper("emergency_contacts")
+			.withConverter(emergencyContactConverter);
 		const contQ = emContactsCollection.where(
 			"resident_id",
 			"==",
-			resident.resident_id
+			resident?.resident_id
 		);
 		const contactData = await contQ.get();
-		for (const doc of contactData.docs) {
-			if (!isTypeEmergencyContact(doc.data()))
-				throw new Error("Object is not of type Emergency Contacts -- Tag:29");
-			const fullContact = doc.data();
-			if (!isTypeEmergencyContact(fullContact)) continue;
-			emergencyContacts.push(fullContact);
-		}
+		// doc.data() is now typed by the converter
+		emergencyContacts = contactData.docs.map(doc => {
+			const contact = doc.data();
+			// Optional: Add document_id to each contact if needed downstream
+			// return { ...contact, document_id: doc.id };
+			return contact;
+		});
+		// If no contacts found, emergencyContacts remains an empty array []
 
+		// Combine resident data (already typed) with its document ID and fetched contacts
 		return {...resident, document_id: residentsSnap.id, emergencyContacts};
 	} catch (error) {
 		throw new Error("Failed to fetch resident.\n\t\t" + error);
 	}
 }
 
-export async function getResidents() {
+export async function getResidents(): Promise<(Resident & {document_id: string})[]> { // Add return type
 	try {
-		const residentsCollection = collectionWrapper("residents");
+		// Apply the converter
+		const residentsCollection = collectionWrapper("residents")
+			.withConverter(residentConverter);
 		const residentsSnap = await residentsCollection.get();
-		return residentsSnap.docs.map((doc: any) => {
+		// doc.data() is now typed
+		return residentsSnap.docs.map((doc) => {
 			const resident = doc.data();
-			if (!isTypeResident(resident))
-				throw new Error("Object is not of type Resident  -- Tag:19");
-			return resident;
+			// Optional: Add document_id if needed downstream
+			return {...resident, document_id: doc.id};
+			// The type guard check might become redundant if the converter handles validation
+			// if (!isTypeResident(resident))
+			// 	throw new Error("Object is not of type Resident  -- Tag:19");
+			// return resident;
 		});
 	} catch (error) {
 		throw new Error("Failed to fetch All Residents Data.\n\t\t" + error);
 	}
 }
 
-export async function getAllRooms() {
+export async function getAllRooms(): Promise<(Residence & {document_id: string})[]> { // Add return type
 	try {
-		const roomsCollection = collectionWrapper("residence");
+		// Apply the converter
+		const roomsCollection = collectionWrapper("residence")
+			.withConverter(residenceConverter);
 		const roomsSnap = await roomsCollection.get();
 		if (!roomsSnap.size) throw notFound();
+		// doc.data() is now typed
 		return roomsSnap.docs.map((doc) => {
 			const residence = doc.data();
-			if (!isTypeResidence(residence))
-				throw new Error("Object is not of type Residence  -- Tag:19");
+			// The type guard check might become redundant if the converter handles validation
+			// if (!isTypeResidence(residence))
+			// 	throw new Error("Object is not of type Residence  -- Tag:19");
+			// Combine typed data with document_id
 			return {document_id: doc.id, ...residence};
 		});
 	} catch (error) {
@@ -239,85 +290,110 @@ export async function getRoomData(residenceId: string) {
 	 * Creates a Join Between Residence,
 	 * Emergency Contacts and Resident documents on residenceId
 	 * *********************************************************/
+	// Define the expected return type structure
+	type RoomDataWithResidents = Residence & {
+		document_id: string;
+		residents: (Omit<Resident, 'residence_id'> & {document_id: string})[] | null;
+	};
 
 	try {
-		const addressCollection = collectionWrapper("residence");
+		// Apply the converter
+		const addressCollection = collectionWrapper("residence")
+			.withConverter(residenceConverter);
 		const addressSnap = await addressCollection.doc(residenceId).get();
-		const residents_map: any = {};
-		const room_map: any = {};
 		if (!addressSnap.exists) throw notFound();
-		const address = {
-			...(addressSnap.data() as any),
-			document_id: addressSnap.id,
-		};
-		if (!isTypeResidence(address))
+		// addressData is now typed
+		const addressData = addressSnap.data();
+		// The type guard check may be redundant because the converter handles validation, yet typescript doesn't seem to know that
+		if (!isTypeResidence(addressData))
 			throw new Error("Object is not of type Residence -- Tag:10");
-		room_map[address.residence_id] = {
-			...room_map[address.residence_id],
-			...address,
-			residents: null,
+
+		// Initialize the result object structure
+		const roomDataResult: RoomDataWithResidents = {
+			...addressData,
+			document_id: addressSnap.id,
+			residents: null, // Initialize residents as null
 		};
 
 		// Fetch and join resident data...
-		const residentsCollection = collectionWrapper("residents");
+		// Apply the converter
+		const residentsCollection = collectionWrapper("residents")
+			.withConverter(residentConverter);
 		const resQ = residentsCollection.where(
 			"residence_id",
 			"==",
-			address.residence_id
+			addressData.residence_id // Use typed data
 		);
-		const residentsData = await resQ.get();
-		for (const doc of residentsData.docs) {
-			if (!doc.exists) throw notFound();
-			let resident = doc.data();
-			if (!isTypeResident(resident))
-				throw new Error("Object is not of type Resident -- Tag:9");
+		const residentsDataSnap = await resQ.get();
 
-			// Add each resident to the residents map
-			// Handle duplicates
-			if (residents_map[resident.resident_id])
-				throw new Error("Duplicate Resident Data! -- Tag:28");
-			const {residence_id, ...newResident} = resident;
-			residents_map[resident.resident_id] = {
-				...newResident,
-				document_id: doc.id,
-			};
+		if (residentsDataSnap.size > 0) {
+			roomDataResult.residents = residentsDataSnap.docs.map(doc => {
+				if (!doc.exists) {
+					// This case should ideally not happen in a query result, but handle defensively
+					console.warn(`Resident document ${doc.id} not found in room ${residenceId}`);
+					// Depending on requirements, you might throw, return null, or filter out
+					// For now, let's filter it out later if needed, or handle the type appropriately.
+					// Returning a placeholder or throwing might be better.
+					throw new Error(`Resident document ${doc.id} unexpectedly missing.`);
+				}
+				// resident is now typed
+				const resident = doc.data();
+				// The type guard check might become redundant
+				// if (!isTypeResident(resident))
+				// 	throw new Error("Object is not of type Resident -- Tag:9");
 
-			// Add all residents in the resident map to the room map
-			room_map[resident.residence_id] = {
-				...room_map[resident.residence_id],
-				residents: [
-					...(room_map[resident.residence_id].residents ?? []),
-					residents_map[resident.resident_id],
-				],
-			};
+				// Omit residence_id and add document_id
+				const {residence_id, ...residentInfo} = resident;
+				return {
+					...residentInfo,
+					document_id: doc.id,
+				};
+			});
 		}
+		// No need for intermediate maps (residents_map, room_map) anymore
 
-		if (Object.values(room_map).length > 1)
-			throw new Error("Duplicate Room Data! -- Tag:28");
-		const roomData = Object.values(room_map)[0];
-		return roomData;
+		return roomDataResult; // Return the structured result
 	} catch (error) {
-		throw new Error("Failed to fetch All Residents Data:\n\t\t" + error);
+		// Log the specific error for better debugging
+		console.error(`Failed to fetch Room Data for residenceId ${residenceId}:`, error);
+		// Re-throw a more specific error or handle as needed
+		throw new Error(`Failed to fetch Room Data for ${residenceId}. -- Tag:15\n\t\t` + error);
 	}
 }
+
 
 export async function deleteResidentData(documentId: string) {
 	try {
 		await db.runTransaction(async (transaction) => {
-			const residentDocRef = collectionWrapper("residents").doc(documentId);
-			const contactColRef = collectionWrapper("emergency_contacts");
+			// Apply converters
+			const residentDocRef = collectionWrapper("residents")
+				.withConverter(residentConverter)
+				.doc(documentId);
+			const contactColRef = collectionWrapper("emergency_contacts")
+				.withConverter(emergencyContactConverter); // Apply converter here too
 
 			const resSnap = await transaction.get(residentDocRef);
 			if (!resSnap.exists) throw notFound();
+			// resSnap.data() is now typed
+			const residentData = resSnap.data();
+			if (!residentData) throw new Error('Invalid Conversion')
 
+			// Query contacts associated with the resident
+			// Note: Performing reads (get) inside a transaction can sometimes be less efficient
+			// if the data isn't strictly needed for the transaction's logic.
+			// Consider fetching contacts outside if possible, but for deletion, it's often done inside.
 			const contactQuery = contactColRef.where(
 				"resident_id",
 				"==",
-				resSnap.data()?.resident_id
+				residentData.resident_id // Use typed data
 			);
-			const contactSnap = await contactQuery.get();
+			// Fetch the contacts within the transaction to ensure consistency
+			const contactSnap = await transaction.get(contactQuery); // Use transaction.get for queries inside transaction
 
-			transaction.delete(resSnap.ref);
+			// Delete the resident document
+			transaction.delete(residentDocRef); // Use the typed ref
+
+			// Delete associated contact documents
 			contactSnap.forEach((doc) => transaction.delete(doc.ref));
 		});
 		return {success: true, message: "Successfully Deleted Resident"};

@@ -4,7 +4,7 @@ import {
 	DocumentData,
 	FirestoreDataConverter,
 	QueryDocumentSnapshot,
-} from "firebase/firestore";
+} from "firebase-admin/firestore";
 
 export interface Resident {
 	resident_id: string;
@@ -66,10 +66,21 @@ export const isTypeResident = (data: unknown): data is Resident =>
 	"residence_id" in data;
 
 export const residentConverter: FirestoreDataConverter<Resident> = {
-	toFirestore(contact: Resident): DocumentData {
-		return {...contact}; // Map Resident fields to Firestore
+	toFirestore(resident: Resident): DocumentData {
+		// Ensure we only send fields belonging to the Resident type to Firestore
+		const {resident_id, residence_id, resident_name} = resident;
+		return {resident_id, residence_id, resident_name};
 	},
 	fromFirestore(snapshot: QueryDocumentSnapshot): Resident {
-		return snapshot.data() as Resident; // Map Firestore data to EmergencyContact
+		const data = snapshot.data();
+		// Validate data structure before casting
+		if (!isTypeResident(data)) {
+			// Handle error appropriately, e.g., throw an error or return a default object
+			// For now, we'll throw an error, assuming data should always match the type.
+			console.error("Firestore data does not match Resident type:", data);
+			throw new Error(`Firestore data (${snapshot.id}) does not match Resident type.`);
+		}
+		// The document_id is typically added outside the converter after fetching
+		return data as Resident;
 	},
 };

@@ -1,14 +1,16 @@
 import {collectionWrapper} from '@/firebase/firestore';
-import {
+import type {
 	Resident, // Base type fetched from 'residents' collection
-	EmergencyContact, // Type fetched from 'emergency_contacts' collection
 	ResidentData, // Type often used in forms/updates, includes contacts
-	// emergencyContactConverter,
-	// residentConverter,
-	// isTypeResident, // Type guard used in getResidentData
-	// isTypeEmergencyContact, // Type guard used in getResidentData
+	residentConverter,
+	isTypeResident, // Type guard used in getResidentData
 } from '@/types/resident';
-import type {RoomData} from '@/types/resident';
+import type {
+	EmergencyContact,
+	emergencyContactConverter,
+	isTypeEmergencyContact, // Type guard used in getResidentData
+} from '@/types/emergency_contacts' // Type fetched from 'emergency_contacts' collection
+import type {RoomData} from '@/types/room-data';
 
 // Mock the collectionWrapper function globally
 jest.mock('@/firebase/firestore', () => ({
@@ -46,20 +48,11 @@ jest.mock('next/navigation', () => ({
 import {getResidentData} from './data-actions';
 
 // Mock the converters and type guards
-jest.mock('@/types/resident', () => {
-	const originalModule = jest.requireActual('@/types/resident');
+jest.mock('@/types/emergency_contacts', () => {
+	const originalModule = jest.requireActual('@/types/emergency_contacts');
 	return {
 		...originalModule,
 		// Mock converters to simulate Firestore data transformation
-		residentConverter: {
-			toFirestore: (data: Resident) => data, // Simple pass-through for sending data
-			fromFirestore: (snapshot: {id: string; data: () => any}, options: any): Resident => ({
-				// Simulate adding id and returning typed data
-				// document_id is NOT part of the core Resident type from Firestore
-				// @ts-ignore
-				...(snapshot.data(options) as Omit<Resident, 'document_id'>),
-			}),
-		},
 		emergencyContactConverter: {
 			toFirestore: (data: EmergencyContact) => data,
 			fromFirestore: (snapshot: {id: string; data: () => any}, options: any): EmergencyContact => ({
@@ -71,8 +64,22 @@ jest.mock('@/types/resident', () => {
 		},
 		// Mock type guards to always return true for valid mock data,
 		// or allow them to run if you want to test their logic implicitly.
-		isTypeResident: jest.fn((data): data is Resident => originalModule.isTypeResident(data)),
 		isTypeEmergencyContact: jest.fn((data): data is EmergencyContact => originalModule.isTypeEmergencyContact(data)),
+	};
+});
+
+jest.mock('@/types/resident', () => {
+	const originalModule = jest.requireActual('@/types/resident');
+	return {
+		...originalModule,
+		residentConverter: {
+			toFirestore: (data: Resident) => data,
+			fromFirestore: (snapshot: {id: string; data: () => any}, options: any): Resident => ({
+				// @ts-ignore
+				...(snapshot.data(options) as Omit<Resident, 'document_id'>),
+			}),
+		},
+		isTypeResident: jest.fn((data): data is Resident => originalModule.isTypeResident(data)),
 	};
 });
 
@@ -105,6 +112,7 @@ describe('getResidentData', () => {
 			work_phone: '555-2221',
 		},
 	];
+
 	// This represents the expected final structure returned by getResidentData
 	// It combines Resident data with its document_id and fetched contacts
 	const expectedResultData = {
@@ -134,26 +142,42 @@ describe('getResidentData', () => {
 		})),
 	};
 
+	const mockMetadataSnap = {
+		exists: true,
+		id: 'lastResidentId',
+		data: () => ({resident_id: '1000'})
+	}
+
 	// Properly scoped mock functions
-	const mockDocFn = jest.fn().mockImplementation((_docId) => {
+	const mockMetadataDocFn = jest.fn().mockImplementation((_docId) => {
+		return {get: jest.fn().mockResolvedValue(mockMetadataSnap)};
+	});
+
+	// Properly scoped mock functions
+	const mockResidentsDocFn = jest.fn().mockImplementation((_docId) => {
 		return {get: jest.fn().mockResolvedValue(mockResidentSnap)};
 	});
 
-	const mockWhereFn = jest.fn().mockImplementation(() => {
+	const mockEmergencyContactsWhereFn = jest.fn().mockImplementation(() => {
 		return {get: jest.fn().mockResolvedValue(mockContactsSnap)};
 	});
 
 	// Consolidated collectionWrapper mock
 	(collectionWrapper as jest.Mock).mockImplementation((collectionName: string) => {
+		if (collectionName === 'metadata') {
+			return {
+				doc: mockMetadataDocFn,
+			};
+		}
 		if (collectionName === 'residents') {
 			return {
-				doc: mockDocFn,
+				doc: mockResidentsDocFn,
 				withConverter: jest.fn().mockReturnThis(),
 			};
 		}
 		if (collectionName === 'emergency_contacts') {
 			return {
-				where: mockWhereFn,
+				where: mockEmergencyContactsWhereFn,
 				withConverter: jest.fn().mockReturnThis(),
 			};
 		}
@@ -184,14 +208,14 @@ describe('getResidentData', () => {
 		(collectionWrapper as jest.Mock).mockImplementation((collectionName: string) => {
 			if (collectionName === 'residents') {
 				return {
-					doc: mockDocFn,
+					doc: mockResidentsDocFn,
 					get: jest.fn().mockResolvedValue(mockResidentSnap), // Default for getResidents
 					withConverter: jest.fn().mockReturnThis(),
 				};
 			}
 			if (collectionName === 'emergency_contacts') {
 				return {
-					where: mockWhereFn,
+					where: mockEmergencyContactsWhereFn,
 					get: jest.fn().mockResolvedValue(mockContactsSnap), // Default
 					withConverter: jest.fn().mockReturnThis(),
 				};
@@ -199,7 +223,7 @@ describe('getResidentData', () => {
 			if (collectionName === 'metadata') {
 				return {
 					doc: jest.fn().mockReturnThis(), // Chainable
-					get: jest.fn().mockResolvedValue({exists: true, data: () => ({resident_id: '1000'})}), // Default for addNewResident
+					get: jest.fn().mockResolvedValue({docs: [], exists: false}), // Default for addNewResident
 					withConverter: jest.fn().mockReturnThis(),
 				};
 			}
@@ -224,18 +248,21 @@ describe('getResidentData', () => {
 // --- Mocks for other functions ---
 // Import necessary functions/types if not already imported
 import db from '@/firebase/server/config';
-import {notFound} from 'next/navigation';
+// import {notFound} from 'next/navigation';
 import {
 	addNewResident,
 	updateResident,
-	mutateResidentData,
-	getResidents,
-	getAllRooms,
-	getRoomData,
-	deleteResidentData,
-	// addNewEmergencyContact, // Tested implicitly via addNewResident/updateResident
 } from './data-actions';
-import {Residence} from '@/types/resident'; // Assuming Residence type exists
+// import {
+// mutateResidentData,
+// getResidents,
+// getAllRooms,
+// getRoomData,
+// deleteResidentData,
+// addNewEmergencyContact, // Tested implicitly via addNewResident/updateResident
+// } from './data-actions';
+
+// import type {Residence} from '@/types/residence'; // Assuming Residence type exists
 
 // --- Test Data ---
 const mockNewResidentData = {
@@ -391,7 +418,7 @@ describe('updateResident', () => {
 		delete: jest.fn(),
 	};
 	const mockResidentDocRef = {id: mockExistingResidentData.document_id};
-	const mockExistingContactDocRef = {id: mockExistingResidentData.emergencyContacts![0].document_id, ref: 'mock-ref-existing'};
+	const mockExistingContactDocRef = {id: 'existing-contact-doc-id', ref: 'mock-ref-existing'};
 	const mockNewContactDocRef = {id: 'new-contact-doc-id', ref: 'mock-ref-new'};
 
 	beforeEach(() => {
