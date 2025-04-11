@@ -3,7 +3,7 @@ import { getResidentData } from "@/app/admin/residents/data-actions";
 import { GoBackLink } from "@/components/go-back-link";
 import { ResidentForm } from "@/components/residents/form";
 import { isTypeResidentData, ResidentData } from "@/types/resident";
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default async function EditResidentPage({
@@ -11,10 +11,15 @@ export default async function EditResidentPage({
 }: {
   params: { id: string; resId: string };
 }) {
-  const room = useSearchParams().get("room");
+  // const room = useSearchParams().get("room");
   const [residentData, setResidentData] = useState<ResidentData | null>(null);
   useEffect(() => {
-    (async () => setResidentData(await getResidentData(resId)))();
+    (async () => {
+      const residentData = await getResidentData(resId);
+      if (!isTypeResidentData(residentData))
+        throw new Error("Object must be of type resident data.");
+      setResidentData(residentData);
+    })();
   });
   if (!residentData && !isTypeResidentData(residentData))
     throw new Error("Invalid Data from Server");

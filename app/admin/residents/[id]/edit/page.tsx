@@ -1,6 +1,7 @@
 import { GoBackLink } from "@/components/go-back-link";
 import { ResidentForm } from "@/components/residents/form";
 import { getResidentData } from "../../data-actions";
+import { isTypeResidentData } from "@/types/resident";
 
 export default async function EditResidentPage({
   params: { id },
@@ -8,6 +9,8 @@ export default async function EditResidentPage({
   params: { id: string };
 }) {
   const residentData = await getResidentData(id);
+  if (!isTypeResidentData(residentData)) throw new Error();
+  console.log(residentData.residence_id);
   return (
     <main className="flex flex-col gap-5 bg-background container w-full md:w-2/3 mx-auto py-32">
       <GoBackLink
