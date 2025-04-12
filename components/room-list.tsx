@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { auth } from "@/firebase/client/config";
-import { Residence } from "@/types/resident";
+import { Residence } from "@/types/residence";
 import { onAuthStateChanged, User } from "firebase/auth";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -75,7 +75,7 @@ export default function RoomList({
                     </TableCell>
                   </TableRow>
                 );
-              }
+              },
             )}
           </TableBody>
         </Table>

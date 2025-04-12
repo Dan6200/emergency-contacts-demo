@@ -17,15 +17,13 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type {
-  EmergencyContact,
-  Nullable,
-  Resident,
-  ResidentData,
-} from "@/types/resident";
+import type { Resident, ResidentData } from "@/types/resident";
+import type { EmergencyContact } from "@/types/emergency_contacts";
 import { Minus, Plus } from "lucide-react";
 import { isError } from "@/app/utils";
 import { mutateResidentData } from "@/app/admin/residents/data-actions";
+
+type Nullable<T> = T | null | undefined;
 
 const emergencyContactSchema = z.object({
   contact_name: z
@@ -49,10 +47,10 @@ const ResidentFormSchema = z.object({
 export type MutateResidents =
   | ((
       resident: Resident,
-      residentId?: string
+      residentId?: string,
     ) => Promise<{ result?: string; success: boolean; message: string }>)
   | ((
-      resident: Resident
+      resident: Resident,
     ) => Promise<{ result: string; success: boolean; message: string }>);
 
 interface ResidentFormProps {
@@ -80,7 +78,7 @@ export function ResidentForm({
 }: ResidentFormProps) {
   const router = useRouter();
   const [noOfEmContacts, setNoOfEmContacts] = useState(
-    emergencyContacts?.length ?? 0
+    emergencyContacts?.length ?? 0,
   );
   const form = useForm<z.infer<typeof ResidentFormSchema>>({
     resolver: zodResolver(ResidentFormSchema),
@@ -100,7 +98,7 @@ export function ResidentForm({
             home_phone: home_phone ?? undefined,
             work_phone: work_phone ?? undefined,
             relationship: relationship ?? undefined,
-          })
+          }),
         ) ?? [],
     },
   });
@@ -137,7 +135,7 @@ export function ResidentForm({
         }
         const { message, success } = await mutateResidentData(
           { ...residentData },
-          document_id
+          document_id,
         );
         toast({
           title: message,
@@ -210,7 +208,7 @@ export function ResidentForm({
             <span
               onClick={() =>
                 setNoOfEmContacts(
-                  noOfEmContacts < 10 ? noOfEmContacts + 1 : noOfEmContacts
+                  noOfEmContacts < 10 ? noOfEmContacts + 1 : noOfEmContacts,
                 )
               }
               className="p-1 border hover:bg-primary/10 rounded-md"
@@ -221,7 +219,7 @@ export function ResidentForm({
               <span
                 onClick={() =>
                   setNoOfEmContacts(
-                    noOfEmContacts > 0 ? noOfEmContacts - 1 : noOfEmContacts
+                    noOfEmContacts > 0 ? noOfEmContacts - 1 : noOfEmContacts,
                   )
                 }
                 className="p-1 border hover:bg-primary/10 rounded-md"

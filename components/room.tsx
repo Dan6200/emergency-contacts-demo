@@ -1,5 +1,5 @@
 "use client";
-import type { RoomData } from "@/types/resident";
+import type { RoomData } from "@/types/room-data";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
@@ -85,7 +85,7 @@ export default function Room({ roomData }: { roomData: RoomData }) {
               className="sm:w-64 w-full"
               onMouseDown={() =>
                 router.push(
-                  `/admin/room/${roomData.document_id}/residents/add?room=${roomData.residence_id}`
+                  `/admin/room/${roomData.document_id}/residents/add?room=${roomData.residence_id}`,
                 )
               }
             >

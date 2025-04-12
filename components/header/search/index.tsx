@@ -1,7 +1,7 @@
 "use client";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Suggestions } from "@/components/header/search/suggestions";
-import { Residence } from "@/types/resident";
+import { Residence } from "@/types/residence";
 import { SearchBar } from "./search-bar";
 import { cn } from "@/lib/utils";
 

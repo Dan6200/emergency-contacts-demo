@@ -6,7 +6,6 @@ import React, {
   useState,
 } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,17 +16,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  Plus,
-  QrCode,
-  SearchIcon,
-  UserRound,
-  UserRoundPlus,
-} from "lucide-react";
+import { QrCode, SearchIcon, UserRound, UserRoundPlus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import Search from "./search/index";
-import { Residence } from "@/types/resident";
+import { Residence } from "@/types/residence";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "@/firebase/client/config";
 import { signOutWrapper } from "@/firebase/auth/actions";
@@ -40,7 +33,7 @@ export default function Header({
   const router = useRouter();
 
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = async (
-    event: MouseEvent
+    event: MouseEvent,
   ) => {
     event.preventDefault();
     signOutWrapper();

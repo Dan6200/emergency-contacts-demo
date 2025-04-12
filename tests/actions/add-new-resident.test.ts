@@ -1,7 +1,4 @@
 import { collectionWrapper } from "@/firebase/firestore";
-import type { ResidentData } from "@/types/resident";
-import type { EmergencyContact } from "@/types/emergency_contacts";
-import type { RoomData } from "@/types/room-data";
 import db from "@/firebase/server/config";
 import { addNewResident } from "@/app/admin/residents/data-actions";
 

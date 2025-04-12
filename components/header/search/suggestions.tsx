@@ -1,6 +1,6 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Residence } from "@/types/resident";
+import type { Residence } from "@/types/residence";
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 

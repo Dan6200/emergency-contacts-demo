@@ -2,10 +2,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Dispatch, forwardRef, SetStateAction, useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Residence } from "@/types/resident";
+import { Residence } from "@/types/residence";
 import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -67,10 +67,10 @@ export const SearchBar = ({
             .replaceAll(/[^a-zA-Z0-9]/g, "") // Ignore non-alnum chars
             .slice(0, 25)
             .includes(
-              searchValue.toLowerCase().replaceAll(/[^a-zA-Z0-9]/g, "")
+              searchValue.toLowerCase().replaceAll(/[^a-zA-Z0-9]/g, ""),
             ) ||
           room.roomNo.toLowerCase().includes(searchValue.toLowerCase()) ||
-          room.residence_id.toLowerCase().includes(searchValue.toLowerCase())
+          room.residence_id.toLowerCase().includes(searchValue.toLowerCase()),
       );
     }
 
